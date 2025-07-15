@@ -93,7 +93,7 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 shadowJar {
-    archiveBaseName.set("Dominic")
+    archiveBaseName.set("Minecraft")
     archiveClassifier.set("")
     archiveVersion.set("")
     manifest {
