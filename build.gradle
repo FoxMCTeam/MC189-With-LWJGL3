@@ -1,0 +1,109 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+group = 'net.minecraft'
+version = '1.8.9'
+
+project.ext.lwjglVersion = "3.4.0-SNAPSHOT"
+project.ext.lwjglNatives = "natives-windows"
+
+repositories {
+    mavenCentral()
+    maven { url "https://central.sonatype.com/repository/maven-snapshots" }
+    maven { url 'https://jitpack.io' }
+    maven { url "https://repo.viaversion.com/everything" }
+    maven { url "https://repo.codemc.io/repository/maven-snapshots/" }
+    maven { url "https://nexus.velocitypowered.com/repository/maven-public/" }
+    flatDir { dirs 'libs' }
+}
+
+dependencies {
+    //def
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    //LWJGL
+    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+    implementation "org.lwjgl:lwjgl"
+    implementation "org.lwjgl:lwjgl-glfw"
+    implementation "org.lwjgl:lwjgl-openal"
+    implementation "org.lwjgl:lwjgl-opengl"
+    implementation "org.lwjgl:lwjgl-opengles"
+    implementation "org.lwjgl:lwjgl-stb"
+    implementation "org.lwjgl:lwjgl::$lwjglNatives"
+    implementation "org.lwjgl:lwjgl-glfw::$lwjglNatives"
+    implementation "org.lwjgl:lwjgl-openal::$lwjglNatives"
+    implementation "org.lwjgl:lwjgl-opengl::$lwjglNatives"
+    implementation "org.lwjgl:lwjgl-opengles::$lwjglNatives"
+    implementation "org.lwjgl:lwjgl-stb::$lwjglNatives"
+
+    //MC LIBS
+    implementation("com.paulscode:codecjorbis:20101023")
+    implementation("com.paulscode:codecwav:20101023")
+    implementation("com.paulscode:soundsystem:20120107")
+    implementation("com.mojang:authlib:1.5.21")
+
+    implementation("commons-codec:commons-codec:1.15")
+    implementation('org.apache.commons:commons-compress:1.26.0')
+    implementation('commons-io:commons-io:2.14.0')
+    implementation('org.apache.commons:commons-lang3:3.18.0')
+    implementation("commons-logging:commons-logging:1.2")
+
+    implementation("com.google.guava:failureaccess:1.0.1")
+    implementation("me.xdrop:fuzzywuzzy:1.4.0")
+    implementation("com.google.code.gson:gson:2.13.1")
+    implementation("com.google.guava:guava:33.4.8-jre")
+
+    implementation("org.apache.httpcomponents.client5:httpclient5:5.0")
+    implementation("org.apache.httpcomponents:httpclient:4.5.13")
+    implementation("org.apache.httpcomponents:httpcore:4.4.16")
+
+    implementation("org.jcodec:jcodec:0.2.5")
+    implementation("us.ihmc:jinput:2.0.6-ihmc2")
+    implementation("net.java.dev.jna:jna:5.17.0")
+    implementation("net.java.dev.jna:jna-platform:5.17.0")
+    implementation("net.sf.jopt-simple:jopt-simple:5.0.4")
+    implementation("net.java.jutils:jutils:1.0.0")
+
+    implementation("org.apache.logging.log4j:log4j-core:2.25.1")
+    implementation("org.apache.logging.log4j:log4j-api:2.25.1")
+    implementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.25.1")
+
+    implementation("org.projectlombok:lombok:1.18.38")
+    implementation("org.openjdk.nashorn:nashorn-core:15.6")
+    implementation("io.netty:netty-all:4.1.67.Final")
+    implementation("com.neovisionaries:nv-i18n:1.27")
+    implementation("oshi-project:oshi-core:1.1")
+    implementation("javax.vecmath:vecmath:1.5.2")
+
+    //Lombok 注解处理器
+    annotationProcessor 'org.projectlombok:lombok:1.18.32'
+    testCompileOnly 'org.projectlombok:lombok:1.18.32'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.32'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+shadowJar {
+    archiveBaseName.set("Dominic")
+    archiveClassifier.set("")
+    archiveVersion.set("")
+    manifest {
+        attributes(
+                'Main-Class': 'net.minecraft.client.main.Main',
+                'Multi-Release': 'true'
+        )
+    }
+    mergeServiceFiles()
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+build.dependsOn shadowJar
