@@ -1,0 +1,40 @@
+name: Build and Release 1122
+
+on:
+  push:
+    branches:
+      - 1.12.2 # 如果你使用的是别的分支名（如 master），请改这里
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 18
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 18 # 按需修改为你的 Java 版本
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Create Pre-Release and Upload JAR
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: pre-release-latest
+          release_name: Latest Pre-Release
+          body: |
+            ⚠ This is an automatically generated pre-release.
+            - Built from the latest commit to `main` branch
+            - Includes Minecraft.jar
+          prerelease: true
+          files: build/libs/Minecraft.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
