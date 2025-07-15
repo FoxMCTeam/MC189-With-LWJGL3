@@ -47,11 +47,11 @@ of.message.newVersion=En ny versjon av §eOptiFine§f er tilgjengelig: §e%s§f
 of.message.java64Bit=Du kan installere §e64-bitersversjonen av Java§f for å forbedre ytelsen.
 of.message.openglError=§eOpenGL-feil§f: %s (%s)
 
-of.message.shaders.loading=latest inn shaders: %s
+of.message.shaders.loading=Laster inn shaders: %s
 
 of.message.other.reset=Tilbakestill alle videoinnstillingene til standardverdiene?
 
-of.message.loadingVisibleChunks=latest synlige verdensbiter
+of.message.loadingVisibleChunks=Laster synlige verdensbiter
 
 # Skin customization
 

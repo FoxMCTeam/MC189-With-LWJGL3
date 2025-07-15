@@ -1,7 +1,7 @@
 package net.optifine;
 
-import net.minecraft.util.BlockPos;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.biome.Biome;
 
 public interface IRandomEntity
 {
@@ -9,7 +9,7 @@ public interface IRandomEntity
 
     BlockPos getSpawnPosition();
 
-    BiomeGenBase getSpawnBiome();
+    Biome getSpawnBiome();
 
     String getName();
 

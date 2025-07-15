@@ -3,8 +3,8 @@ package net.optifine;
 import java.util.UUID;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.util.BlockPos;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.biome.Biome;
 
 public class RandomEntity implements IRandomEntity
 {
@@ -20,12 +20,12 @@ public class RandomEntity implements IRandomEntity
 
     public BlockPos getSpawnPosition()
     {
-        return this.entity.getDataWatcher().spawnPosition;
+        return this.entity.getDataManager().spawnPosition;
     }
 
-    public BiomeGenBase getSpawnBiome()
+    public Biome getSpawnBiome()
     {
-        return this.entity.getDataWatcher().spawnBiome;
+        return this.entity.getDataManager().spawnBiome;
     }
 
     public String getName()

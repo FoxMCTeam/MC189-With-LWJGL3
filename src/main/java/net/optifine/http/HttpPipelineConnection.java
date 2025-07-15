@@ -10,7 +10,7 @@ import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 
 public class HttpPipelineConnection
 {
@@ -45,8 +45,8 @@ public class HttpPipelineConnection
         this.host = null;
         this.port = 0;
         this.proxy = Proxy.NO_PROXY;
-        this.listRequests = new LinkedList();
-        this.listRequestsSend = new LinkedList();
+        this.listRequests = new LinkedList<HttpPipelineRequest>();
+        this.listRequestsSend = new LinkedList<HttpPipelineRequest>();
         this.socket = null;
         this.inputStream = null;
         this.outputStream = null;
@@ -157,11 +157,11 @@ public class HttpPipelineConnection
 
         if (remove)
         {
-            return (HttpPipelineRequest)list.remove(0);
+            return list.remove(0);
         }
         else
         {
-            return (HttpPipelineRequest)list.get(0);
+            return list.get(0);
         }
     }
 
@@ -386,14 +386,14 @@ public class HttpPipelineConnection
         {
             if (!this.responseReceived)
             {
-                HttpPipelineRequest httppipelinerequest = (HttpPipelineRequest)this.listRequests.remove(0);
+                HttpPipelineRequest httppipelinerequest = this.listRequests.remove(0);
                 httppipelinerequest.getHttpListener().failed(httppipelinerequest.getHttpRequest(), e);
                 httppipelinerequest.setClosed(true);
             }
 
             while (this.listRequests.size() > 0)
             {
-                HttpPipelineRequest httppipelinerequest1 = (HttpPipelineRequest)this.listRequests.remove(0);
+                HttpPipelineRequest httppipelinerequest1 = this.listRequests.remove(0);
                 HttpPipeline.addRequest(httppipelinerequest1);
             }
         }
@@ -401,7 +401,14 @@ public class HttpPipelineConnection
 
     public synchronized boolean isClosed()
     {
-        return this.terminated ? true : this.countRequests >= this.keepaliveMaxCount;
+        if (this.terminated)
+        {
+            return true;
+        }
+        else
+        {
+            return this.countRequests >= this.keepaliveMaxCount;
+        }
     }
 
     public int getCountRequests()

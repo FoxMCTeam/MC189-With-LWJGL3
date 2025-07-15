@@ -6,7 +6,7 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityEnderChestRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.minecraft.tileentity.TileEntityEnderChest;
 import net.optifine.reflect.Reflector;
 
@@ -31,7 +31,19 @@ public class ModelAdapterEnderChest extends ModelAdapter
         else
         {
             ModelChest modelchest = (ModelChest)model;
-            return modelPart.equals("lid") ? modelchest.chestLid : (modelPart.equals("base") ? modelchest.chestBelow : (modelPart.equals("knob") ? modelchest.chestKnob : null));
+
+            if (modelPart.equals("lid"))
+            {
+                return modelchest.chestLid;
+            }
+            else if (modelPart.equals("base"))
+            {
+                return modelchest.chestBelow;
+            }
+            else
+            {
+                return modelPart.equals("knob") ? modelchest.chestKnob : null;
+            }
         }
     }
 
@@ -43,7 +55,7 @@ public class ModelAdapterEnderChest extends ModelAdapter
     public IEntityRenderer makeEntityRender(ModelBase modelBase, float shadowSize)
     {
         TileEntityRendererDispatcher tileentityrendererdispatcher = TileEntityRendererDispatcher.instance;
-        TileEntitySpecialRenderer tileentityspecialrenderer = tileentityrendererdispatcher.getSpecialRendererByClass(TileEntityEnderChest.class);
+        TileEntitySpecialRenderer tileentityspecialrenderer = tileentityrendererdispatcher.getRenderer(TileEntityEnderChest.class);
 
         if (!(tileentityspecialrenderer instanceof TileEntityEnderChestRenderer))
         {

@@ -16,11 +16,6 @@ public class FunctionBool implements IExpressionBool
         return this.type.evalBool(this.arguments);
     }
 
-    public ExpressionType getExpressionType()
-    {
-        return ExpressionType.BOOL;
-    }
-
     public String toString()
     {
         return "" + this.type + "()";

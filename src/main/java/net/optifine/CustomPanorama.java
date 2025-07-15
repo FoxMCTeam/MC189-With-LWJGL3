@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
-import net.minecraft.src.Config;
+
 import net.minecraft.util.ResourceLocation;
 import net.optifine.util.MathUtils;
 import net.optifine.util.PropertiesOrdered;
@@ -51,7 +51,7 @@ public class CustomPanorama
 
     private static String[] getPanoramaFolders()
     {
-        List<String> list = new ArrayList();
+        List<String> list = new ArrayList<String>();
         list.add("textures/gui/title/background");
 
         for (int i = 0; i < 100; ++i)
@@ -66,7 +66,7 @@ public class CustomPanorama
             }
         }
 
-        String[] astring = (String[])((String[])list.toArray(new String[list.size()]));
+        String[] astring = (String[])list.toArray(new String[list.size()]);
         return astring;
     }
 
@@ -97,7 +97,7 @@ public class CustomPanorama
                 {
                     Properties properties = new PropertiesOrdered();
                     properties.load(inputstream);
-                    Config.dbg("CustomPanorama: " + resourcelocation.getResourcePath());
+                    Config.dbg("CustomPanorama: " + resourcelocation.getPath());
                     aproperties[i] = properties;
                     inputstream.close();
                 }
@@ -111,26 +111,26 @@ public class CustomPanorama
         return aproperties;
     }
 
-    private static int[] getWeights(Properties[] propertiess)
+    private static int[] getWeights(Properties[] properties)
     {
-        int[] aint = new int[propertiess.length];
+        int[] aint = new int[properties.length];
 
         for (int i = 0; i < aint.length; ++i)
         {
-            Properties properties = propertiess[i];
+            Properties prop = properties[i];
 
-            if (properties == null)
+            if (prop == null)
             {
-                properties = propertiess[0];
+                prop = properties[0];
             }
 
-            if (properties == null)
+            if (prop == null)
             {
                 aint[i] = 1;
             }
             else
             {
-                String s = properties.getProperty("weight", (String)null);
+                String s = prop.getProperty("weight", (String)null);
                 aint[i] = Config.parseInt(s, 1);
             }
         }

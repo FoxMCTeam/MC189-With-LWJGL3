@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import net.minecraft.network.PacketThreadUtil;
-import net.minecraft.src.Config;
 import net.optifine.util.ResUtils;
 import net.optifine.util.StrUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -43,7 +42,7 @@ public class CustomLoadingScreens
         screens = null;
         screensMinDimensionId = 0;
         Pair<CustomLoadingScreen[], Integer> pair = parseScreens();
-        screens = (CustomLoadingScreen[])pair.getLeft();
+        screens = pair.getLeft();
         screensMinDimensionId = ((Integer)pair.getRight()).intValue();
     }
 
@@ -52,7 +51,7 @@ public class CustomLoadingScreens
         String s = "optifine/gui/loading/background";
         String s1 = ".png";
         String[] astring = ResUtils.collectFiles(s, s1);
-        Map<Integer, String> map = new HashMap();
+        Map<Integer, String> map = new HashMap<Integer, String>();
 
         for (int i = 0; i < astring.length; ++i)
         {
@@ -76,7 +75,7 @@ public class CustomLoadingScreens
 
         if (ainteger.length <= 0)
         {
-            return new ImmutablePair((Object)null, Integer.valueOf(0));
+            return new ImmutablePair<CustomLoadingScreen[], Integer>((CustomLoadingScreen[]) null, Integer.valueOf(0));
         }
         else
         {
@@ -90,11 +89,11 @@ public class CustomLoadingScreens
             for (int j1 = 0; j1 < ainteger.length; ++j1)
             {
                 Integer integer = ainteger[j1];
-                String s4 = (String)map.get(integer);
+                String s4 = map.get(integer);
                 acustomloadingscreen[integer.intValue() - k] = CustomLoadingScreen.parseScreen(s4, integer.intValue(), properties);
             }
 
-            return new ImmutablePair(acustomloadingscreen, Integer.valueOf(k));
+            return new ImmutablePair<CustomLoadingScreen[], Integer>(acustomloadingscreen, k);
         }
     }
 

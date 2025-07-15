@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.texture.ITextureObject;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.src.Config;
 import net.minecraft.util.ResourceLocation;
 import net.optifine.util.PropertiesOrdered;
 
@@ -73,7 +72,7 @@ public class EmissiveTextures
                     resourcelocation = LOCATION_EMPTY;
                 }
 
-                ITextureObject itextureobject = (ITextureObject)mapTextures.get(resourcelocation);
+                ITextureObject itextureobject = mapTextures.get(resourcelocation);
 
                 if (itextureobject == null)
                 {
@@ -167,7 +166,7 @@ public class EmissiveTextures
 
     public static boolean isEmissive(ResourceLocation loc)
     {
-        return suffixEmissivePng == null ? false : loc.getResourcePath().endsWith(suffixEmissivePng);
+        return suffixEmissivePng == null ? false : loc.getPath().endsWith(suffixEmissivePng);
     }
 
     public static void loadTexture(ResourceLocation loc, SimpleTexture tex)
@@ -179,7 +178,7 @@ public class EmissiveTextures
 
             if (suffixEmissivePng != null)
             {
-                String s = loc.getResourcePath();
+                String s = loc.getPath();
 
                 if (s.endsWith(".png"))
                 {
@@ -190,7 +189,7 @@ public class EmissiveTextures
                     else
                     {
                         String s1 = s.substring(0, s.length() - ".png".length()) + suffixEmissivePng;
-                        ResourceLocation resourcelocation = new ResourceLocation(loc.getResourceDomain(), s1);
+                        ResourceLocation resourcelocation = new ResourceLocation(loc.getNamespace(), s1);
 
                         if (Config.hasResource(resourcelocation))
                         {

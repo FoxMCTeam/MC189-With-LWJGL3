@@ -28,7 +28,7 @@ public class PlayerConfigurations
     {
         if (reloadPlayerItems && System.currentTimeMillis() > timeReloadPlayerItemsMs + 5000L)
         {
-            AbstractClientPlayer abstractclientplayer = Minecraft.getMinecraft().thePlayer;
+            AbstractClientPlayer abstractclientplayer = Minecraft.getMinecraft().player;
 
             if (abstractclientplayer != null)
             {

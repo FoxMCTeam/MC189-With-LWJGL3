@@ -3,7 +3,8 @@ package net.optifine.util;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.src.Config;
+import java.util.function.LongSupplier;
+import net.optifine.Config;
 
 public class NativeMemory
 {
@@ -22,7 +23,7 @@ public class NativeMemory
 
     private static LongSupplier makeLongSupplier(String[][] paths)
     {
-        List<Throwable> list = new ArrayList();
+        List<Throwable> list = new ArrayList<Throwable>();
 
         for (int i = 0; i < paths.length; ++i)
         {
@@ -68,8 +69,9 @@ public class NativeMemory
                 method.setAccessible(true);
             }
 
-            final Method method1 = method;
-            final Object o= object;
+            final Object objectF = object;
+            final Method methodF = method;
+
             LongSupplier longsupplier = new LongSupplier()
             {
                 private boolean disabled = false;
@@ -83,7 +85,7 @@ public class NativeMemory
                     {
                         try
                         {
-                            return (long) method1.invoke(o);
+                            return ((Long)methodF.invoke(objectF)).longValue();
                         }
                         catch (Throwable throwable)
                         {

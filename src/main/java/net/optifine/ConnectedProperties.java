@@ -12,10 +12,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.init.Blocks;
-import net.minecraft.src.Config;
-import net.minecraft.util.EnumWorldBlockLayer;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import net.optifine.config.ConnectedParser;
 import net.optifine.config.MatchBlock;
 import net.optifine.config.Matches;
@@ -36,7 +35,7 @@ public class ConnectedProperties
     public String[] tiles = null;
     public int connect = 0;
     public int faces = 63;
-    public BiomeGenBase[] biomes = null;
+    public Biome[] biomes = null;
     public RangeListInt heights = null;
     public int renderPass = 0;
     public boolean innerSeams = false;
@@ -56,8 +55,8 @@ public class ConnectedProperties
     public String[] connectTiles = null;
     public TextureAtlasSprite[] connectTileIcons = null;
     public int tintIndex = -1;
-    public IBlockState tintBlockState = Blocks.air.getDefaultState();
-    public EnumWorldBlockLayer layer = null;
+    public IBlockState tintBlockState = Blocks.AIR.getDefaultState();
+    public BlockRenderLayer layer = null;
     public static final int METHOD_NONE = 0;
     public static final int METHOD_CTM = 1;
     public static final int METHOD_HORIZONTAL = 2;
@@ -134,8 +133,8 @@ public class ConnectedProperties
         this.connectBlocks = connectedparser.parseMatchBlocks(props.getProperty("connectBlocks"));
         this.connectTiles = this.parseMatchTiles(props.getProperty("connectTiles"));
         this.tintIndex = connectedparser.parseInt(props.getProperty("tintIndex"), -1);
-        this.tintBlockState = connectedparser.parseBlockState(props.getProperty("tintBlock"), Blocks.air.getDefaultState());
-        this.layer = connectedparser.parseBlockRenderLayer(props.getProperty("layer"), EnumWorldBlockLayer.CUTOUT_MIPPED);
+        this.tintBlockState = connectedparser.parseBlockState(props.getProperty("tintBlock"), Blocks.AIR.getDefaultState());
+        this.layer = connectedparser.parseBlockRenderLayer(props.getProperty("layer"), BlockRenderLayer.CUTOUT_MIPPED);
     }
 
     private int[] parseCtmTileIndexes(Properties props)
@@ -146,7 +145,7 @@ public class ConnectedProperties
         }
         else
         {
-            Map<Integer, Integer> map = new HashMap();
+            Map<Integer, Integer> map = new HashMap<Integer, Integer>();
 
             for (Object object : props.keySet())
             {
@@ -273,7 +272,7 @@ public class ConnectedProperties
         {
             List list = new ArrayList();
             String[] astring = Config.tokenize(str, " ,");
-            label32:
+            label61:
 
             for (int i = 0; i < astring.length; ++i)
             {
@@ -302,7 +301,7 @@ public class ConnectedProperties
                             {
                                 if (l > k)
                                 {
-                                    continue label32;
+                                    continue label61;
                                 }
 
                                 list.add(String.valueOf(l));
@@ -315,7 +314,7 @@ public class ConnectedProperties
                 list.add(s);
             }
 
-            String[] astring2 = (String[])((String[])list.toArray(new String[list.size()]));
+            String[] astring2 = (String[])list.toArray(new String[list.size()]);
 
             for (int i1 = 0; i1 < astring2.length; ++i1)
             {
@@ -473,12 +472,11 @@ public class ConnectedProperties
 
     public static IProperty getProperty(String key, Collection properties)
     {
-        for (Object e : properties)
+        for (Object iproperty : properties)
         {
-            IProperty iproperty = (IProperty) e;
-            if (key.equals(iproperty.getName()))
+            if (key.equals(((IProperty) iproperty).getName()))
             {
-                return iproperty;
+                return (IProperty) iproperty;
             }
         }
 
@@ -704,7 +702,14 @@ public class ConnectedProperties
 
     private int detectConnect()
     {
-        return this.matchBlocks != null ? 1 : (this.matchTiles != null ? 2 : 128);
+        if (this.matchBlocks != null)
+        {
+            return 1;
+        }
+        else
+        {
+            return this.matchTiles != null ? 2 : 128;
+        }
     }
 
     private MatchBlock[] detectMatchBlocks()
@@ -743,7 +748,7 @@ public class ConnectedProperties
             {
                 char c0 = this.name.charAt(j);
 
-                if (c0 < 48 || c0 > 57)
+                if (c0 < '0' || c0 > '9')
                 {
                     break;
                 }
@@ -832,7 +837,7 @@ public class ConnectedProperties
             Config.warn("Invalid tiles, must be at least 17: " + path);
             return false;
         }
-        else if (this.layer != null && this.layer != EnumWorldBlockLayer.SOLID)
+        else if (this.layer != null && this.layer != BlockRenderLayer.SOLID)
         {
             return true;
         }
@@ -849,7 +854,7 @@ public class ConnectedProperties
         {
             return false;
         }
-        else if (this.layer != null && this.layer != EnumWorldBlockLayer.SOLID)
+        else if (this.layer != null && this.layer != BlockRenderLayer.SOLID)
         {
             return true;
         }
@@ -866,7 +871,7 @@ public class ConnectedProperties
         {
             return false;
         }
-        else if (this.layer != null && this.layer != EnumWorldBlockLayer.SOLID)
+        else if (this.layer != null && this.layer != BlockRenderLayer.SOLID)
         {
             return true;
         }
@@ -883,7 +888,7 @@ public class ConnectedProperties
         {
             return false;
         }
-        else if (this.layer != null && this.layer != EnumWorldBlockLayer.SOLID)
+        else if (this.layer != null && this.layer != BlockRenderLayer.SOLID)
         {
             return true;
         }
@@ -900,7 +905,7 @@ public class ConnectedProperties
         {
             return false;
         }
-        else if (this.layer != null && this.layer != EnumWorldBlockLayer.SOLID)
+        else if (this.layer != null && this.layer != BlockRenderLayer.SOLID)
         {
             return true;
         }
@@ -1159,8 +1164,8 @@ public class ConnectedProperties
             {
                 String s = tileNames[i];
                 ResourceLocation resourcelocation = new ResourceLocation(s);
-                String s1 = resourcelocation.getResourceDomain();
-                String s2 = resourcelocation.getResourcePath();
+                String s1 = resourcelocation.getNamespace();
+                String s2 = resourcelocation.getPath();
 
                 if (!s2.contains("/"))
                 {
@@ -1171,7 +1176,7 @@ public class ConnectedProperties
 
                 if (skipTiles && s3.endsWith("<skip>.png"))
                 {
-                    list.add(null);
+                    list.add((Object)null);
                 }
                 else if (defaultTiles && s3.endsWith("<default>.png"))
                 {
@@ -1201,7 +1206,7 @@ public class ConnectedProperties
                 }
             }
 
-            TextureAtlasSprite[] atextureatlassprite = (TextureAtlasSprite[])((TextureAtlasSprite[])list.toArray(new TextureAtlasSprite[list.size()]));
+            TextureAtlasSprite[] atextureatlassprite = (TextureAtlasSprite[])list.toArray(new TextureAtlasSprite[list.size()]);
             return atextureatlassprite;
         }
     }
@@ -1213,7 +1218,14 @@ public class ConnectedProperties
 
     public boolean matchesBlock(int blockId, int metadata)
     {
-        return !Matches.block(blockId, metadata, this.matchBlocks) ? false : Matches.metadata(metadata, this.metadatas);
+        if (!Matches.block(blockId, metadata, this.matchBlocks))
+        {
+            return false;
+        }
+        else
+        {
+            return Matches.metadata(metadata, this.metadatas);
+        }
     }
 
     public boolean matchesIcon(TextureAtlasSprite icon)
@@ -1226,7 +1238,7 @@ public class ConnectedProperties
         return "CTM name: " + this.name + ", basePath: " + this.basePath + ", matchBlocks: " + Config.arrayToString((Object[])this.matchBlocks) + ", matchTiles: " + Config.arrayToString((Object[])this.matchTiles);
     }
 
-    public boolean matchesBiome(BiomeGenBase biome)
+    public boolean matchesBiome(Biome biome)
     {
         return Matches.biome(biome, this.biomes);
     }

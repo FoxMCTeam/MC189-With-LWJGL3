@@ -6,7 +6,7 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityEnchantmentTableRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.minecraft.tileentity.TileEntityEnchantmentTable;
 import net.optifine.reflect.Reflector;
 
@@ -31,7 +31,35 @@ public class ModelAdapterBook extends ModelAdapter
         else
         {
             ModelBook modelbook = (ModelBook)model;
-            return modelPart.equals("cover_right") ? modelbook.coverRight : (modelPart.equals("cover_left") ? modelbook.coverLeft : (modelPart.equals("pages_right") ? modelbook.pagesRight : (modelPart.equals("pages_left") ? modelbook.pagesLeft : (modelPart.equals("flipping_page_right") ? modelbook.flippingPageRight : (modelPart.equals("flipping_page_left") ? modelbook.flippingPageLeft : (modelPart.equals("book_spine") ? modelbook.bookSpine : null))))));
+
+            if (modelPart.equals("cover_right"))
+            {
+                return modelbook.coverRight;
+            }
+            else if (modelPart.equals("cover_left"))
+            {
+                return modelbook.coverLeft;
+            }
+            else if (modelPart.equals("pages_right"))
+            {
+                return modelbook.pagesRight;
+            }
+            else if (modelPart.equals("pages_left"))
+            {
+                return modelbook.pagesLeft;
+            }
+            else if (modelPart.equals("flipping_page_right"))
+            {
+                return modelbook.flippingPageRight;
+            }
+            else if (modelPart.equals("flipping_page_left"))
+            {
+                return modelbook.flippingPageLeft;
+            }
+            else
+            {
+                return modelPart.equals("book_spine") ? modelbook.bookSpine : null;
+            }
         }
     }
 
@@ -43,7 +71,7 @@ public class ModelAdapterBook extends ModelAdapter
     public IEntityRenderer makeEntityRender(ModelBase modelBase, float shadowSize)
     {
         TileEntityRendererDispatcher tileentityrendererdispatcher = TileEntityRendererDispatcher.instance;
-        TileEntitySpecialRenderer tileentityspecialrenderer = tileentityrendererdispatcher.getSpecialRendererByClass(TileEntityEnchantmentTable.class);
+        TileEntitySpecialRenderer tileentityspecialrenderer = tileentityrendererdispatcher.getRenderer(TileEntityEnchantmentTable.class);
 
         if (!(tileentityspecialrenderer instanceof TileEntityEnchantmentTableRenderer))
         {

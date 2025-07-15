@@ -1,7 +1,7 @@
 package net.optifine.shaders.config;
 
 import java.util.Map;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.optifine.expr.ConstantFloat;
 import net.optifine.expr.FunctionBool;
 import net.optifine.expr.FunctionType;
@@ -30,7 +30,7 @@ public class MacroExpressionResolver implements IExpressionResolver
         {
             while (this.mapMacroValues.containsKey(name))
             {
-                String s1 = (String)this.mapMacroValues.get(name);
+                String s1 = this.mapMacroValues.get(name);
 
                 if (s1 == null || s1.equals(name))
                 {

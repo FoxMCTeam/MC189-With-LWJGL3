@@ -3,16 +3,16 @@ package net.optifine.util;
 import java.lang.reflect.Array;
 import java.util.ArrayDeque;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 
 public class CacheObjectArray
 {
-    private static ArrayDeque<int[]> arrays = new ArrayDeque();
+    private static ArrayDeque<int[]> arrays = new ArrayDeque<int[]>();
     private static int maxCacheSize = 10;
 
     private static synchronized int[] allocateArray(int size)
     {
-        int[] aint = (int[])arrays.pollLast();
+        int[] aint = arrays.pollLast();
 
         if (aint == null || aint.length < size)
         {
@@ -71,7 +71,7 @@ public class CacheObjectArray
 
         for (int j = 0; j < count; ++j)
         {
-            int[] aint = (int[])((int[])Array.newInstance(Integer.TYPE, size));
+            int[] aint = (int[])Array.newInstance(Integer.TYPE, size);
         }
 
         long k = System.currentTimeMillis();
@@ -111,7 +111,7 @@ public class CacheObjectArray
 
         for (int j = 0; j < count; ++j)
         {
-            Object[] aobject = (Object[])((Object[])Array.newInstance(cls, size));
+            Object[] aobject = (Object[]) Array.newInstance(cls, size);
         }
 
         long k = System.currentTimeMillis();

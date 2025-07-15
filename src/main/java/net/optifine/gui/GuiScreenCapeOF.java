@@ -4,11 +4,10 @@ import com.mojang.authlib.exceptions.InvalidCredentialsException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.Random;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.optifine.Lang;
 
 public class GuiScreenCapeOF extends GuiScreenOF
@@ -19,11 +18,9 @@ public class GuiScreenCapeOF extends GuiScreenOF
     private long messageHideTimeMs;
     private String linkUrl;
     private GuiButtonOF buttonCopyLink;
-    private FontRenderer fontRenderer;
 
     public GuiScreenCapeOF(GuiScreen parentScreenIn)
     {
-        this.fontRenderer = Config.getMinecraft().fontRendererObj;
         this.parentScreen = parentScreenIn;
     }
 
@@ -34,16 +31,16 @@ public class GuiScreenCapeOF extends GuiScreenOF
     public void initGui()
     {
         int i = 0;
-        this.title = I18n.format("of.options.capeOF.title", new Object[0]);
+        this.title = I18n.format("of.options.capeOF.title");
         i = i + 2;
-        this.buttonList.add(new GuiButtonOF(210, this.width / 2 - 155, this.height / 6 + 24 * (i >> 1), 150, 20, I18n.format("of.options.capeOF.openEditor", new Object[0])));
-        this.buttonList.add(new GuiButtonOF(220, this.width / 2 - 155 + 160, this.height / 6 + 24 * (i >> 1), 150, 20, I18n.format("of.options.capeOF.reloadCape", new Object[0])));
+        this.buttonList.add(new GuiButtonOF(210, this.width / 2 - 155, this.height / 6 + 24 * (i >> 1), 150, 20, I18n.format("of.options.capeOF.openEditor")));
+        this.buttonList.add(new GuiButtonOF(220, this.width / 2 - 155 + 160, this.height / 6 + 24 * (i >> 1), 150, 20, I18n.format("of.options.capeOF.reloadCape")));
         i = i + 6;
-        this.buttonCopyLink = new GuiButtonOF(230, this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), 200, 20, I18n.format("of.options.capeOF.copyEditorLink", new Object[0]));
+        this.buttonCopyLink = new GuiButtonOF(230, this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), 200, 20, I18n.format("of.options.capeOF.copyEditorLink"));
         this.buttonCopyLink.visible = this.linkUrl != null;
-        this.buttonList.add(this.buttonCopyLink);
+        this.addButton(this.buttonCopyLink);
         i = i + 4;
-        this.buttonList.add(new GuiButtonOF(200, this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), I18n.format("gui.done", new Object[0])));
+        this.buttonList.add(new GuiButtonOF(200, this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), I18n.format("gui.done")));
     }
 
     /**
@@ -87,7 +84,7 @@ public class GuiScreenCapeOF extends GuiScreenOF
                 }
                 catch (InvalidCredentialsException invalidcredentialsexception)
                 {
-                    Config.showGuiMessage(I18n.format("of.message.capeOF.error1", new Object[0]), I18n.format("of.message.capeOF.error2", new Object[] {invalidcredentialsexception.getMessage()}));
+                    Config.showGuiMessage(I18n.format("of.message.capeOF.error1"), I18n.format("of.message.capeOF.error2", invalidcredentialsexception.getMessage()));
                     Config.warn("Mojang authentication failed");
                     Config.warn(invalidcredentialsexception.getClass().getName() + ": " + invalidcredentialsexception.getMessage());
                 }
@@ -102,11 +99,11 @@ public class GuiScreenCapeOF extends GuiScreenOF
             {
                 this.showMessage(Lang.get("of.message.capeOF.reloadCape"), 15000L);
 
-                if (this.mc.thePlayer != null)
+                if (this.mc.player != null)
                 {
                     long i = 15000L;
                     long j = System.currentTimeMillis() + i;
-                    this.mc.thePlayer.setReloadCapeTimeMs(j);
+                    this.mc.player.setReloadCapeTimeMs(j);
                 }
             }
 
@@ -125,7 +122,7 @@ public class GuiScreenCapeOF extends GuiScreenOF
     }
 
     /**
-     * Draws the screen and all the components in it. Args : mouseX, mouseY, renderPartialTicks
+     * Draws the screen and all the components in it.
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {

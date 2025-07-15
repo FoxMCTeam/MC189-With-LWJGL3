@@ -4,14 +4,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.minecraft.util.ResourceLocation;
 
 public class FontUtils
 {
     public static Properties readFontProperties(ResourceLocation locationFontTexture)
     {
-        String s = locationFontTexture.getResourcePath();
+        String s = locationFontTexture.getPath();
         Properties properties = new PropertiesOrdered();
         String s1 = ".png";
 
@@ -25,7 +25,7 @@ public class FontUtils
 
             try
             {
-                ResourceLocation resourcelocation = new ResourceLocation(locationFontTexture.getResourceDomain(), s2);
+                ResourceLocation resourcelocation = new ResourceLocation(locationFontTexture.getNamespace(), s2);
                 InputStream inputstream = Config.getResourceStream(Config.getResourceManager(), resourcelocation);
 
                 if (inputstream == null)
@@ -35,6 +35,7 @@ public class FontUtils
 
                 Config.log("Loading " + s2);
                 properties.load(inputstream);
+                inputstream.close();
             }
             catch (FileNotFoundException var7)
             {
@@ -51,19 +52,18 @@ public class FontUtils
 
     public static void readCustomCharWidths(Properties props, float[] charWidth)
     {
-        for (Object e : props.keySet())
+        for (Object s : props.keySet())
         {
-            String s = (String) e;
             String s1 = "width.";
 
-            if (s.startsWith(s1))
+            if (((String) s).startsWith(s1))
             {
-                String s2 = s.substring(s1.length());
+                String s2 = ((String) s).substring(s1.length());
                 int i = Config.parseInt(s2, -1);
 
                 if (i >= 0 && i < charWidth.length)
                 {
-                    String s3 = props.getProperty(s);
+                    String s3 = props.getProperty((String) s);
                     float f = Config.parseFloat(s3, -1.0F);
 
                     if (f >= 0.0F)
@@ -146,7 +146,7 @@ public class FontUtils
         }
         else
         {
-            String s = fontLoc.getResourcePath();
+            String s = fontLoc.getPath();
             String s1 = "textures/";
             String s2 = "mcpatcher/";
 
@@ -158,7 +158,7 @@ public class FontUtils
             {
                 s = s.substring(s1.length());
                 s = s2 + s;
-                ResourceLocation resourcelocation = new ResourceLocation(fontLoc.getResourceDomain(), s);
+                ResourceLocation resourcelocation = new ResourceLocation(fontLoc.getNamespace(), s);
                 return Config.hasResource(Config.getResourceManager(), resourcelocation) ? resourcelocation : fontLoc;
             }
         }

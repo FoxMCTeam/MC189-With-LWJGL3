@@ -23,11 +23,11 @@ import net.minecraft.client.gui.inventory.GuiDispenser;
 import net.minecraft.client.gui.inventory.GuiFurnace;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.gui.inventory.GuiScreenHorseInventory;
+import net.minecraft.client.gui.inventory.GuiShulkerBox;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.entity.Entity;
-import net.minecraft.src.Config;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.optifine.override.PlayerControllerOF;
 import net.optifine.util.PropertiesOrdered;
@@ -54,7 +54,7 @@ public class CustomGuis
             {
                 return loc;
             }
-            else if (loc.getResourceDomain().equals("minecraft") && loc.getResourcePath().startsWith("textures/gui/"))
+            else if (loc.getNamespace().equals("minecraft") && loc.getPath().startsWith("textures/gui/"))
             {
                 if (playerControllerOF == null)
                 {
@@ -62,7 +62,7 @@ public class CustomGuis
                 }
                 else
                 {
-                    IBlockAccess iblockaccess = mc.theWorld;
+                    IBlockAccess iblockaccess = mc.world;
 
                     if (iblockaccess == null)
                     {
@@ -70,11 +70,11 @@ public class CustomGuis
                     }
                     else if (guiscreen instanceof GuiContainerCreative)
                     {
-                        return getTexturePos(CustomGuiProperties.EnumContainer.CREATIVE, mc.thePlayer.getPosition(), iblockaccess, loc, guiscreen);
+                        return getTexturePos(CustomGuiProperties.EnumContainer.CREATIVE, mc.player.getPosition(), iblockaccess, loc, guiscreen);
                     }
                     else if (guiscreen instanceof GuiInventory)
                     {
-                        return getTexturePos(CustomGuiProperties.EnumContainer.INVENTORY, mc.thePlayer.getPosition(), iblockaccess, loc, guiscreen);
+                        return getTexturePos(CustomGuiProperties.EnumContainer.INVENTORY, mc.player.getPosition(), iblockaccess, loc, guiscreen);
                     }
                     else
                     {
@@ -125,6 +125,11 @@ public class CustomGuis
                             if (guiscreen instanceof GuiHopper)
                             {
                                 return getTexturePos(CustomGuiProperties.EnumContainer.HOPPER, blockpos, iblockaccess, loc, guiscreen);
+                            }
+
+                            if (guiscreen instanceof GuiShulkerBox)
+                            {
+                                return getTexturePos(CustomGuiProperties.EnumContainer.SHULKER_BOX, blockpos, iblockaccess, loc, guiscreen);
                             }
                         }
 
@@ -208,7 +213,7 @@ public class CustomGuis
 
         if (Config.isCustomGuis())
         {
-            List<List<CustomGuiProperties>> list = new ArrayList();
+            List<List<CustomGuiProperties>> list = new ArrayList<List<CustomGuiProperties>>();
             IResourcePack[] airesourcepack = Config.getResourcePacks();
 
             for (int i = airesourcepack.length - 1; i >= 0; --i)
@@ -229,7 +234,7 @@ public class CustomGuis
         }
         else
         {
-            CustomGuiProperties[][] acustomguiproperties = new CustomGuiProperties[CustomGuiProperties.EnumContainer.VALUES.length][];
+            CustomGuiProperties[][] acustomguiproperties = new CustomGuiProperties[CustomGuiProperties.EnumContainer.values().length][];
 
             for (int i = 0; i < acustomguiproperties.length; ++i)
             {
@@ -239,7 +244,7 @@ public class CustomGuis
 
                     if (list != null)
                     {
-                        CustomGuiProperties[] acustomguiproperties1 = (CustomGuiProperties[])((CustomGuiProperties[])list.toArray(new CustomGuiProperties[list.size()]));
+                        CustomGuiProperties[] acustomguiproperties1 = (CustomGuiProperties[])list.toArray(new CustomGuiProperties[list.size()]);
                         acustomguiproperties[i] = acustomguiproperties1;
                     }
                 }
@@ -251,7 +256,7 @@ public class CustomGuis
 
     private static void update(IResourcePack rp, List<List<CustomGuiProperties>> listProps)
     {
-        String[] astring = ResUtils.collectFiles(rp, (String)"optifine/gui/container/", (String)".properties", (String[])null);
+        String[] astring = ResUtils.collectFiles(rp, "optifine/gui/container/", ".properties", (String[])null);
         Arrays.sort((Object[])astring);
 
         for (int i = 0; i < astring.length; ++i)
@@ -304,14 +309,14 @@ public class CustomGuis
 
             while (listProps.size() <= i)
             {
-                listProps.add(null);
+                listProps.add((List<CustomGuiProperties>) null);
             }
 
             List<CustomGuiProperties> list = (List)listProps.get(i);
 
             if (list == null)
             {
-                list = new ArrayList();
+                list = new ArrayList<CustomGuiProperties>();
                 listProps.set(i, list);
             }
 

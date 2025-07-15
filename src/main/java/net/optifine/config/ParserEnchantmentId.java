@@ -7,6 +7,6 @@ public class ParserEnchantmentId implements IParserInt
     public int parse(String str, int defVal)
     {
         Enchantment enchantment = Enchantment.getEnchantmentByLocation(str);
-        return enchantment == null ? defVal : enchantment.effectId;
+        return enchantment == null ? defVal : Enchantment.getEnchantmentID(enchantment);
     }
 }

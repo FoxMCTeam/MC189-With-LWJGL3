@@ -8,7 +8,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 
 public class HttpPipeline
 {
@@ -56,7 +56,7 @@ public class HttpPipeline
 
             String s2 = "GET";
             String s3 = "HTTP/1.1";
-            Map<String, String> map = new LinkedHashMap();
+            Map<String, String> map = new LinkedHashMap<String, String>();
             map.put("User-Agent", "Java/" + System.getProperty("java.version"));
             map.put("Host", s1);
             map.put("Accept", "text/html, image/gif, image/png");
@@ -140,7 +140,7 @@ public class HttpPipeline
 
     public static HttpResponse executeRequest(HttpRequest req) throws IOException
     {
-        final Map<String, Object> map = new HashMap();
+        final Map<String, Object> map = new HashMap<String, Object>();
         String s = "Response";
         String s1 = "Exception";
         HttpListener httplistener = new HttpListener()
@@ -212,10 +212,9 @@ public class HttpPipeline
 
     public static boolean hasActiveRequests()
     {
-        for (Object e: mapConnections.values())
+        for (Object httppipelineconnection : mapConnections.values())
         {
-            HttpPipelineConnection httppipelineconnection = (HttpPipelineConnection) e;
-            if (httppipelineconnection.hasActiveRequests())
+            if (((HttpPipelineConnection) httppipelineconnection).hasActiveRequests())
             {
                 return true;
             }

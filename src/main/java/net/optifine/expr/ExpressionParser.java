@@ -8,7 +8,7 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 
 public class ExpressionParser
 {
@@ -59,7 +59,7 @@ public class ExpressionParser
             }
             else
             {
-                Deque<Token> deque = new ArrayDeque(Arrays.asList(atoken));
+                Deque<Token> deque = new ArrayDeque<Token>(Arrays.asList(atoken));
                 return this.parseInfix(deque);
             }
         }
@@ -77,15 +77,15 @@ public class ExpressionParser
         }
         else
         {
-            List<IExpression> list = new LinkedList();
-            List<Token> list1 = new LinkedList();
+            List<IExpression> list = new LinkedList<IExpression>();
+            List<Token> list1 = new LinkedList<Token>();
             IExpression iexpression = this.parseExpression(deque);
             checkNull(iexpression, "Missing expression");
             list.add(iexpression);
 
             while (true)
             {
-                Token token = (Token)deque.poll();
+                Token token = deque.poll();
 
                 if (token == null)
                 {
@@ -107,7 +107,7 @@ public class ExpressionParser
 
     private IExpression makeInfix(List<IExpression> listExpr, List<Token> listOper) throws ParseException
     {
-        List<FunctionType> list = new LinkedList();
+        List<FunctionType> list = new LinkedList<FunctionType>();
 
         for (Token token : listOper)
         {
@@ -127,7 +127,7 @@ public class ExpressionParser
         }
         else if (listExpr.size() == 1)
         {
-            return (IExpression)listExpr.get(0);
+            return listExpr.get(0);
         }
         else
         {
@@ -149,7 +149,7 @@ public class ExpressionParser
 
                 if (listExpr.size() == 1 && listFunc.size() == 0)
                 {
-                    return (IExpression)listExpr.get(0);
+                    return listExpr.get(0);
                 }
                 else
                 {
@@ -167,13 +167,13 @@ public class ExpressionParser
     {
         for (int i = 0; i < listFuncs.size(); ++i)
         {
-            FunctionType functiontype = (FunctionType)listFuncs.get(i);
+            FunctionType functiontype = listFuncs.get(i);
 
             if (functiontype.getPrecedence() == precedence)
             {
                 listFuncs.remove(i);
-                IExpression iexpression = (IExpression)listExpr.remove(i);
-                IExpression iexpression1 = (IExpression)listExpr.remove(i);
+                IExpression iexpression = listExpr.remove(i);
+                IExpression iexpression1 = listExpr.remove(i);
                 IExpression iexpression2 = makeFunction(functiontype, new IExpression[] {iexpression, iexpression1});
                 listExpr.add(i, iexpression2);
                 --i;
@@ -183,7 +183,7 @@ public class ExpressionParser
 
     private IExpression parseExpression(Deque<Token> deque) throws ParseException
     {
-        Token token = (Token)deque.poll();
+        Token token = deque.poll();
         checkNull(token, "Missing expression");
 
         switch (token.getType())
@@ -242,69 +242,55 @@ public class ExpressionParser
         }
     }
 
-    private FunctionType getFunctionType(Token tokens, Deque<Token> deque) throws ParseException
+    private FunctionType getFunctionType(Token token, Deque<Token> deque) throws ParseException
     {
-        Token token = (Token)deque.peek();
-
-        if (tokens != null && token.getType() == TokenType.BRACKET_OPEN)
-        {
-            FunctionType functiontype1 = FunctionType.parse(token.getText());
-            checkNull(functiontype1, "Unknown function: " + token);
-            return functiontype1;
-        }
-        else
-        {
-            FunctionType functiontype = FunctionType.parse(token.getText());
-
-            if (functiontype == null)
-            {
+        Token tokenNext = (Token)deque.peek();
+        FunctionType type;
+        if (tokenNext != null && tokenNext.getType() == TokenType.BRACKET_OPEN) {
+            type = FunctionType.parse(token.getText());
+            checkNull(type, "Unknown function: " + token);
+            return type;
+        } else {
+            type = FunctionType.parse(token.getText());
+            if (type == null) {
                 return null;
-            }
-            else if (functiontype.getParameterCount(new IExpression[0]) > 0)
-            {
-                throw new ParseException("Missing arguments: " + functiontype);
-            }
-            else
-            {
-                return functiontype;
+            } else if (type.getParameterCount(new IExpression[0]) > 0) {
+                throw new ParseException("Missing arguments: " + type);
+            } else {
+                return type;
             }
         }
     }
 
     private IExpression makeFunction(FunctionType type, Deque<Token> deque) throws ParseException
     {
-        if (type.getParameterCount(new IExpression[0]) == 0)
-        {
-            Token token = (Token)deque.peek();
-
-            if (token == null || token.getType() != TokenType.BRACKET_OPEN)
-            {
+        Token tokenNext;
+        if (type.getParameterCount(new IExpression[0]) == 0) {
+            tokenNext = (Token)deque.peek();
+            if (tokenNext == null || tokenNext.getType() != TokenType.BRACKET_OPEN) {
                 return makeFunction(type, new IExpression[0]);
             }
         }
 
-        Token token1 = (Token)deque.poll();
-        Deque<Token> deque2 = getGroup(deque, TokenType.BRACKET_CLOSE, true);
-        IExpression[] aiexpression = this.parseExpressions(deque2);
-        return makeFunction(type, aiexpression);
+        tokenNext = (Token)deque.poll();
+        Deque<Token> dequeBracketed = getGroup(deque, TokenType.BRACKET_CLOSE, true);
+        IExpression[] exprs = this.parseExpressions(dequeBracketed);
+        return makeFunction(type, exprs);
     }
 
     private IExpression[] parseExpressions(Deque<Token> deque) throws ParseException
     {
-        List<IExpression> list = new ArrayList();
+        ArrayList list = new ArrayList();
 
-        while (true)
-        {
-            Deque<Token> deque2 = getGroup(deque, TokenType.COMMA, false);
-            IExpression iexpression = this.parseInfix(deque2);
-
-            if (iexpression == null)
-            {
-                IExpression[] aiexpression = (IExpression[])((IExpression[])list.toArray(new IExpression[list.size()]));
-                return aiexpression;
+        while(true) {
+            Deque<Token> dequeArg = getGroup(deque, TokenType.COMMA, false);
+            IExpression expr = this.parseInfix(dequeArg);
+            if (expr == null) {
+                IExpression[] exprs = (IExpression[])((IExpression[])list.toArray(new IExpression[list.size()]));
+                return exprs;
             }
 
-            list.add(iexpression);
+            list.add(expr);
         }
     }
 
@@ -372,46 +358,37 @@ public class ExpressionParser
 
     private IExpression makeBracketed(Token token, Deque<Token> deque) throws ParseException
     {
-        Deque<Token> deque2 = getGroup(deque, TokenType.BRACKET_CLOSE, true);
-        return this.parseInfix(deque2);
+        Deque<Token> dequeBracketed = getGroup(deque, TokenType.BRACKET_CLOSE, true);
+        return this.parseInfix(dequeBracketed);
     }
 
     private static Deque<Token> getGroup(Deque<Token> deque, TokenType tokenTypeEnd, boolean tokenEndRequired) throws ParseException
     {
-        Deque<Token> deque3 = new ArrayDeque();
-        int i = 0;
-        Iterator iterator = deque.iterator();
+        Deque<Token> dequeGroup = new ArrayDeque();
+        int level = 0;
+        Iterator it = deque.iterator();
 
-        while (iterator.hasNext())
-        {
-            Token token = (Token)iterator.next();
-            iterator.remove();
-
-            if (i == 0 && token.getType() == tokenTypeEnd)
-            {
-                return deque3;
+        while(it.hasNext()) {
+            Token token = (Token)it.next();
+            it.remove();
+            if (level == 0 && token.getType() == tokenTypeEnd) {
+                return dequeGroup;
             }
 
-            deque3.add(token);
-
-            if (token.getType() == TokenType.BRACKET_OPEN)
-            {
-                ++i;
+            dequeGroup.add(token);
+            if (token.getType() == TokenType.BRACKET_OPEN) {
+                ++level;
             }
 
-            if (token.getType() == TokenType.BRACKET_CLOSE)
-            {
-                --i;
+            if (token.getType() == TokenType.BRACKET_CLOSE) {
+                --level;
             }
         }
 
-        if (tokenEndRequired)
-        {
+        if (tokenEndRequired) {
             throw new ParseException("Missing end token: " + tokenTypeEnd);
-        }
-        else
-        {
-            return deque3;
+        } else {
+            return dequeGroup;
         }
     }
 

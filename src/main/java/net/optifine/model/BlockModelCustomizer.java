@@ -4,11 +4,11 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.resources.model.IBakedModel;
-import net.minecraft.src.Config;
-import net.minecraft.util.BlockPos;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.optifine.Config;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumWorldBlockLayer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.optifine.BetterGrass;
 import net.optifine.ConnectedTextures;
@@ -30,7 +30,7 @@ public class BlockModelCustomizer
         return modelIn;
     }
 
-    public static List<BakedQuad> getRenderQuads(List<BakedQuad> quads, IBlockAccess worldIn, IBlockState stateIn, BlockPos posIn, EnumFacing enumfacing, EnumWorldBlockLayer layer, long rand, RenderEnv renderEnv)
+    public static List<BakedQuad> getRenderQuads(List<BakedQuad> quads, IBlockAccess worldIn, IBlockState stateIn, BlockPos posIn, EnumFacing enumfacing, BlockRenderLayer layer, long rand, RenderEnv renderEnv)
     {
         if (enumfacing != null)
         {
@@ -50,7 +50,7 @@ public class BlockModelCustomizer
 
         for (int i = 0; i < quads.size(); ++i)
         {
-            BakedQuad bakedquad = (BakedQuad)quads.get(i);
+            BakedQuad bakedquad = quads.get(i);
             BakedQuad[] abakedquad = getRenderQuads(bakedquad, worldIn, stateIn, posIn, enumfacing, rand, renderEnv);
 
             if (i == 0 && quads.size() == 1 && abakedquad.length == 1 && abakedquad[0] == bakedquad && bakedquad.getQuadEmissive() == null)
@@ -74,9 +74,9 @@ public class BlockModelCustomizer
         return list;
     }
 
-    private static EnumWorldBlockLayer getEmissiveLayer(EnumWorldBlockLayer layer)
+    private static BlockRenderLayer getEmissiveLayer(BlockRenderLayer layer)
     {
-        return layer != null && layer != EnumWorldBlockLayer.SOLID ? layer : EnumWorldBlockLayer.CUTOUT_MIPPED;
+        return layer != null && layer != BlockRenderLayer.SOLID ? layer : BlockRenderLayer.CUTOUT_MIPPED;
     }
 
     private static BakedQuad[] getRenderQuads(BakedQuad quad, IBlockAccess worldIn, IBlockState stateIn, BlockPos posIn, EnumFacing enumfacing, long rand, RenderEnv renderEnv)

@@ -1,0 +1,13 @@
+package net.minecraftforge.common.model;
+
+import net.minecraft.util.EnumFacing;
+import org.lwjglx.util.vector.Matrix4f;
+
+public interface ITransformation
+{
+    Matrix4f getMatrix();
+
+    EnumFacing rotate(EnumFacing var1);
+
+    int rotate(EnumFacing var1, int var2);
+}

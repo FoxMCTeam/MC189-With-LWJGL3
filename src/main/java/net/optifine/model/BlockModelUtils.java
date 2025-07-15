@@ -1,26 +1,30 @@
 package net.optifine.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BakedQuadRetextured;
 import net.minecraft.client.renderer.block.model.BlockFaceUV;
 import net.minecraft.client.renderer.block.model.BlockPartFace;
 import net.minecraft.client.renderer.block.model.BlockPartRotation;
-import net.minecraft.client.renderer.block.model.BreakingFour;
 import net.minecraft.client.renderer.block.model.FaceBakery;
+import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.block.model.ItemOverrideList;
+import net.minecraft.client.renderer.block.model.ModelManager;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelRotation;
+import net.minecraft.client.renderer.block.model.SimpleBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.resources.model.IBakedModel;
-import net.minecraft.client.resources.model.ModelManager;
-import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.client.resources.model.ModelRotation;
-import net.minecraft.client.resources.model.SimpleBakedModel;
-import net.minecraft.src.Config;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
+import net.optifine.Config;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import org.lwjglx.util.vector.Vector3f;
 
 public class BlockModelUtils
@@ -37,42 +41,44 @@ public class BlockModelUtils
     {
         List list = new ArrayList();
         EnumFacing[] aenumfacing = EnumFacing.VALUES;
-        List<List<BakedQuad>> list1 = new ArrayList();
+        Map<EnumFacing, List<BakedQuad>> map = new HashMap<EnumFacing, List<BakedQuad>>();
 
         for (int i = 0; i < aenumfacing.length; ++i)
         {
             EnumFacing enumfacing = aenumfacing[i];
-            List list2 = new ArrayList();
-            list2.add(makeBakedQuad(enumfacing, sprite, tintIndex));
-            list1.add(list2);
+            List list1 = new ArrayList();
+            list1.add(makeBakedQuad(enumfacing, sprite, tintIndex));
+            map.put(enumfacing, list1);
         }
 
-        IBakedModel ibakedmodel = new SimpleBakedModel(list, list1, true, true, sprite, ItemCameraTransforms.DEFAULT);
+        ItemOverrideList itemoverridelist = new ItemOverrideList(new ArrayList());
+        IBakedModel ibakedmodel = new SimpleBakedModel(list, map, true, true, sprite, ItemCameraTransforms.DEFAULT, itemoverridelist);
         return ibakedmodel;
     }
 
     public static IBakedModel joinModelsCube(IBakedModel modelBase, IBakedModel modelAdd)
     {
-        List<BakedQuad> list = new ArrayList();
-        list.addAll(modelBase.getGeneralQuads());
-        list.addAll(modelAdd.getGeneralQuads());
+        List<BakedQuad> list = new ArrayList<BakedQuad>();
+        list.addAll(modelBase.getQuads((IBlockState)null, (EnumFacing)null, 0L));
+        list.addAll(modelAdd.getQuads((IBlockState)null, (EnumFacing)null, 0L));
         EnumFacing[] aenumfacing = EnumFacing.VALUES;
-        List list1 = new ArrayList();
+        Map<EnumFacing, List<BakedQuad>> map = new HashMap<EnumFacing, List<BakedQuad>>();
 
         for (int i = 0; i < aenumfacing.length; ++i)
         {
             EnumFacing enumfacing = aenumfacing[i];
-            List list2 = new ArrayList();
-            list2.addAll(modelBase.getFaceQuads(enumfacing));
-            list2.addAll(modelAdd.getFaceQuads(enumfacing));
-            list1.add(list2);
+            List list1 = new ArrayList();
+            list1.addAll(modelBase.getQuads((IBlockState)null, enumfacing, 0L));
+            list1.addAll(modelAdd.getQuads((IBlockState)null, enumfacing, 0L));
+            map.put(enumfacing, list1);
         }
 
         boolean flag = modelBase.isAmbientOcclusion();
         boolean flag1 = modelBase.isBuiltInRenderer();
-        TextureAtlasSprite textureatlassprite = modelBase.getTexture();
+        TextureAtlasSprite textureatlassprite = modelBase.getParticleTexture();
         ItemCameraTransforms itemcameratransforms = modelBase.getItemCameraTransforms();
-        IBakedModel ibakedmodel = new SimpleBakedModel(list, list1, flag, flag1, textureatlassprite, itemcameratransforms);
+        ItemOverrideList itemoverridelist = modelBase.getOverrides();
+        IBakedModel ibakedmodel = new SimpleBakedModel(list, map, flag, flag1, textureatlassprite, itemcameratransforms, itemoverridelist);
         return ibakedmodel;
     }
 
@@ -122,11 +128,11 @@ public class BlockModelUtils
                     for (int i = 0; i < aenumfacing.length; ++i)
                     {
                         EnumFacing enumfacing = aenumfacing[i];
-                        List<BakedQuad> list = ibakedmodel1.getFaceQuads(enumfacing);
+                        List<BakedQuad> list = ibakedmodel1.getQuads((IBlockState)null, enumfacing, 0L);
                         replaceTexture(list, spriteOld, spriteNew);
                     }
 
-                    List<BakedQuad> list1 = ibakedmodel1.getGeneralQuads();
+                    List<BakedQuad> list1 = ibakedmodel1.getQuads((IBlockState)null, (EnumFacing)null, 0L);
                     replaceTexture(list1, spriteOld, spriteNew);
                     return ibakedmodel1;
                 }
@@ -144,13 +150,13 @@ public class BlockModelUtils
 
     private static void replaceTexture(List<BakedQuad> quads, TextureAtlasSprite spriteOld, TextureAtlasSprite spriteNew)
     {
-        List<BakedQuad> list = new ArrayList();
+        List<BakedQuad> list = new ArrayList<BakedQuad>();
 
         for (BakedQuad bakedquad : quads)
         {
             if (bakedquad.getSprite() == spriteOld)
             {
-                bakedquad = new BreakingFour(bakedquad, spriteNew);
+                bakedquad = new BakedQuadRetextured(bakedquad, spriteNew);
             }
 
             list.add(bakedquad);
@@ -169,7 +175,14 @@ public class BlockModelUtils
 
     private static float snapVertexCoord(float x)
     {
-        return x > -1.0E-6F && x < 1.0E-6F ? 0.0F : (x > 0.999999F && x < 1.000001F ? 1.0F : x);
+        if (x > -1.0E-6F && x < 1.0E-6F)
+        {
+            return 0.0F;
+        }
+        else
+        {
+            return x > 0.999999F && x < 1.000001F ? 1.0F : x;
+        }
     }
 
     public static AxisAlignedBB getOffsetBoundingBox(AxisAlignedBB aabb, Block.EnumOffsetType offsetType, BlockPos pos)

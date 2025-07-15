@@ -3,7 +3,7 @@ package net.optifine.shaders.gui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 import net.optifine.shaders.config.ShaderOption;
 
 public class GuiSliderShaderOption extends GuiButtonShaderOption
@@ -38,17 +38,17 @@ public class GuiSliderShaderOption extends GuiButtonShaderOption
         {
             if (this.dragging && !GuiScreen.isShiftKeyDown())
             {
-                this.sliderValue = (float)(mouseX - (this.xPosition + 4)) / (float)(this.width - 8);
-                this.sliderValue = MathHelper.clamp_float(this.sliderValue, 0.0F, 1.0F);
+                this.sliderValue = (float)(mouseX - (this.x + 4)) / (float)(this.width - 8);
+                this.sliderValue = MathHelper.clamp(this.sliderValue, 0.0F, 1.0F);
                 this.shaderOption.setIndexNormalized(this.sliderValue);
                 this.sliderValue = this.shaderOption.getIndexNormalized();
                 this.displayString = GuiShaderOptions.getButtonText(this.shaderOption, this.width);
             }
 
-            mc.getTextureManager().bindTexture(buttonTextures);
+            mc.getTextureManager().bindTexture(BUTTON_TEXTURES);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            this.drawTexturedModalRect(this.xPosition + (int)(this.sliderValue * (float)(this.width - 8)), this.yPosition, 0, 66, 4, 20);
-            this.drawTexturedModalRect(this.xPosition + (int)(this.sliderValue * (float)(this.width - 8)) + 4, this.yPosition, 196, 66, 4, 20);
+            this.drawTexturedModalRect(this.x + (int)(this.sliderValue * (float)(this.width - 8)), this.y, 0, 66, 4, 20);
+            this.drawTexturedModalRect(this.x + (int)(this.sliderValue * (float)(this.width - 8)) + 4, this.y, 196, 66, 4, 20);
         }
     }
 
@@ -60,8 +60,8 @@ public class GuiSliderShaderOption extends GuiButtonShaderOption
     {
         if (super.mousePressed(mc, mouseX, mouseY))
         {
-            this.sliderValue = (float)(mouseX - (this.xPosition + 4)) / (float)(this.width - 8);
-            this.sliderValue = MathHelper.clamp_float(this.sliderValue, 0.0F, 1.0F);
+            this.sliderValue = (float)(mouseX - (this.x + 4)) / (float)(this.width - 8);
+            this.sliderValue = MathHelper.clamp(this.sliderValue, 0.0F, 1.0F);
             this.shaderOption.setIndexNormalized(this.sliderValue);
             this.displayString = GuiShaderOptions.getButtonText(this.shaderOption, this.width);
             this.dragging = true;

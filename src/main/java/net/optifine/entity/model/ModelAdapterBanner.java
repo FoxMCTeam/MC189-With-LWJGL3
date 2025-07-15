@@ -6,7 +6,7 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityBannerRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.minecraft.tileentity.TileEntityBanner;
 import net.optifine.reflect.Reflector;
 
@@ -31,7 +31,19 @@ public class ModelAdapterBanner extends ModelAdapter
         else
         {
             ModelBanner modelbanner = (ModelBanner)model;
-            return modelPart.equals("slate") ? modelbanner.bannerSlate : (modelPart.equals("stand") ? modelbanner.bannerStand : (modelPart.equals("top") ? modelbanner.bannerTop : null));
+
+            if (modelPart.equals("slate"))
+            {
+                return modelbanner.bannerSlate;
+            }
+            else if (modelPart.equals("stand"))
+            {
+                return modelbanner.bannerStand;
+            }
+            else
+            {
+                return modelPart.equals("top") ? modelbanner.bannerTop : null;
+            }
         }
     }
 
@@ -43,7 +55,7 @@ public class ModelAdapterBanner extends ModelAdapter
     public IEntityRenderer makeEntityRender(ModelBase modelBase, float shadowSize)
     {
         TileEntityRendererDispatcher tileentityrendererdispatcher = TileEntityRendererDispatcher.instance;
-        TileEntitySpecialRenderer tileentityspecialrenderer = tileentityrendererdispatcher.getSpecialRendererByClass(TileEntityBanner.class);
+        TileEntitySpecialRenderer tileentityspecialrenderer = tileentityrendererdispatcher.getRenderer(TileEntityBanner.class);
 
         if (!(tileentityspecialrenderer instanceof TileEntityBannerRenderer))
         {

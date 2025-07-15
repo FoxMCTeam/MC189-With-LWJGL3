@@ -1,7 +1,7 @@
 package net.optifine.util;
 
 import net.minecraft.client.renderer.chunk.RenderChunk;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 
 public class RenderChunkUtils
@@ -34,7 +34,7 @@ public class RenderChunkUtils
         double d0 = (double)blockCount / 4096.0D;
         d0 = d0 * 0.995D;
         double d1 = d0 * 2.0D - 1.0D;
-        d1 = MathHelper.clamp_double(d1, -1.0D, 1.0D);
-        return (double)MathHelper.sqrt_double(1.0D - d1 * d1);
+        d1 = MathHelper.clamp(d1, -1.0D, 1.0D);
+        return (double)MathHelper.sqrt(1.0D - d1 * d1);
     }
 }

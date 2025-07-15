@@ -2,10 +2,9 @@ package net.optifine.entity.model.anim;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.entity.EntityLivingBase;
-import net.optifine.expr.ExpressionType;
 import net.optifine.expr.IExpressionBool;
 
 public enum RenderEntityParameterBool implements IExpressionBool
@@ -40,11 +39,6 @@ public enum RenderEntityParameterBool implements IExpressionBool
         return this.name;
     }
 
-    public ExpressionType getExpressionType()
-    {
-        return ExpressionType.BOOL;
-    }
-
     public boolean eval()
     {
         Render render = this.renderManager.renderRender;
@@ -55,10 +49,10 @@ public enum RenderEntityParameterBool implements IExpressionBool
         }
         else
         {
-            if (render instanceof RendererLivingEntity)
+            if (render instanceof RenderLivingBase)
             {
-                RendererLivingEntity rendererlivingentity = (RendererLivingEntity)render;
-                EntityLivingBase entitylivingbase = rendererlivingentity.renderEntity;
+                RenderLivingBase renderlivingbase = (RenderLivingBase)render;
+                EntityLivingBase entitylivingbase = renderlivingbase.renderEntity;
 
                 if (entitylivingbase == null)
                 {
@@ -76,6 +70,9 @@ public enum RenderEntityParameterBool implements IExpressionBool
                     case IS_CHILD:
                         return entitylivingbase.isChild();
 
+                    case IS_GLOWING:
+                        return entitylivingbase.isGlowing();
+
                     case IS_HURT:
                         return entitylivingbase.hurtTime > 0;
 
@@ -92,7 +89,7 @@ public enum RenderEntityParameterBool implements IExpressionBool
                         return entitylivingbase.onGround;
 
                     case IS_RIDDEN:
-                        return entitylivingbase.riddenByEntity != null;
+                        return entitylivingbase.isBeingRidden();
 
                     case IS_RIDING:
                         return entitylivingbase.isRiding();

@@ -1,7 +1,6 @@
 package net.minecraft.block.properties;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 
 public abstract class PropertyHelper<T extends Comparable<T>> implements IProperty<T>
 {
@@ -35,14 +34,14 @@ public abstract class PropertyHelper<T extends Comparable<T>> implements IProper
         {
             return true;
         }
-        else if (p_equals_1_ != null && this.getClass() == p_equals_1_.getClass())
+        else if (!(p_equals_1_ instanceof PropertyHelper))
         {
-            PropertyHelper propertyhelper = (PropertyHelper)p_equals_1_;
-            return this.valueClass.equals(propertyhelper.valueClass) && this.name.equals(propertyhelper.name);
+            return false;
         }
         else
         {
-            return false;
+            PropertyHelper<?> propertyhelper = (PropertyHelper)p_equals_1_;
+            return this.valueClass.equals(propertyhelper.valueClass) && this.name.equals(propertyhelper.name);
         }
     }
 

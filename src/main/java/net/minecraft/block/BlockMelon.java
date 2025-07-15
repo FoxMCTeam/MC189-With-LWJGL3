@@ -12,18 +12,16 @@ public class BlockMelon extends Block
 {
     protected BlockMelon()
     {
-        super(Material.gourd, MapColor.limeColor);
-        this.setCreativeTab(CreativeTabs.tabBlock);
+        super(Material.GOURD, MapColor.LIME);
+        this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
 
     /**
      * Get the Item that this Block should drop when harvested.
-     *  
-     * @param fortune the level of the Fortune enchantment on the player's tool
      */
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Items.melon;
+        return Items.MELON;
     }
 
     /**

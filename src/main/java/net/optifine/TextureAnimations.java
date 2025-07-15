@@ -14,7 +14,6 @@ import java.util.Properties;
 import javax.imageio.ImageIO;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.settings.GameSettings;
-import net.minecraft.src.Config;
 import net.minecraft.util.ResourceLocation;
 import net.optifine.util.PropertiesOrdered;
 import net.optifine.util.ResUtils;
@@ -91,13 +90,13 @@ public class TextureAnimations
             }
         }
 
-        TextureAnimation[] atextureanimation1 = (TextureAnimation[])((TextureAnimation[])list.toArray(new TextureAnimation[list.size()]));
+        TextureAnimation[] atextureanimation1 = (TextureAnimation[])list.toArray(new TextureAnimation[list.size()]);
         return atextureanimation1;
     }
 
     private static TextureAnimation[] getTextureAnimations(IResourcePack rp)
     {
-        String[] astring = ResUtils.collectFiles(rp, (String)"mcpatcher/anim/", (String)".properties", (String[])null);
+        String[] astring = ResUtils.collectFiles(rp, "mcpatcher/anim/", ".properties", (String[])null);
 
         if (astring.length <= 0)
         {
@@ -118,6 +117,7 @@ public class TextureAnimations
                     InputStream inputstream = rp.getInputStream(resourcelocation);
                     Properties properties = new PropertiesOrdered();
                     properties.load(inputstream);
+                    inputstream.close();
                     TextureAnimation textureanimation = makeTextureAnimation(properties, resourcelocation);
 
                     if (textureanimation != null)
@@ -144,7 +144,7 @@ public class TextureAnimations
                 }
             }
 
-            TextureAnimation[] atextureanimation = (TextureAnimation[])((TextureAnimation[])list.toArray(new TextureAnimation[list.size()]));
+            TextureAnimation[] atextureanimation = (TextureAnimation[])list.toArray(new TextureAnimation[list.size()]);
             return atextureanimation;
         }
     }
@@ -164,7 +164,7 @@ public class TextureAnimations
             {
                 s = s.trim();
                 s1 = s1.trim();
-                String s2 = TextureUtils.getBasePath(propLoc.getResourcePath());
+                String s2 = TextureUtils.getBasePath(propLoc.getPath());
                 s = TextureUtils.fixResourcePath(s, s2);
                 s1 = TextureUtils.fixResourcePath(s1, s2);
                 byte[] abyte = getCustomTextureData(s, k);

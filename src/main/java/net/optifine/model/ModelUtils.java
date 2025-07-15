@@ -1,11 +1,14 @@
 package net.optifine.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.resources.model.IBakedModel;
-import net.minecraft.client.resources.model.SimpleBakedModel;
-import net.minecraft.src.Config;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.SimpleBakedModel;
+import net.optifine.Config;
 import net.minecraft.util.EnumFacing;
 
 public class ModelUtils
@@ -14,27 +17,26 @@ public class ModelUtils
     {
         if (model != null)
         {
-            Config.dbg("Model: " + model + ", ao: " + model.isAmbientOcclusion() + ", gui3d: " + model.isGui3d() + ", builtIn: " + model.isBuiltInRenderer() + ", particle: " + model.getTexture());
+            Config.dbg("Model: " + model + ", ao: " + model.isAmbientOcclusion() + ", gui3d: " + model.isGui3d() + ", builtIn: " + model.isBuiltInRenderer() + ", particle: " + model.getParticleTexture());
             EnumFacing[] aenumfacing = EnumFacing.VALUES;
 
             for (int i = 0; i < aenumfacing.length; ++i)
             {
                 EnumFacing enumfacing = aenumfacing[i];
-                List list = model.getFaceQuads(enumfacing);
+                List list = model.getQuads((IBlockState)null, enumfacing, 0L);
                 dbgQuads(enumfacing.getName(), list, "  ");
             }
 
-            List list1 = model.getGeneralQuads();
+            List list1 = model.getQuads((IBlockState)null, (EnumFacing)null, 0L);
             dbgQuads("General", list1, "  ");
         }
     }
 
     private static void dbgQuads(String name, List quads, String prefix)
     {
-        for (Object e : quads)
+        for (Object bakedquad : quads)
         {
-            BakedQuad bakedquad = (BakedQuad) e;
-            dbgQuad(name, bakedquad, prefix);
+            dbgQuad(name, (BakedQuad) bakedquad, prefix);
         }
     }
 
@@ -64,34 +66,33 @@ public class ModelUtils
 
     public static IBakedModel duplicateModel(IBakedModel model)
     {
-        List list = duplicateQuadList(model.getGeneralQuads());
+        List list = duplicateQuadList(model.getQuads((IBlockState)null, (EnumFacing)null, 0L));
         EnumFacing[] aenumfacing = EnumFacing.VALUES;
-        List list1 = new ArrayList();
+        Map<EnumFacing, List<BakedQuad>> map = new HashMap<EnumFacing, List<BakedQuad>>();
 
         for (int i = 0; i < aenumfacing.length; ++i)
         {
             EnumFacing enumfacing = aenumfacing[i];
-            List list2 = model.getFaceQuads(enumfacing);
-            List list3 = duplicateQuadList(list2);
-            list1.add(list3);
+            List list1 = model.getQuads((IBlockState)null, enumfacing, 0L);
+            List list2 = duplicateQuadList(list1);
+            map.put(enumfacing, list2);
         }
 
-        SimpleBakedModel simplebakedmodel = new SimpleBakedModel(list, list1, model.isAmbientOcclusion(), model.isGui3d(), model.getTexture(), model.getItemCameraTransforms());
+        SimpleBakedModel simplebakedmodel = new SimpleBakedModel(list, map, model.isAmbientOcclusion(), model.isGui3d(), model.getParticleTexture(), model.getItemCameraTransforms(), model.getOverrides());
         return simplebakedmodel;
     }
 
-    public static List duplicateQuadList(List lists)
+    public static List duplicateQuadList(List list)
     {
-        List list = new ArrayList();
+        List list2 = new ArrayList();
 
-        for (Object e : lists)
+        for (Object bakedquad : list)
         {
-            BakedQuad bakedquad = (BakedQuad) e;
-            BakedQuad bakedquad1 = duplicateQuad(bakedquad);
-            list.add(bakedquad1);
+            BakedQuad bakedquad1 = duplicateQuad((BakedQuad) bakedquad);
+            list2.add(bakedquad1);
         }
 
-        return list;
+        return list2;
     }
 
     public static BakedQuad duplicateQuad(BakedQuad quad)

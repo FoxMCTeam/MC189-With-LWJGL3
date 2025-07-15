@@ -5,9 +5,9 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelSkeletonHead;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.tileentity.RenderWitherSkull;
+import net.minecraft.client.renderer.entity.RenderWitherSkull;
 import net.minecraft.entity.projectile.EntityWitherSkull;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.optifine.reflect.Reflector;
 
 public class ModelAdapterWitherSkull extends ModelAdapter

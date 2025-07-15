@@ -3,7 +3,7 @@ package net.optifine;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import net.minecraft.src.Config;
+
 import net.minecraft.util.ResourceLocation;
 import net.optifine.config.ConnectedParser;
 
@@ -83,7 +83,7 @@ public class RandomEntityProperties
             }
         }
 
-        RandomEntityRule[] arandomentityrule = (RandomEntityRule[])((RandomEntityRule[])list.toArray(new RandomEntityRule[list.size()]));
+        RandomEntityRule[] arandomentityrule = (RandomEntityRule[])list.toArray(new RandomEntityRule[list.size()]);
         return arandomentityrule;
     }
 
@@ -117,7 +117,7 @@ public class RandomEntityProperties
 
                     if (!Config.hasResource(resourcelocation))
                     {
-                        Config.warn("Texture not found: " + resourcelocation.getResourcePath());
+                        Config.warn("Texture not found: " + resourcelocation.getPath());
                         return false;
                     }
                 }
@@ -129,6 +129,13 @@ public class RandomEntityProperties
 
     public boolean isDefault()
     {
-        return this.rules != null ? false : this.resourceLocations == null;
+        if (this.rules != null)
+        {
+            return false;
+        }
+        else
+        {
+            return this.resourceLocations == null;
+        }
     }
 }

@@ -1,26 +1,26 @@
 package net.optifine;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class DynamicLightsMap
 {
-    private Map<Integer, DynamicLight> map = new HashMap();
-    private List<DynamicLight> list = new ArrayList();
+    private Int2ObjectMap<DynamicLight> map = new Int2ObjectOpenHashMap<DynamicLight>();
+    private List<DynamicLight> list = new ArrayList<DynamicLight>();
     private boolean dirty = false;
 
     public DynamicLight put(int id, DynamicLight dynamicLight)
     {
-        DynamicLight dynamiclight = (DynamicLight)this.map.put(Integer.valueOf(id), dynamicLight);
+        DynamicLight dynamiclight = (DynamicLight)this.map.put(id, dynamicLight);
         this.setDirty();
         return dynamiclight;
     }
 
     public DynamicLight get(int id)
     {
-        return (DynamicLight)this.map.get(Integer.valueOf(id));
+        return (DynamicLight)this.map.get(id);
     }
 
     public int size()
@@ -30,7 +30,7 @@ public class DynamicLightsMap
 
     public DynamicLight remove(int id)
     {
-        DynamicLight dynamiclight = (DynamicLight)this.map.remove(Integer.valueOf(id));
+        DynamicLight dynamiclight = (DynamicLight)this.map.remove(id);
 
         if (dynamiclight != null)
         {

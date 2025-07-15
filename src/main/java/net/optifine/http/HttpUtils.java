@@ -10,7 +10,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 
 public class HttpUtils
 {
@@ -88,11 +88,10 @@ public class HttpUtils
 
             if (headers != null)
             {
-                for (Object e: headers.keySet())
+                for (Object s : headers.keySet())
                 {
-                    String s = (String) e;
                     String s1 = "" + headers.get(s);
-                    httpurlconnection.setRequestProperty(s, s1);
+                    httpurlconnection.setRequestProperty((String) s, s1);
                 }
             }
 
@@ -142,7 +141,7 @@ public class HttpUtils
 
                 if (flag)
                 {
-                    File file1 = Minecraft.getMinecraft().mcDataDir;
+                    File file1 = Minecraft.getMinecraft().gameDir;
                     File file2 = new File(file1, "playermodels");
                     playerItemsUrl = file2.toURI().toURL().toExternalForm();
                 }

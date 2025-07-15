@@ -61,7 +61,7 @@ public class ModelAdapterRabbit extends ModelAdapter
         }
         else
         {
-            mapPartFields = new HashMap();
+            mapPartFields = new HashMap<String, Integer>();
             mapPartFields.put("left_foot", Integer.valueOf(0));
             mapPartFields.put("right_foot", Integer.valueOf(1));
             mapPartFields.put("left_thigh", Integer.valueOf(2));
@@ -81,7 +81,9 @@ public class ModelAdapterRabbit extends ModelAdapter
     public IEntityRenderer makeEntityRender(ModelBase modelBase, float shadowSize)
     {
         RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
-        RenderRabbit renderrabbit = new RenderRabbit(rendermanager, modelBase, shadowSize);
+        RenderRabbit renderrabbit = new RenderRabbit(rendermanager);
+        renderrabbit.mainModel = modelBase;
+        renderrabbit.shadowSize = shadowSize;
         return renderrabbit;
     }
 }

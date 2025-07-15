@@ -2,9 +2,7 @@ package net.optifine.entity.model;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelZombie;
-import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPigZombie;
 import net.minecraft.entity.monster.EntityPigZombie;
@@ -25,7 +23,6 @@ public class ModelAdapterPigZombie extends ModelAdapterBiped
     {
         RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
         RenderPigZombie renderpigzombie = new RenderPigZombie(rendermanager);
-        Render.setModelBipedMain(renderpigzombie, (ModelBiped)modelBase);
         renderpigzombie.mainModel = modelBase;
         renderpigzombie.shadowSize = shadowSize;
         return renderpigzombie;

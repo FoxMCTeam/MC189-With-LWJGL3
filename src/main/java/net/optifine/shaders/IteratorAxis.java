@@ -2,7 +2,7 @@ package net.optifine.shaders;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.optifine.BlockPosM;
 
 public class IteratorAxis implements Iterator<BlockPos>

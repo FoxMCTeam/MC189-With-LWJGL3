@@ -7,7 +7,7 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.entity.RenderLeashKnot;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLeashKnot;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.optifine.reflect.Reflector;
 
 public class ModelAdapterLeadKnot extends ModelAdapter
@@ -31,7 +31,7 @@ public class ModelAdapterLeadKnot extends ModelAdapter
         else
         {
             ModelLeashKnot modelleashknot = (ModelLeashKnot)model;
-            return modelPart.equals("knot") ? modelleashknot.field_110723_a : null;
+            return modelPart.equals("knot") ? modelleashknot.knotRenderer : null;
         }
     }
 

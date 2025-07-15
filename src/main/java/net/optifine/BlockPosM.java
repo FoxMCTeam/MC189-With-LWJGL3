@@ -2,10 +2,9 @@ package net.optifine;
 
 import com.google.common.collect.AbstractIterator;
 import java.util.Iterator;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3i;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 
 public class BlockPosM extends BlockPos
 {
@@ -23,7 +22,7 @@ public class BlockPosM extends BlockPos
 
     public BlockPosM(double xIn, double yIn, double zIn)
     {
-        this(MathHelper.floor_double(xIn), MathHelper.floor_double(yIn), MathHelper.floor_double(zIn));
+        this(MathHelper.floor(xIn), MathHelper.floor(yIn), MathHelper.floor(zIn));
     }
 
     public BlockPosM(int x, int y, int z, int level)
@@ -36,7 +35,7 @@ public class BlockPosM extends BlockPos
     }
 
     /**
-     * Get the X coordinate
+     * Gets the X coordinate.
      */
     public int getX()
     {
@@ -44,7 +43,7 @@ public class BlockPosM extends BlockPos
     }
 
     /**
-     * Get the Y coordinate
+     * Gets the Y coordinate.
      */
     public int getY()
     {
@@ -52,7 +51,7 @@ public class BlockPosM extends BlockPos
     }
 
     /**
-     * Get the Z coordinate
+     * Gets the Z coordinate.
      */
     public int getZ()
     {
@@ -69,24 +68,7 @@ public class BlockPosM extends BlockPos
 
     public void setXyz(double xIn, double yIn, double zIn)
     {
-        this.setXyz(MathHelper.floor_double(xIn), MathHelper.floor_double(yIn), MathHelper.floor_double(zIn));
-    }
-
-    public BlockPosM set(Vec3i vec)
-    {
-        this.setXyz(vec.getX(), vec.getY(), vec.getZ());
-        return this;
-    }
-
-    public BlockPosM set(int xIn, int yIn, int zIn)
-    {
-        this.setXyz(xIn, yIn, zIn);
-        return this;
-    }
-
-    public BlockPos offsetMutable(EnumFacing facing)
-    {
-        return this.offset(facing);
+        this.setXyz(MathHelper.floor(xIn), MathHelper.floor(yIn), MathHelper.floor(zIn));
     }
 
     /**
@@ -96,7 +78,7 @@ public class BlockPosM extends BlockPos
     {
         if (this.level <= 0)
         {
-            return super.offset(facing, 1);
+            return super.offset(facing, 1).toImmutable();
         }
         else
         {
@@ -115,9 +97,9 @@ public class BlockPosM extends BlockPos
 
             if (blockposm == null)
             {
-                int j = this.mx + facing.getFrontOffsetX();
-                int k = this.my + facing.getFrontOffsetY();
-                int l = this.mz + facing.getFrontOffsetZ();
+                int j = this.mx + facing.getXOffset();
+                int k = this.my + facing.getYOffset();
+                int l = this.mz + facing.getZOffset();
                 blockposm = new BlockPosM(j, k, l, this.level - 1);
                 this.facings[i] = blockposm;
             }
@@ -128,13 +110,10 @@ public class BlockPosM extends BlockPos
 
     /**
      * Offsets this BlockPos n blocks in the given direction
-     *  
-     * @param facing The direction of the offset
-     * @param n The number of blocks to offset by
      */
     public BlockPos offset(EnumFacing facing, int n)
     {
-        return n == 1 ? this.offset(facing) : super.offset(facing, n);
+        return n == 1 ? this.offset(facing) : super.offset(facing, n).toImmutable();
     }
 
     private void update()
@@ -146,9 +125,9 @@ public class BlockPosM extends BlockPos
             if (blockposm != null)
             {
                 EnumFacing enumfacing = EnumFacing.VALUES[i];
-                int j = this.mx + enumfacing.getFrontOffsetX();
-                int k = this.my + enumfacing.getFrontOffsetY();
-                int l = this.mz + enumfacing.getFrontOffsetZ();
+                int j = this.mx + enumfacing.getXOffset();
+                int k = this.my + enumfacing.getYOffset();
+                int l = this.mz + enumfacing.getZOffset();
                 blockposm.setXyz(j, k, l);
             }
         }
@@ -156,6 +135,12 @@ public class BlockPosM extends BlockPos
         this.needsUpdate = false;
     }
 
+    /**
+     * Returns a version of this BlockPos that is guaranteed to be immutable.
+     *  
+     * <p>When storing a BlockPos given to you for an extended period of time, make sure you
+     * use this in case the value is changed internally.</p>
+     */
     public BlockPos toImmutable()
     {
         return new BlockPos(this.mx, this.my, this.mz);

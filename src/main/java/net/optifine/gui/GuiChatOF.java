@@ -2,7 +2,7 @@ package net.optifine.gui;
 
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiVideoSettings;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.optifine.shaders.Shaders;
 
 public class GuiChatOF extends GuiChat
@@ -15,6 +15,9 @@ public class GuiChatOF extends GuiChat
         super(GuiVideoSettings.getGuiChatText(guiChat));
     }
 
+    /**
+     * Used to add chat messages to the client's GuiChat.
+     */
     public void sendChatMessage(String msg)
     {
         if (this.checkCustomCommand(msg))
@@ -57,5 +60,25 @@ public class GuiChatOF extends GuiChat
                 return false;
             }
         }
+    }
+
+    /**
+     * Sets the list of tab completions, as long as they were previously requested.
+     */
+    public void setCompletions(String... newCompletions)
+    {
+        String s = GuiVideoSettings.getGuiChatText(this);
+
+        if ("/reloadShaders".startsWith(s))
+        {
+            newCompletions = (String[])Config.addObjectToArray(newCompletions, "/reloadShaders");
+        }
+
+        if ("/reloadChunks".startsWith(s))
+        {
+            newCompletions = (String[])Config.addObjectToArray(newCompletions, "/reloadChunks");
+        }
+
+        super.setCompletions(newCompletions);
     }
 }

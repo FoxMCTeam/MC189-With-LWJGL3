@@ -1,46 +1,38 @@
 package net.minecraft.command;
 
 import java.util.List;
-import net.minecraft.util.BlockPos;
+import javax.annotation.Nullable;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 
 public interface ICommand extends Comparable<ICommand>
 {
     /**
      * Gets the name of the command
      */
-    String getCommandName();
+    String getName();
 
     /**
      * Gets the usage string for the command.
-     *  
-     * @param sender The {@link ICommandSender} who is requesting usage details.
      */
-    String getCommandUsage(ICommandSender sender);
+    String getUsage(ICommandSender sender);
 
-    List<String> getCommandAliases();
+    List<String> getAliases();
 
     /**
-     * Callback when the command is invoked
-     *  
-     * @param sender The {@link ICommandSender sender} who executed the command
-     * @param args The arguments that were passed with the command
+     * Callback for when the command is executed
      */
-    void processCommand(ICommandSender sender, String[] args) throws CommandException;
+    void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException;
 
     /**
-     * Returns true if the given command sender is allowed to use this command.
-     *  
-     * @param sender The CommandSender
+     * Check if the given ICommandSender has permission to execute this command
      */
-    boolean canCommandSenderUseCommand(ICommandSender sender);
+    boolean checkPermission(MinecraftServer server, ICommandSender sender);
 
-    List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos);
+    List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos targetPos);
 
     /**
      * Return whether the specified command parameter index is a username parameter.
-     *  
-     * @param args The arguments that were given
-     * @param index The argument index that we are checking
      */
     boolean isUsernameIndex(String[] args, int index);
 }

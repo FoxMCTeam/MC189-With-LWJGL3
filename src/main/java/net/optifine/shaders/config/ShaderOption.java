@@ -2,7 +2,7 @@ package net.optifine.shaders.config;
 
 import java.util.Arrays;
 import java.util.List;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.optifine.shaders.Shaders;
 import net.optifine.util.StrUtils;
 
@@ -139,7 +139,7 @@ public abstract class ShaderOption
 
             if (!list.contains(s))
             {
-                this.paths = (String[])((String[])Config.addObjectToArray(this.paths, s));
+                this.paths = (String[])Config.addObjectToArray(this.paths, s);
             }
         }
     }

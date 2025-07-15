@@ -3,7 +3,7 @@ package net.optifine.shaders.config;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.optifine.shaders.Shaders;
 import net.optifine.util.StrUtils;
 
@@ -118,7 +118,7 @@ public class ShaderOptionVariable extends ShaderOption
                 {
                     if (!Arrays.asList(astring1).contains(value))
                     {
-                        astring1 = (String[])((String[])Config.addObjectToArray(astring1, value, 0));
+                        astring1 = (String[])Config.addObjectToArray(astring1, value, 0);
                     }
 
                     return astring1;

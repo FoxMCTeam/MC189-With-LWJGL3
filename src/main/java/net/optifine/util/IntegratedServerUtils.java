@@ -4,9 +4,10 @@ import java.util.UUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldServer;
@@ -17,7 +18,7 @@ public class IntegratedServerUtils
     public static WorldServer getWorldServer()
     {
         Minecraft minecraft = Config.getMinecraft();
-        World world = minecraft.theWorld;
+        World world = minecraft.world;
 
         if (world == null)
         {
@@ -45,11 +46,11 @@ public class IntegratedServerUtils
                 }
                 else
                 {
-                    int i = worldprovider.getDimensionId();
+                    DimensionType dimensiontype = worldprovider.getDimensionType();
 
                     try
                     {
-                        WorldServer worldserver = integratedserver.worldServerForDimension(i);
+                        WorldServer worldserver = integratedserver.getWorld(dimensiontype.getId());
                         return worldserver;
                     }
                     catch (NullPointerException var6)
@@ -86,7 +87,7 @@ public class IntegratedServerUtils
         }
         else
         {
-            Chunk chunk = worldserver.getChunkProvider().provideChunk(pos.getX() >> 4, pos.getZ() >> 4);
+            Chunk chunk = worldserver.getChunkProvider().getLoadedChunk(pos.getX() >> 4, pos.getZ() >> 4);
 
             if (chunk == null)
             {

@@ -1,6 +1,5 @@
 package net.optifine.shaders.config;
 
-import net.optifine.expr.ExpressionType;
 import net.optifine.expr.IExpressionBool;
 
 public class ExpressionShaderOptionSwitch implements IExpressionBool
@@ -15,11 +14,6 @@ public class ExpressionShaderOptionSwitch implements IExpressionBool
     public boolean eval()
     {
         return ShaderOptionSwitch.isTrue(this.shaderOption.getValue());
-    }
-
-    public ExpressionType getExpressionType()
-    {
-        return ExpressionType.BOOL;
     }
 
     public String toString()

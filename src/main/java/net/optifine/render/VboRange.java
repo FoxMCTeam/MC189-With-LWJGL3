@@ -6,7 +6,7 @@ public class VboRange
 {
     private int position = -1;
     private int size = 0;
-    private LinkedList.Node<VboRange> node = new LinkedList.Node(this);
+    private LinkedList.Node<VboRange> node = new LinkedList.Node<VboRange>(this);
 
     public int getPosition()
     {

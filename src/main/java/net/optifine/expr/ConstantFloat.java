@@ -14,11 +14,6 @@ public class ConstantFloat implements IExpressionFloat
         return this.value;
     }
 
-    public ExpressionType getExpressionType()
-    {
-        return ExpressionType.FLOAT;
-    }
-
     public String toString()
     {
         return "" + this.value;

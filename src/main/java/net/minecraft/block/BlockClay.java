@@ -11,18 +11,16 @@ public class BlockClay extends Block
 {
     public BlockClay()
     {
-        super(Material.clay);
-        this.setCreativeTab(CreativeTabs.tabBlock);
+        super(Material.CLAY);
+        this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
 
     /**
      * Get the Item that this Block should drop when harvested.
-     *  
-     * @param fortune the level of the Fortune enchantment on the player's tool
      */
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Items.clay_ball;
+        return Items.CLAY_BALL;
     }
 
     /**

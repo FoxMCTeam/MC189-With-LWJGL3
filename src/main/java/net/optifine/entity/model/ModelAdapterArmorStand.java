@@ -4,10 +4,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelArmorStand;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.entity.ArmorStandRenderer;
+import net.minecraft.client.renderer.entity.RenderArmorStand;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.item.EntityArmorStand;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 
 public class ModelAdapterArmorStand extends ModelAdapterBiped
 {
@@ -30,23 +30,39 @@ public class ModelAdapterArmorStand extends ModelAdapterBiped
         else
         {
             ModelArmorStand modelarmorstand = (ModelArmorStand)model;
-            return modelPart.equals("right") ? modelarmorstand.standRightSide : (modelPart.equals("left") ? modelarmorstand.standLeftSide : (modelPart.equals("waist") ? modelarmorstand.standWaist : (modelPart.equals("base") ? modelarmorstand.standBase : super.getModelRenderer(modelarmorstand, modelPart))));
+
+            if (modelPart.equals("right"))
+            {
+                return modelarmorstand.standRightSide;
+            }
+            else if (modelPart.equals("left"))
+            {
+                return modelarmorstand.standLeftSide;
+            }
+            else if (modelPart.equals("waist"))
+            {
+                return modelarmorstand.standWaist;
+            }
+            else
+            {
+                return modelPart.equals("base") ? modelarmorstand.standBase : super.getModelRenderer(modelarmorstand, modelPart);
+            }
         }
     }
 
     public String[] getModelRendererNames()
     {
         String[] astring = super.getModelRendererNames();
-        astring = (String[])((String[])Config.addObjectsToArray(astring, new String[] {"right", "left", "waist", "base"}));
+        astring = (String[])Config.addObjectsToArray(astring, new String[] {"right", "left", "waist", "base"});
         return astring;
     }
 
     public IEntityRenderer makeEntityRender(ModelBase modelBase, float shadowSize)
     {
         RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
-        ArmorStandRenderer armorstandrenderer = new ArmorStandRenderer(rendermanager);
-        armorstandrenderer.mainModel = modelBase;
-        armorstandrenderer.shadowSize = shadowSize;
-        return armorstandrenderer;
+        RenderArmorStand renderarmorstand = new RenderArmorStand(rendermanager);
+        renderarmorstand.mainModel = modelBase;
+        renderarmorstand.shadowSize = shadowSize;
+        return renderarmorstand;
     }
 }

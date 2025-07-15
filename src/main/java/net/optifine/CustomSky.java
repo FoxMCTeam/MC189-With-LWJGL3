@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Properties;
 import net.minecraft.client.renderer.texture.ITextureObject;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.src.Config;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.optifine.render.Blender;
@@ -95,7 +94,7 @@ public class CustomSky
 
             if (list.size() > 0)
             {
-                CustomSkyLayer[] acustomskylayer2 = (CustomSkyLayer[])((CustomSkyLayer[])list.toArray(new CustomSkyLayer[list.size()]));
+                CustomSkyLayer[] acustomskylayer2 = (CustomSkyLayer[])list.toArray(new CustomSkyLayer[list.size()]);
                 acustomskylayer[j] = acustomskylayer2;
                 i = j;
             }
@@ -123,7 +122,7 @@ public class CustomSky
     {
         if (worldSkyLayers != null)
         {
-            int i = world.provider.getDimensionId();
+            int i = world.provider.getDimensionType().getId();
 
             if (i >= 0 && i < worldSkyLayers.length)
             {
@@ -167,12 +166,20 @@ public class CustomSky
         }
         else
         {
-            int i = world.provider.getDimensionId();
+            int i = world.provider.getDimensionType().getId();
 
             if (i >= 0 && i < worldSkyLayers.length)
             {
                 CustomSkyLayer[] acustomskylayer = worldSkyLayers[i];
-                return acustomskylayer == null ? false : acustomskylayer.length > 0;
+
+                if (acustomskylayer == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return acustomskylayer.length > 0;
+                }
             }
             else
             {

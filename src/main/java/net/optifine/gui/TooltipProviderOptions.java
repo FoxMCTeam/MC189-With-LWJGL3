@@ -40,14 +40,14 @@ public class TooltipProviderOptions implements TooltipProvider
         {
             IOptionControl ioptioncontrol = (IOptionControl)btn;
             GameSettings.Options gamesettings$options = ioptioncontrol.getOption();
-            String[] astring = getTooltipLines(gamesettings$options.getEnumString());
+            String[] astring = getTooltipLines(gamesettings$options.getTranslation());
             return astring;
         }
     }
 
     public static String[] getTooltipLines(String key)
     {
-        List<String> list = new ArrayList();
+        List<String> list = new ArrayList<String>();
 
         for (int i = 0; i < 10; ++i)
         {
@@ -68,7 +68,7 @@ public class TooltipProviderOptions implements TooltipProvider
         }
         else
         {
-            String[] astring = (String[])((String[])list.toArray(new String[list.size()]));
+            String[] astring = (String[])list.toArray(new String[list.size()]);
             return astring;
         }
     }

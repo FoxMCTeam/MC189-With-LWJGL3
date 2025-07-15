@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class PropertiesOrdered extends Properties
 {
-    private Set<Object> keysOrdered = new LinkedHashSet();
+    private Set<Object> keysOrdered = new LinkedHashSet<Object>();
 
     public synchronized Object put(Object key, Object value)
     {

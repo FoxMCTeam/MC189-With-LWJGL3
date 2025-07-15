@@ -4,20 +4,20 @@ import net.optifine.SmartAnimations;
 
 public class Tessellator
 {
-    private WorldRenderer worldRenderer;
-    private WorldVertexBufferUploader vboUploader = new WorldVertexBufferUploader();
+    private final BufferBuilder buffer;
+    private final WorldVertexBufferUploader vboUploader = new WorldVertexBufferUploader();
 
     /** The static instance of the Tessellator. */
-    private static final Tessellator instance = new Tessellator(2097152);
+    private static final Tessellator INSTANCE = new Tessellator(2097152);
 
     public static Tessellator getInstance()
     {
-        return instance;
+        return INSTANCE;
     }
 
     public Tessellator(int bufferSize)
     {
-        this.worldRenderer = new WorldRenderer(bufferSize);
+        this.buffer = new BufferBuilder(bufferSize);
     }
 
     /**
@@ -25,17 +25,17 @@ public class Tessellator
      */
     public void draw()
     {
-        if (this.worldRenderer.animatedSprites != null)
+        if (this.buffer.animatedSprites != null)
         {
-            SmartAnimations.spritesRendered(this.worldRenderer.animatedSprites);
+            SmartAnimations.spritesRendered(this.buffer.animatedSprites);
         }
 
-        this.worldRenderer.finishDrawing();
-        this.vboUploader.func_181679_a(this.worldRenderer);
+        this.buffer.finishDrawing();
+        this.vboUploader.draw(this.buffer);
     }
 
-    public WorldRenderer getWorldRenderer()
+    public BufferBuilder getBuffer()
     {
-        return this.worldRenderer;
+        return this.buffer;
     }
 }

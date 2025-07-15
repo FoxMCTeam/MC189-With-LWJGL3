@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.minecraft.util.ResourceLocation;
 import net.optifine.config.ConnectedParser;
 import net.optifine.config.MatchBlock;
@@ -79,7 +79,7 @@ public class BlockAliases
             }
             else
             {
-                List<List<BlockAlias>> list = new ArrayList();
+                List<List<BlockAlias>> list = new ArrayList<List<BlockAlias>>();
                 String s = "/shaders/block.properties";
                 InputStream inputstream = shaderPack.getResourceAsStream(s);
 
@@ -90,7 +90,7 @@ public class BlockAliases
 
                 loadModBlockAliases(list);
 
-                if (((List)list).size() > 0)
+                if (list.size() > 0)
                 {
                     blockAliases = toArrays(list);
                 }
@@ -132,12 +132,11 @@ public class BlockAliases
                 Config.dbg("[Shaders] Parsing block mappings: " + path);
                 ConnectedParser connectedparser = new ConnectedParser("Shaders");
 
-                for (Object e : properties.keySet())
+                for (Object s : properties.keySet())
                 {
-                    String s = (String) e;
-                    String s1 = properties.getProperty(s);
+                    String s1 = properties.getProperty((String) s);
 
-                    if (s.startsWith("layer."))
+                    if (((String) s).startsWith("layer."))
                     {
                         if (blockLayerPropertes == null)
                         {
@@ -150,13 +149,13 @@ public class BlockAliases
                     {
                         String s2 = "block.";
 
-                        if (!s.startsWith(s2))
+                        if (!((String) s).startsWith(s2))
                         {
                             Config.warn("[Shaders] Invalid block ID: " + s);
                         }
                         else
                         {
-                            String s3 = StrUtils.removePrefix(s, s2);
+                            String s3 = StrUtils.removePrefix((String) s, s2);
                             int i = Config.parseInt(s3, -1);
 
                             if (i < 0)
@@ -198,14 +197,14 @@ public class BlockAliases
 
             while (j >= blocksAliases.size())
             {
-                blocksAliases.add(null);
+                blocksAliases.add((List<BlockAlias>) null);
             }
 
             List<BlockAlias> list = (List)blocksAliases.get(j);
 
             if (list == null)
             {
-                list = new ArrayList();
+                list = new ArrayList<BlockAlias>();
                 blocksAliases.set(j, list);
             }
 
@@ -224,7 +223,7 @@ public class BlockAliases
 
             if (list != null)
             {
-                ablockalias[i] = (BlockAlias[])((BlockAlias[])list.toArray(new BlockAlias[list.size()]));
+                ablockalias[i] = (BlockAlias[])list.toArray(new BlockAlias[list.size()]);
             }
         }
 

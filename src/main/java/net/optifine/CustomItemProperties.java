@@ -14,22 +14,22 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockPart;
 import net.minecraft.client.renderer.block.model.BlockPartFace;
 import net.minecraft.client.renderer.block.model.FaceBakery;
+import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemModelGenerator;
+import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelBlock;
+import net.minecraft.client.renderer.block.model.ModelManager;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelRotation;
+import net.minecraft.client.renderer.block.model.SimpleBakedModel;
 import net.minecraft.client.renderer.texture.ITextureObject;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.resources.model.IBakedModel;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.ModelManager;
-import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.client.resources.model.ModelRotation;
-import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
-import net.minecraft.src.Config;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.optifine.config.IParserInt;
@@ -81,6 +81,7 @@ public class CustomItemProperties
     public static final int TYPE_ITEM = 1;
     public static final int TYPE_ENCHANTMENT = 2;
     public static final int TYPE_ARMOR = 3;
+    public static final int TYPE_ELYTRA = 4;
     public static final int HAND_ANY = 0;
     public static final int HAND_MAIN = 1;
     public static final int HAND_OFF = 2;
@@ -164,6 +165,10 @@ public class CustomItemProperties
         {
             return 3;
         }
+        else if (str.equals("elytra"))
+        {
+            return 4;
+        }
         else
         {
             Config.warn("Unknown method: " + str);
@@ -187,7 +192,7 @@ public class CustomItemProperties
             str = str.trim();
             Set set = new TreeSet();
             String[] astring = Config.tokenize(str, " ");
-            label45:
+            label57:
 
             for (int i = 0; i < astring.length; ++i)
             {
@@ -196,7 +201,7 @@ public class CustomItemProperties
 
                 if (j >= 0)
                 {
-                    set.add(j);
+                    set.add(new Integer(j));
                 }
                 else
                 {
@@ -219,10 +224,10 @@ public class CustomItemProperties
                                 {
                                     if (k1 > j1)
                                     {
-                                        continue label45;
+                                        continue label57;
                                     }
 
-                                    set.add(k1);
+                                    set.add(new Integer(k1));
                                     ++k1;
                                 }
                             }
@@ -245,13 +250,13 @@ public class CustomItemProperties
                         }
                         else
                         {
-                            set.add(i2);
+                            set.add(new Integer(i2));
                         }
                     }
                 }
             }
 
-            Integer[] ainteger = (Integer[])((Integer[])set.toArray(new Integer[set.size()]));
+            Integer[] ainteger = (Integer[])set.toArray(new Integer[set.size()]);
             int[] aint = new int[ainteger.length];
 
             for (int l1 = 0; l1 < aint.length; ++l1)
@@ -295,7 +300,7 @@ public class CustomItemProperties
         {
             if (mapTexs != null)
             {
-                String s = (String)mapTexs.get("texture.bow_standby");
+                String s = mapTexs.get("texture.bow_standby");
 
                 if (s != null)
                 {
@@ -344,9 +349,8 @@ public class CustomItemProperties
             Set set = map.keySet();
             Map map1 = new LinkedHashMap();
 
-            for (Object e : set)
+            for (Object s1 : set)
             {
-                String s1 = (String) e;
                 String s2 = (String)map.get(s1);
                 s2 = fixTextureName(s2, basePath);
                 map1.put(s1, s2);
@@ -400,7 +404,7 @@ public class CustomItemProperties
         {
             if (mapModelNames != null)
             {
-                String s = (String)mapModelNames.get("model.bow_standby");
+                String s = mapModelNames.get("model.bow_standby");
 
                 if (s != null)
                 {
@@ -426,9 +430,8 @@ public class CustomItemProperties
             Set set = map.keySet();
             Map map1 = new LinkedHashMap();
 
-            for (Object e : set)
+            for (Object s1 : set)
             {
-                String s1 = (String) e;
                 String s2 = (String)map.get(s1);
                 s2 = fixModelName(s2, basePath);
                 map1.put(s1, s2);
@@ -635,16 +638,15 @@ public class CustomItemProperties
         {
             List list = new ArrayList();
 
-            for (Object e : map.keySet())
+            for (Object s1 : map.keySet())
             {
-                String s1 = (String) e;
                 String s2 = (String)map.get(s1);
-                String s3 = s1.substring(s.length());
+                String s3 = ((String) s1).substring(s.length());
                 NbtTagValue nbttagvalue = new NbtTagValue(s3, s2);
                 list.add(nbttagvalue);
             }
 
-            NbtTagValue[] anbttagvalue = (NbtTagValue[])((NbtTagValue[])list.toArray(new NbtTagValue[list.size()]));
+            NbtTagValue[] anbttagvalue = (NbtTagValue[])list.toArray(new NbtTagValue[list.size()]);
             return anbttagvalue;
         }
     }
@@ -653,12 +655,11 @@ public class CustomItemProperties
     {
         Map map = new LinkedHashMap();
 
-        for (Object e: props.keySet())
+        for (Object s : props.keySet())
         {
-            String s = (String) e;
-            String s1 = props.getProperty(s);
+            String s1 = props.getProperty((String) s);
 
-            if (s.startsWith(keyPrefix))
+            if (((String) s).startsWith(keyPrefix))
             {
                 map.put(s, s1);
             }
@@ -713,7 +714,12 @@ public class CustomItemProperties
             }
             else
             {
-                if (this.type == 1 || this.type == 3)
+                if (this.type == 4 && this.items == null)
+                {
+                    this.items = new int[] {Item.getIdFromItem(Items.ELYTRA)};
+                }
+
+                if (this.type == 1 || this.type == 3 || this.type == 4)
                 {
                     if (this.items == null)
                     {
@@ -785,7 +791,7 @@ public class CustomItemProperties
 
             for (String s : this.mapTextures.keySet())
             {
-                String s1 = (String)this.mapTextures.get(s);
+                String s1 = this.mapTextures.get(s);
                 ResourceLocation resourcelocation1 = this.getTextureLocation(s1);
                 this.mapTextureLocations.put(s, resourcelocation1);
 
@@ -808,8 +814,8 @@ public class CustomItemProperties
         else
         {
             ResourceLocation resourcelocation = new ResourceLocation(texName);
-            String s = resourcelocation.getResourceDomain();
-            String s1 = resourcelocation.getResourcePath();
+            String s = resourcelocation.getNamespace();
+            String s1 = resourcelocation.getPath();
 
             if (!s1.contains("/"))
             {
@@ -831,10 +837,10 @@ public class CustomItemProperties
 
     private ResourceLocation getSpriteLocation(ResourceLocation resLoc)
     {
-        String s = resLoc.getResourcePath();
+        String s = resLoc.getPath();
         s = StrUtils.removePrefix(s, "textures/");
         s = StrUtils.removeSuffix(s, ".png");
-        ResourceLocation resourcelocation = new ResourceLocation(resLoc.getResourceDomain(), s);
+        ResourceLocation resourcelocation = new ResourceLocation(resLoc.getNamespace(), s);
         return resourcelocation;
     }
 
@@ -850,7 +856,7 @@ public class CustomItemProperties
             {
                 for (String s : this.mapTextures.keySet())
                 {
-                    String s1 = (String)this.mapTextures.get(s);
+                    String s1 = this.mapTextures.get(s);
                     String s2 = StrUtils.removePrefix(s, "texture.");
 
                     if (s2.startsWith("bow") || s2.startsWith("fishing_rod") || s2.startsWith("shield"))
@@ -860,7 +866,7 @@ public class CustomItemProperties
 
                         if (this.mapBakedModelsTexture == null)
                         {
-                            this.mapBakedModelsTexture = new HashMap();
+                            this.mapBakedModelsTexture = new HashMap<String, IBakedModel>();
                         }
 
                         String s3 = "item/" + s2;
@@ -897,16 +903,17 @@ public class CustomItemProperties
         if (this.type == 1 && this.items.length == 1)
         {
             Item item = Item.getItemById(this.items[0]);
+            boolean flag = item == Items.POTIONITEM || item == Items.SPLASH_POTION || item == Items.LINGERING_POTION;
 
-            if (item == Items.potionitem && this.damage != null && this.damage.getCountRanges() > 0)
+            if (flag && this.damage != null && this.damage.getCountRanges() > 0)
             {
                 RangeInt rangeint = this.damage.getRange(0);
                 int i = rangeint.getMin();
-                boolean flag = (i & 16384) != 0;
+                boolean flag1 = (i & 16384) != 0;
                 String s5 = this.getMapTexture(this.mapTextures, "texture.potion_overlay", "items/potion_overlay");
                 String s6 = null;
 
-                if (flag)
+                if (flag1)
                 {
                     s6 = this.getMapTexture(this.mapTextures, "texture.potion_bottle_splash", "items/potion_bottle_splash");
                 }
@@ -927,22 +934,22 @@ public class CustomItemProperties
                     String s = "leather";
                     String s1 = "helmet";
 
-                    if (itemarmor.armorType == 0)
+                    if (itemarmor.armorType == EntityEquipmentSlot.HEAD)
                     {
                         s1 = "helmet";
                     }
 
-                    if (itemarmor.armorType == 1)
+                    if (itemarmor.armorType == EntityEquipmentSlot.CHEST)
                     {
                         s1 = "chestplate";
                     }
 
-                    if (itemarmor.armorType == 2)
+                    if (itemarmor.armorType == EntityEquipmentSlot.LEGS)
                     {
                         s1 = "leggings";
                     }
 
-                    if (itemarmor.armorType == 3)
+                    if (itemarmor.armorType == EntityEquipmentSlot.FEET)
                     {
                         s1 = "boots";
                     }
@@ -966,7 +973,7 @@ public class CustomItemProperties
         }
         else
         {
-            String s = (String)map.get(key);
+            String s = map.get(key);
             return s == null ? def : s;
         }
     }
@@ -1000,13 +1007,13 @@ public class CustomItemProperties
         boolean flag = false;
         String s = modelBlockIn.resolveTextureName("particle");
         TextureAtlasSprite textureatlassprite = textureMap.getAtlasSprite((new ResourceLocation(s)).toString());
-        SimpleBakedModel.Builder simplebakedmodel$builder = (new SimpleBakedModel.Builder(modelBlockIn)).setTexture(textureatlassprite);
+        SimpleBakedModel.Builder simplebakedmodel$builder = (new SimpleBakedModel.Builder(modelBlockIn, modelBlockIn.createOverrides())).setTexture(textureatlassprite);
 
         for (BlockPart blockpart : modelBlockIn.getElements())
         {
             for (EnumFacing enumfacing : blockpart.mapFaces.keySet())
             {
-                BlockPartFace blockpartface = (BlockPartFace)blockpart.mapFaces.get(enumfacing);
+                BlockPartFace blockpartface = blockpart.mapFaces.get(enumfacing);
 
                 if (!useTint)
                 {
@@ -1106,8 +1113,8 @@ public class CustomItemProperties
 
         if (modelLocation != null && map != null)
         {
-            String s = modelLocation.getResourcePath();
-            IBakedModel ibakedmodel1 = (IBakedModel)map.get(s);
+            String s = modelLocation.getPath();
+            IBakedModel ibakedmodel1 = map.get(s);
 
             if (ibakedmodel1 != null)
             {
@@ -1129,7 +1136,7 @@ public class CustomItemProperties
         {
             for (String s : this.mapModels.keySet())
             {
-                String s1 = (String)this.mapModels.get(s);
+                String s1 = this.mapModels.get(s);
                 String s2 = StrUtils.removePrefix(s, "model.");
 
                 if (s2.startsWith("bow") || s2.startsWith("fishing_rod") || s2.startsWith("shield"))
@@ -1153,7 +1160,7 @@ public class CustomItemProperties
 
             if (this.bakedModelFull == ibakedmodel)
             {
-                Config.warn("Custom Items: Model not found " + modelresourcelocation.getResourcePath());
+                Config.warn("Custom Items: Model not found " + modelresourcelocation.getPath());
                 this.bakedModelFull = null;
             }
         }
@@ -1162,7 +1169,7 @@ public class CustomItemProperties
         {
             for (String s : this.mapModels.keySet())
             {
-                String s1 = (String)this.mapModels.get(s);
+                String s1 = this.mapModels.get(s);
                 String s2 = StrUtils.removePrefix(s, "model.");
 
                 if (s2.startsWith("bow") || s2.startsWith("fishing_rod") || s2.startsWith("shield"))
@@ -1173,13 +1180,13 @@ public class CustomItemProperties
 
                     if (ibakedmodel1 == ibakedmodel)
                     {
-                        Config.warn("Custom Items: Model not found " + modelresourcelocation1.getResourcePath());
+                        Config.warn("Custom Items: Model not found " + modelresourcelocation1.getPath());
                     }
                     else
                     {
                         if (this.mapBakedModelsFull == null)
                         {
-                            this.mapBakedModelsFull = new HashMap();
+                            this.mapBakedModelsFull = new HashMap<String, IBakedModel>();
                         }
 
                         String s3 = "item/" + s2;
@@ -1201,20 +1208,20 @@ public class CustomItemProperties
             {
                 Object object = Reflector.ModelLoader_VanillaLoader_INSTANCE.getValue();
                 checkNull(object, "vanillaLoader is null");
-                Object object1 = Reflector.call(object, Reflector.ModelLoader_VanillaLoader_loadModel, new Object[] {modelresourcelocation});
+                Object object1 = Reflector.call(object, Reflector.ModelLoader_VanillaLoader_loadModel, modelresourcelocation);
                 checkNull(object1, "iModel is null");
                 Map map = (Map)Reflector.getFieldValue(modelBakery, Reflector.ModelLoader_stateModels);
                 checkNull(map, "stateModels is null");
                 map.put(modelresourcelocation, object1);
-                Set set = (Set)Reflector.getFieldValue(modelBakery, Reflector.ModelLoader_textures);
+                Set set = (Set)Reflector.ModelLoaderRegistry_textures.getValue();
                 checkNull(set, "registryTextures is null");
-                Collection collection = (Collection)Reflector.call(object1, Reflector.IModel_getTextures, new Object[0]);
+                Collection collection = (Collection)Reflector.call(object1, Reflector.IModel_getTextures);
                 checkNull(collection, "modelTextures is null");
                 set.addAll(collection);
             }
             catch (Exception exception)
             {
-                Config.warn("Error registering model with ModelLoader: " + modelresourcelocation + ", " + exception.getClass().getName() + ": " + exception.getMessage());
+                Config.warn("Error registering model: " + modelresourcelocation + ", " + exception.getClass().getName() + ": " + exception.getMessage());
             }
         }
         else

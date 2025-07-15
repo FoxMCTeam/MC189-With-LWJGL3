@@ -1,15 +1,13 @@
 package net.optifine.util;
 
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityBeacon;
 import net.minecraft.tileentity.TileEntityBrewingStand;
-import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.tileentity.TileEntityDispenser;
 import net.minecraft.tileentity.TileEntityEnchantmentTable;
 import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraft.tileentity.TileEntityHopper;
-import net.minecraft.util.BlockPos;
+import net.minecraft.tileentity.TileEntityLockableLoot;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.IWorldNameable;
 import net.optifine.reflect.Reflector;
@@ -32,7 +30,7 @@ public class TileEntityUtils
         {
             IWorldNameable iworldnameable = (IWorldNameable)te;
             updateTileEntityName(te);
-            return !iworldnameable.hasCustomName() ? null : iworldnameable.getCommandSenderName();
+            return !iworldnameable.hasCustomName() ? null : iworldnameable.getName();
         }
     }
 
@@ -75,17 +73,7 @@ public class TileEntityUtils
         }
         else
         {
-            if (te instanceof IWorldNameable)
-            {
-                IWorldNameable iworldnameable = (IWorldNameable)te;
-
-                if (iworldnameable.hasCustomName())
-                {
-                    return iworldnameable.getCommandSenderName();
-                }
-            }
-
-            return null;
+            return te instanceof TileEntityLockableLoot ? (String)Reflector.getFieldValue(te, Reflector.TileEntityLockableLoot_customName) : null;
         }
     }
 
@@ -107,24 +95,9 @@ public class TileEntityUtils
         {
             return Reflector.setFieldValue(te, Reflector.TileEntityFurnace_customName, name);
         }
-        else if (te instanceof TileEntityChest)
-        {
-            ((TileEntityChest)te).setCustomName(name);
-            return true;
-        }
-        else if (te instanceof TileEntityDispenser)
-        {
-            ((TileEntityDispenser)te).setCustomName(name);
-            return true;
-        }
-        else if (te instanceof TileEntityHopper)
-        {
-            ((TileEntityHopper)te).setCustomName(name);
-            return true;
-        }
         else
         {
-            return false;
+            return te instanceof TileEntityLockableLoot ? Reflector.setFieldValue(te, Reflector.TileEntityLockableLoot_customName, name) : false;
         }
     }
 }

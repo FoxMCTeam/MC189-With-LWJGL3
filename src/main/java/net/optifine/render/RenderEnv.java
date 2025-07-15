@@ -10,11 +10,11 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BlockModelRenderer;
 import net.minecraft.client.renderer.RegionRenderCacheBuilder;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.BreakingFour;
-import net.minecraft.src.Config;
-import net.minecraft.util.BlockPos;
+import net.minecraft.client.renderer.block.model.BakedQuadRetextured;
+import net.optifine.Config;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumWorldBlockLayer;
+import net.minecraft.util.math.BlockPos;
 import net.optifine.BlockPosM;
 import net.optifine.model.ListQuadsOverlay;
 
@@ -34,14 +34,14 @@ public class RenderEnv
     private boolean[] borderFlags2 = null;
     private boolean[] borderFlags3 = null;
     private EnumFacing[] borderDirections = null;
-    private List<BakedQuad> listQuadsCustomizer = new ArrayList();
-    private List<BakedQuad> listQuadsCtmMultipass = new ArrayList();
+    private List<BakedQuad> listQuadsCustomizer = new ArrayList<BakedQuad>();
+    private List<BakedQuad> listQuadsCtmMultipass = new ArrayList<BakedQuad>();
     private BakedQuad[] arrayQuadsCtm1 = new BakedQuad[1];
     private BakedQuad[] arrayQuadsCtm2 = new BakedQuad[2];
     private BakedQuad[] arrayQuadsCtm3 = new BakedQuad[3];
     private BakedQuad[] arrayQuadsCtm4 = new BakedQuad[4];
     private RegionRenderCacheBuilder regionRenderCacheBuilder = null;
-    private ListQuadsOverlay[] listsQuadsOverlay = new ListQuadsOverlay[EnumWorldBlockLayer.values().length];
+    private ListQuadsOverlay[] listsQuadsOverlay = new ListQuadsOverlay[BlockRenderLayer.values().length];
     private boolean overlaysRendered = false;
     private static final int UNKNOWN = -1;
     private static final int FALSE = 0;
@@ -122,7 +122,7 @@ public class RenderEnv
     {
         if (this.breakingAnimation == -1 && listQuads.size() > 0)
         {
-            if (listQuads.get(0) instanceof BreakingFour)
+            if (listQuads.get(0) instanceof BakedQuadRetextured)
             {
                 this.breakingAnimation = 1;
             }
@@ -139,7 +139,7 @@ public class RenderEnv
     {
         if (this.breakingAnimation < 0)
         {
-            if (quad instanceof BreakingFour)
+            if (quad instanceof BakedQuadRetextured)
             {
                 this.breakingAnimation = 1;
             }
@@ -300,7 +300,7 @@ public class RenderEnv
         this.regionRenderCacheBuilder = regionRenderCacheBuilder;
     }
 
-    public ListQuadsOverlay getListQuadsOverlay(EnumWorldBlockLayer layer)
+    public ListQuadsOverlay getListQuadsOverlay(BlockRenderLayer layer)
     {
         ListQuadsOverlay listquadsoverlay = this.listsQuadsOverlay[layer.ordinal()];
 

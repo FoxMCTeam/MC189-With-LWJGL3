@@ -6,7 +6,7 @@ import java.util.List;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.settings.GameSettings;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.optifine.Lang;
 import net.optifine.shaders.config.ShaderOption;
 import net.optifine.shaders.gui.GuiButtonShaderOption;
@@ -57,9 +57,9 @@ public class TooltipProviderShaderOptions extends TooltipProviderOptions
             s4 = "\u00a78" + Lang.getDefault() + ": " + s5;
         }
 
-        List<String> list = new ArrayList();
+        List<String> list = new ArrayList<String>();
         list.add(s);
-        list.addAll(Arrays.<String>asList(astring));
+        list.addAll(Arrays.asList(astring));
 
         if (s2 != null)
         {
@@ -103,12 +103,12 @@ public class TooltipProviderShaderOptions extends TooltipProviderOptions
 
     private String[] makeTooltipLines(int width, List<String> args)
     {
-        FontRenderer fontrenderer = Config.getMinecraft().fontRendererObj;
-        List<String> list = new ArrayList();
+        FontRenderer fontrenderer = Config.getMinecraft().fontRenderer;
+        List<String> list = new ArrayList<String>();
 
         for (int i = 0; i < args.size(); ++i)
         {
-            String s = (String)args.get(i);
+            String s = args.get(i);
 
             if (s != null && s.length() > 0)
             {
@@ -119,7 +119,7 @@ public class TooltipProviderShaderOptions extends TooltipProviderOptions
             }
         }
 
-        String[] astring = (String[])((String[])list.toArray(new String[list.size()]));
+        String[] astring = (String[])list.toArray(new String[list.size()]);
         return astring;
     }
 }

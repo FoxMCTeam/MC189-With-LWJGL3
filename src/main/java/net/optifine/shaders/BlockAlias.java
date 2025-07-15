@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.optifine.config.MatchBlock;
 
 public class BlockAlias
@@ -40,7 +40,7 @@ public class BlockAlias
 
     public int[] getMatchBlockIds()
     {
-        Set<Integer> set = new HashSet();
+        Set<Integer> set = new HashSet<Integer>();
 
         for (int i = 0; i < this.matchBlocks.length; ++i)
         {
@@ -56,7 +56,7 @@ public class BlockAlias
 
     public MatchBlock[] getMatchBlocks(int matchBlockId)
     {
-        List<MatchBlock> list = new ArrayList();
+        List<MatchBlock> list = new ArrayList<MatchBlock>();
 
         for (int i = 0; i < this.matchBlocks.length; ++i)
         {
@@ -68,7 +68,7 @@ public class BlockAlias
             }
         }
 
-        MatchBlock[] amatchblock = (MatchBlock[])((MatchBlock[])list.toArray(new MatchBlock[list.size()]));
+        MatchBlock[] amatchblock = (MatchBlock[])list.toArray(new MatchBlock[list.size()]);
         return amatchblock;
     }
 

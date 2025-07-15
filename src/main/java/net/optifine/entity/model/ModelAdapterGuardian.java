@@ -7,7 +7,7 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.entity.RenderGuardian;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.monster.EntityGuardian;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.optifine.reflect.Reflector;
 
 public class ModelAdapterGuardian extends ModelAdapter
@@ -46,7 +46,7 @@ public class ModelAdapterGuardian extends ModelAdapter
 
                 if (modelPart.startsWith(s))
                 {
-                    ModelRenderer[] amodelrenderer1 = (ModelRenderer[])((ModelRenderer[])Reflector.getFieldValue(modelguardian, Reflector.ModelGuardian_spines));
+                    ModelRenderer[] amodelrenderer1 = (ModelRenderer[])Reflector.getFieldValue(modelguardian, Reflector.ModelGuardian_spines);
 
                     if (amodelrenderer1 == null)
                     {
@@ -66,7 +66,7 @@ public class ModelAdapterGuardian extends ModelAdapter
 
                     if (modelPart.startsWith(s1))
                     {
-                        ModelRenderer[] amodelrenderer = (ModelRenderer[])((ModelRenderer[])Reflector.getFieldValue(modelguardian, Reflector.ModelGuardian_tail));
+                        ModelRenderer[] amodelrenderer = (ModelRenderer[])Reflector.getFieldValue(modelguardian, Reflector.ModelGuardian_tail);
 
                         if (amodelrenderer == null)
                         {

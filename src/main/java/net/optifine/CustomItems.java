@@ -16,22 +16,24 @@ import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemModelGenerator;
-import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.IResourcePack;
-import net.minecraft.client.resources.model.IBakedModel;
-import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemEnchantedBook;
+import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.Potion;
-import net.minecraft.src.Config;
 import net.minecraft.util.ResourceLocation;
 import net.optifine.config.NbtTagValue;
 import net.optifine.render.Blender;
@@ -59,6 +61,7 @@ public class CustomItems
     public static final String DEFAULT_TEXTURE_SPLASH = "items/potion_bottle_splash";
     public static final String DEFAULT_TEXTURE_DRINKABLE = "items/potion_bottle_drinkable";
     private static final int[][] EMPTY_INT2_ARRAY = new int[0][];
+    private static final Map<String, Integer> mapPotionDamages = makeMapPotionDamages();
     private static final String TYPE_POTION_NORMAL = "normal";
     private static final String TYPE_POTION_SPLASH = "splash";
     private static final String TYPE_POTION_LINGER = "linger";
@@ -124,14 +127,14 @@ public class CustomItems
 
     private static void update(IResourcePack rp)
     {
-        String[] astring = ResUtils.collectFiles(rp, (String)"mcpatcher/cit/", (String)".properties", (String[])null);
+        String[] astring = ResUtils.collectFiles(rp, "mcpatcher/cit/", ".properties", (String[])null);
         Map map = makeAutoImageProperties(rp);
 
         if (map.size() > 0)
         {
             Set set = map.keySet();
-            String[] astring1 = (String[])((String[])set.toArray(new String[set.size()]));
-            astring = (String[])((String[])Config.addObjectsToArray(astring, astring1));
+            String[] astring1 = (String[])set.toArray(new String[set.size()]);
+            astring = (String[])Config.addObjectsToArray(astring, astring1);
         }
 
         Arrays.sort((Object[])astring);
@@ -165,6 +168,7 @@ public class CustomItems
 
                     Properties properties = new PropertiesOrdered();
                     properties.load(inputstream);
+                    inputstream.close();
                     customitemproperties = new CustomItemProperties(properties, s);
                 }
 
@@ -217,7 +221,19 @@ public class CustomItems
             {
                 CustomItemProperties customitemproperties = (CustomItemProperties)o1;
                 CustomItemProperties customitemproperties1 = (CustomItemProperties)o2;
-                return customitemproperties.layer != customitemproperties1.layer ? customitemproperties.layer - customitemproperties1.layer : (customitemproperties.weight != customitemproperties1.weight ? customitemproperties1.weight - customitemproperties.weight : (!customitemproperties.basePath.equals(customitemproperties1.basePath) ? customitemproperties.basePath.compareTo(customitemproperties1.basePath) : customitemproperties.name.compareTo(customitemproperties1.name)));
+
+                if (customitemproperties.layer != customitemproperties1.layer)
+                {
+                    return customitemproperties.layer - customitemproperties1.layer;
+                }
+                else if (customitemproperties.weight != customitemproperties1.weight)
+                {
+                    return customitemproperties1.weight - customitemproperties.weight;
+                }
+                else
+                {
+                    return !customitemproperties.basePath.equals(customitemproperties1.basePath) ? customitemproperties.basePath.compareTo(customitemproperties1.basePath) : customitemproperties.name.compareTo(customitemproperties1.name);
+                }
             }
         };
         return comparator;
@@ -254,7 +270,7 @@ public class CustomItems
 
     private static List<CustomItemProperties> getAllProperties()
     {
-        List<CustomItemProperties> list = new ArrayList();
+        List<CustomItemProperties> list = new ArrayList<CustomItemProperties>();
         addAll(itemProperties, list);
         addAll(enchantmentProperties, list);
         return list;
@@ -287,9 +303,9 @@ public class CustomItems
     private static Map makeAutoImageProperties(IResourcePack rp)
     {
         Map map = new HashMap();
-        map.putAll(makePotionImageProperties(rp, "normal", Item.getIdFromItem(Items.potionitem)));
-        map.putAll(makePotionImageProperties(rp, "splash", Item.getIdFromItem(Items.potionitem)));
-        map.putAll(makePotionImageProperties(rp, "linger", Item.getIdFromItem(Items.potionitem)));
+        map.putAll(makePotionImageProperties(rp, "normal", Item.getIdFromItem(Items.POTIONITEM)));
+        map.putAll(makePotionImageProperties(rp, "splash", Item.getIdFromItem(Items.SPLASH_POTION)));
+        map.putAll(makePotionImageProperties(rp, "linger", Item.getIdFromItem(Items.LINGERING_POTION)));
         return map;
     }
 
@@ -326,7 +342,7 @@ public class CustomItems
         }
         else if (name.equals("empty") && type.equals("normal"))
         {
-            itemId = Item.getIdFromItem(Items.glass_bottle);
+            itemId = Item.getIdFromItem(Items.GLASS_BOTTLE);
             Properties properties = new PropertiesOrdered();
             properties.put("type", "item");
             properties.put("items", "" + itemId);
@@ -334,7 +350,7 @@ public class CustomItems
         }
         else
         {
-            int[] aint = (int[])((int[])getMapPotionIds().get(name));
+            int[] aint = (int[])getMapPotionIds().get(name);
 
             if (aint == null)
             {
@@ -445,21 +461,16 @@ public class CustomItems
 
     private static int getPotionNameDamage(String name)
     {
-        String s = "potion." + name;
-        Potion[] apotion = Potion.potionTypes;
+        String s = "effect." + name;
 
-        for (int i = 0; i < apotion.length; ++i)
+        for (ResourceLocation resourcelocation : Potion.REGISTRY.getKeys())
         {
-            Potion potion = apotion[i];
+            Potion potion = Potion.REGISTRY.getObject(resourcelocation);
+            String s1 = potion.getName();
 
-            if (potion != null)
+            if (s.equals(s1))
             {
-                String s1 = potion.getName();
-
-                if (s.equals(s1))
-                {
-                    return potion.getId();
-                }
+                return Potion.getIdFromPotion(potion);
             }
         }
 
@@ -489,17 +500,17 @@ public class CustomItems
         return list;
     }
 
-    private static CustomItemProperties[][] propertyListToArray(List lists)
+    private static CustomItemProperties[][] propertyListToArray(List list)
     {
-        CustomItemProperties[][] acustomitemproperties = new CustomItemProperties[lists.size()][];
+        CustomItemProperties[][] acustomitemproperties = new CustomItemProperties[list.size()][];
 
-        for (int i = 0; i < lists.size(); ++i)
+        for (int i = 0; i < list.size(); ++i)
         {
-            List list = (List)lists.get(i);
+            List subList = (List)list.get(i);
 
-            if (list != null)
+            if (subList != null)
             {
-                CustomItemProperties[] acustomitemproperties1 = (CustomItemProperties[])((CustomItemProperties[])list.toArray(new CustomItemProperties[list.size()]));
+                CustomItemProperties[] acustomitemproperties1 = (CustomItemProperties[])subList.toArray(new CustomItemProperties[subList.size()]);
                 Arrays.sort(acustomitemproperties1, new CustomItemsComparator());
                 acustomitemproperties[i] = acustomitemproperties1;
             }
@@ -545,22 +556,22 @@ public class CustomItems
         }
     }
 
-    private static void addToList(CustomItemProperties cp, List lists, int id)
+    private static void addToList(CustomItemProperties cp, List list, int id)
     {
-        while (id >= lists.size())
+        while (id >= list.size())
         {
-            lists.add(null);
+            list.add((Object)null);
         }
 
-        List list = (List)lists.get(id);
+        List subList = (List)list.get(id);
 
-        if (list == null)
+        if (subList == null)
         {
-            list = new ArrayList();
-            list.set(id, list);
+            subList = new ArrayList();
+            list.set(id, subList);
         }
 
-        list.add(cp);
+        subList.add(cp);
     }
 
     public static IBakedModel getCustomItemModel(ItemStack itemStack, IBakedModel model, ResourceLocation modelLocation, boolean fullModel)
@@ -589,7 +600,7 @@ public class CustomItems
         }
     }
 
-    public static boolean bindCustomArmorTexture(ItemStack itemStack, int layer, String overlay)
+    public static boolean bindCustomArmorTexture(ItemStack itemStack, EntityEquipmentSlot slot, String overlay)
     {
         if (itemProperties == null)
         {
@@ -597,7 +608,7 @@ public class CustomItems
         }
         else
         {
-            ResourceLocation resourcelocation = getCustomArmorLocation(itemStack, layer, overlay);
+            ResourceLocation resourcelocation = getCustomArmorLocation(itemStack, slot, overlay);
 
             if (resourcelocation == null)
             {
@@ -611,7 +622,7 @@ public class CustomItems
         }
     }
 
-    private static ResourceLocation getCustomArmorLocation(ItemStack itemStack, int layer, String overlay)
+    private static ResourceLocation getCustomArmorLocation(ItemStack itemStack, EntityEquipmentSlot slot, String overlay)
     {
         CustomItemProperties customitemproperties = getCustomItemProperties(itemStack, 3);
 
@@ -635,11 +646,12 @@ public class CustomItems
             {
                 ItemArmor itemarmor = (ItemArmor)item;
                 String s = itemarmor.getArmorMaterial().getName();
+                int i = slot == EntityEquipmentSlot.LEGS ? 2 : 1;
                 StringBuffer stringbuffer = new StringBuffer();
                 stringbuffer.append("texture.");
                 stringbuffer.append(s);
                 stringbuffer.append("_layer_");
-                stringbuffer.append(layer);
+                stringbuffer.append(i);
 
                 if (overlay != null)
                 {
@@ -650,6 +662,27 @@ public class CustomItems
                 String s1 = stringbuffer.toString();
                 ResourceLocation resourcelocation = (ResourceLocation)customitemproperties.mapTextureLocations.get(s1);
                 return resourcelocation == null ? customitemproperties.textureLocation : resourcelocation;
+            }
+        }
+    }
+
+    public static ResourceLocation getCustomElytraTexture(ItemStack itemStack, ResourceLocation locElytra)
+    {
+        if (itemProperties == null)
+        {
+            return locElytra;
+        }
+        else
+        {
+            CustomItemProperties customitemproperties = getCustomItemProperties(itemStack, 4);
+
+            if (customitemproperties == null)
+            {
+                return locElytra;
+            }
+            else
+            {
+                return customitemproperties.textureLocation == null ? locElytra : customitemproperties.textureLocation;
             }
         }
     }
@@ -697,7 +730,12 @@ public class CustomItems
 
         if (cip.damage != null)
         {
-            int i = itemStack.getItemDamage();
+            int i = getItemStackDamage(itemStack);
+
+            if (i < 0)
+            {
+                return false;
+            }
 
             if (cip.damageMask != 0)
             {
@@ -716,7 +754,7 @@ public class CustomItems
             }
         }
 
-        if (cip.stackSize != null && !cip.stackSize.isInRange(itemStack.stackSize))
+        if (cip.stackSize != null && !cip.stackSize.isInRange(itemStack.getCount()))
         {
             return false;
         }
@@ -808,10 +846,108 @@ public class CustomItems
         }
     }
 
+    private static int getItemStackDamage(ItemStack itemStack)
+    {
+        Item item = itemStack.getItem();
+        return item instanceof ItemPotion ? getPotionDamage(itemStack) : itemStack.getItemDamage();
+    }
+
+    private static int getPotionDamage(ItemStack itemStack)
+    {
+        NBTTagCompound nbttagcompound = itemStack.getTagCompound();
+
+        if (nbttagcompound == null)
+        {
+            return 0;
+        }
+        else
+        {
+            String s = nbttagcompound.getString("Potion");
+
+            if (s != null && !s.equals(""))
+            {
+                Integer integer = mapPotionDamages.get(s);
+
+                if (integer == null)
+                {
+                    return -1;
+                }
+                else
+                {
+                    int i = integer.intValue();
+
+                    if (itemStack.getItem() == Items.SPLASH_POTION)
+                    {
+                        i |= 16384;
+                    }
+
+                    return i;
+                }
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+
+    private static Map<String, Integer> makeMapPotionDamages()
+    {
+        Map<String, Integer> map = new HashMap<String, Integer>();
+        addPotion("water", 0, false, map);
+        addPotion("awkward", 16, false, map);
+        addPotion("thick", 32, false, map);
+        addPotion("mundane", 64, false, map);
+        addPotion("regeneration", 1, true, map);
+        addPotion("swiftness", 2, true, map);
+        addPotion("fire_resistance", 3, true, map);
+        addPotion("poison", 4, true, map);
+        addPotion("healing", 5, true, map);
+        addPotion("night_vision", 6, true, map);
+        addPotion("weakness", 8, true, map);
+        addPotion("strength", 9, true, map);
+        addPotion("slowness", 10, true, map);
+        addPotion("leaping", 11, true, map);
+        addPotion("harming", 12, true, map);
+        addPotion("water_breathing", 13, true, map);
+        addPotion("invisibility", 14, true, map);
+        return map;
+    }
+
+    private static void addPotion(String name, int value, boolean extended, Map<String, Integer> map)
+    {
+        if (extended)
+        {
+            value |= 8192;
+        }
+
+        map.put("minecraft:" + name, Integer.valueOf(value));
+
+        if (extended)
+        {
+            int i = value | 32;
+            map.put("minecraft:strong_" + name, Integer.valueOf(i));
+            int j = value | 64;
+            map.put("minecraft:long_" + name, Integer.valueOf(j));
+        }
+    }
+
     private static int[][] getEnchantmentIdLevels(ItemStack itemStack)
     {
         Item item = itemStack.getItem();
-        NBTTagList nbttaglist = item == Items.enchanted_book ? Items.enchanted_book.getEnchantments(itemStack) : itemStack.getEnchantmentTagList();
+        NBTTagList nbttaglist1;
+
+        if (item == Items.ENCHANTED_BOOK)
+        {
+            ItemEnchantedBook itemenchantedbook = (ItemEnchantedBook)Items.ENCHANTED_BOOK;
+            nbttaglist1 = ItemEnchantedBook.getEnchantments(itemStack);
+        }
+        else
+        {
+            nbttaglist1 = itemStack.getEnchantmentTagList();
+        }
+
+        NBTTagList nbttaglist = nbttaglist1;
 
         if (nbttaglist != null && nbttaglist.tagCount() > 0)
         {
@@ -915,7 +1051,7 @@ public class CustomItems
                     GlStateManager.enableLighting();
                     GlStateManager.depthFunc(515);
                     GlStateManager.depthMask(true);
-                    texturemanager.bindTexture(TextureMap.locationBlocksTexture);
+                    texturemanager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
                 }
 
                 return flag;
@@ -1034,5 +1170,10 @@ public class CustomItems
     public static boolean isUseGlint()
     {
         return useGlint;
+    }
+
+    public static void setRenderOffHand(boolean renderOffHand)
+    {
+        renderOffHand = renderOffHand;
     }
 }

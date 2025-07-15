@@ -1,12 +1,11 @@
 package net.optifine.shaders.config;
 
 import java.util.Properties;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class Property
 {
-    private int[] values = null;
     private int defaultValue = 0;
     private String propertyName = null;
     private String[] propertyValues = null;
@@ -59,13 +58,29 @@ public class Property
         }
     }
 
-    public void nextValue()
+    public void nextValue(boolean forward)
     {
-        ++this.value;
+        int i = 0;
+        int j = this.propertyValues.length - 1;
+        this.value = Config.limit(this.value, i, j);
 
-        if (this.value < 0 || this.value >= this.propertyValues.length)
+        if (forward)
         {
-            this.value = 0;
+            ++this.value;
+
+            if (this.value > j)
+            {
+                this.value = i;
+            }
+        }
+        else
+        {
+            --this.value;
+
+            if (this.value < i)
+            {
+                this.value = j;
+            }
         }
     }
 

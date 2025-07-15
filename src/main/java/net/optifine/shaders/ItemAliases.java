@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.minecraft.util.ResourceLocation;
 import net.optifine.config.ConnectedParser;
 import net.optifine.reflect.Reflector;
@@ -59,7 +59,7 @@ public class ItemAliases
             }
             else
             {
-                List<Integer> list = new ArrayList();
+                List<Integer> list = new ArrayList<Integer>();
                 String s = "/shaders/item.properties";
                 InputStream inputstream = shaderPack.getResourceAsStream(s);
 
@@ -70,7 +70,7 @@ public class ItemAliases
 
                 loadModItemAliases(list);
 
-                if (((List)list).size() > 0)
+                if (list.size() > 0)
                 {
                     itemAliases = toArray(list);
                 }
@@ -112,19 +112,18 @@ public class ItemAliases
                 Config.dbg("[Shaders] Parsing item mappings: " + path);
                 ConnectedParser connectedparser = new ConnectedParser("Shaders");
 
-                for (Object e : properties.keySet())
+                for (Object s : properties.keySet())
                 {
-                    String s = (String) e;
-                    String s1 = properties.getProperty(s);
+                    String s1 = properties.getProperty((String) s);
                     String s2 = "item.";
 
-                    if (!s.startsWith(s2))
+                    if (!((String) s).startsWith(s2))
                     {
                         Config.warn("[Shaders] Invalid item ID: " + s);
                     }
                     else
                     {
-                        String s3 = StrUtils.removePrefix(s, s2);
+                        String s3 = StrUtils.removePrefix((String) s, s2);
                         int i = Config.parseInt(s3, -1);
 
                         if (i < 0)

@@ -9,10 +9,9 @@ import net.minecraft.client.renderer.chunk.CompiledChunk;
 import net.minecraft.client.renderer.chunk.RenderChunk;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
-import net.minecraft.src.Config;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class DynamicLight
@@ -25,7 +24,7 @@ public class DynamicLight
     private int lastLightLevel = 0;
     private boolean underwater = false;
     private long timeCheckMs = 0L;
-    private Set<BlockPos> setLitChunkPos = new HashSet();
+    private Set<BlockPos> setLitChunkPos = new HashSet<BlockPos>();
     private BlockPos.MutableBlockPos blockPosMutable = new BlockPos.MutableBlockPos();
 
     public DynamicLight(Entity entity)
@@ -68,19 +67,19 @@ public class DynamicLight
 
             if (world != null)
             {
-                this.blockPosMutable.set(MathHelper.floor_double(d6), MathHelper.floor_double(d0), MathHelper.floor_double(d1));
+                this.blockPosMutable.setPos(MathHelper.floor(d6), MathHelper.floor(d0), MathHelper.floor(d1));
                 IBlockState iblockstate = world.getBlockState(this.blockPosMutable);
                 Block block = iblockstate.getBlock();
-                this.underwater = block == Blocks.water;
+                this.underwater = block == Blocks.WATER;
             }
 
-            Set<BlockPos> set = new HashSet();
+            Set<BlockPos> set = new HashSet<BlockPos>();
 
             if (j > 0)
             {
-                EnumFacing enumfacing2 = (MathHelper.floor_double(d6) & 15) >= 8 ? EnumFacing.EAST : EnumFacing.WEST;
-                EnumFacing enumfacing = (MathHelper.floor_double(d0) & 15) >= 8 ? EnumFacing.UP : EnumFacing.DOWN;
-                EnumFacing enumfacing1 = (MathHelper.floor_double(d1) & 15) >= 8 ? EnumFacing.SOUTH : EnumFacing.NORTH;
+                EnumFacing enumfacing2 = (MathHelper.floor(d6) & 15) >= 8 ? EnumFacing.EAST : EnumFacing.WEST;
+                EnumFacing enumfacing = (MathHelper.floor(d0) & 15) >= 8 ? EnumFacing.UP : EnumFacing.DOWN;
+                EnumFacing enumfacing1 = (MathHelper.floor(d1) & 15) >= 8 ? EnumFacing.SOUTH : EnumFacing.NORTH;
                 BlockPos blockpos = new BlockPos(d6, d0, d1);
                 RenderChunk renderchunk = renderGlobal.getRenderChunk(blockpos);
                 BlockPos blockpos1 = this.getChunkPos(renderchunk, blockpos, enumfacing2);
@@ -125,10 +124,10 @@ public class DynamicLight
 
             if (compiledchunk != null && !compiledchunk.isEmpty())
             {
-                renderChunk.setNeedsUpdate(true);
+                renderChunk.setNeedsUpdate(false);
             }
 
-            BlockPos blockpos = renderChunk.getPosition();
+            BlockPos blockpos = renderChunk.getPosition().toImmutable();
 
             if (setPrevPos != null)
             {
@@ -147,7 +146,7 @@ public class DynamicLight
         for (BlockPos blockpos : this.setLitChunkPos)
         {
             RenderChunk renderchunk = renderGlobal.getRenderChunk(blockpos);
-            this.updateChunkLight(renderchunk, (Set<BlockPos>)null, (Set<BlockPos>)null);
+            this.updateChunkLight(renderchunk, (Set)null, (Set)null);
         }
     }
 

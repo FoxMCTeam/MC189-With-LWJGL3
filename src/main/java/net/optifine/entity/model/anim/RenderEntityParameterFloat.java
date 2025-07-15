@@ -2,10 +2,9 @@ package net.optifine.entity.model.anim;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.entity.EntityLivingBase;
-import net.optifine.expr.ExpressionType;
 import net.optifine.expr.IExpressionFloat;
 
 public enum RenderEntityParameterFloat implements IExpressionFloat
@@ -24,8 +23,8 @@ public enum RenderEntityParameterFloat implements IExpressionFloat
     MOVE_STRAFING("move_strafing"),
     PARTIAL_TICKS("partial_ticks"),
     POS_X("pos_x"),
-    POS_Y("pos_Y"),
-    POS_Z("pos_Z"),
+    POS_Y("pos_y"),
+    POS_Z("pos_z"),
     REVENGE_TIME("revenge_time"),
     SWING_PROGRESS("swing_progress");
 
@@ -44,11 +43,6 @@ public enum RenderEntityParameterFloat implements IExpressionFloat
         return this.name;
     }
 
-    public ExpressionType getExpressionType()
-    {
-        return ExpressionType.FLOAT;
-    }
-
     public float eval()
     {
         Render render = this.renderManager.renderRender;
@@ -59,32 +53,32 @@ public enum RenderEntityParameterFloat implements IExpressionFloat
         }
         else
         {
-            if (render instanceof RendererLivingEntity)
+            if (render instanceof RenderLivingBase)
             {
-                RendererLivingEntity rendererlivingentity = (RendererLivingEntity)render;
+                RenderLivingBase renderlivingbase = (RenderLivingBase)render;
 
                 switch (this)
                 {
                     case LIMB_SWING:
-                        return rendererlivingentity.renderLimbSwing;
+                        return renderlivingbase.renderLimbSwing;
 
                     case LIMB_SWING_SPEED:
-                        return rendererlivingentity.renderLimbSwingAmount;
+                        return renderlivingbase.renderLimbSwingAmount;
 
                     case AGE:
-                        return rendererlivingentity.renderAgeInTicks;
+                        return renderlivingbase.renderAgeInTicks;
 
                     case HEAD_YAW:
-                        return rendererlivingentity.renderHeadYaw;
+                        return renderlivingbase.renderHeadYaw;
 
                     case HEAD_PITCH:
-                        return rendererlivingentity.renderHeadPitch;
+                        return renderlivingbase.renderHeadPitch;
 
                     case SCALE:
-                        return rendererlivingentity.renderScaleFactor;
+                        return renderlivingbase.renderScaleFactor;
 
                     default:
-                        EntityLivingBase entitylivingbase = rendererlivingentity.renderEntity;
+                        EntityLivingBase entitylivingbase = renderlivingbase.renderEntity;
 
                         if (entitylivingbase == null)
                         {
@@ -100,13 +94,13 @@ public enum RenderEntityParameterFloat implements IExpressionFloat
                                 return (float)entitylivingbase.hurtTime;
 
                             case IDLE_TIME:
-                                return (float)entitylivingbase.getAge();
+                                return (float)entitylivingbase.getIdleTime();
 
                             case MAX_HEALTH:
                                 return entitylivingbase.getMaxHealth();
 
                             case MOVE_FORWARD:
-                                return entitylivingbase.moveForward;
+                                return entitylivingbase.moveVertical;
 
                             case MOVE_STRAFING:
                                 return entitylivingbase.moveStrafing;
@@ -124,7 +118,7 @@ public enum RenderEntityParameterFloat implements IExpressionFloat
                                 return (float)entitylivingbase.getRevengeTimer();
 
                             case SWING_PROGRESS:
-                                return entitylivingbase.getSwingProgress(rendererlivingentity.renderPartialTicks);
+                                return entitylivingbase.getSwingProgress(renderlivingbase.renderPartialTicks);
                         }
                 }
             }

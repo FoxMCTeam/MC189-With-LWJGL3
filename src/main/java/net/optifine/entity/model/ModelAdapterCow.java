@@ -22,6 +22,9 @@ public class ModelAdapterCow extends ModelAdapterQuadruped
     public IEntityRenderer makeEntityRender(ModelBase modelBase, float shadowSize)
     {
         RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
-        return new RenderCow(rendermanager, modelBase, shadowSize);
+        RenderCow rendercow = new RenderCow(rendermanager);
+        rendercow.mainModel = modelBase;
+        rendercow.shadowSize = shadowSize;
+        return rendercow;
     }
 }

@@ -5,15 +5,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
-import net.minecraft.src.Config;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import net.optifine.config.ConnectedParser;
 import net.optifine.config.Matches;
 import net.optifine.config.RangeListInt;
@@ -38,7 +37,7 @@ public class CustomSkyLayer
     private boolean weatherClear;
     private boolean weatherRain;
     private boolean weatherThunder;
-    public BiomeGenBase[] biomes;
+    public Biome[] biomes;
     public RangeListInt heights;
     private float transition;
     private SmoothFloat smoothPositionBrightness;
@@ -86,8 +85,8 @@ public class CustomSkyLayer
 
     private List<String> parseWeatherList(String str)
     {
-        List<String> list = Arrays.<String>asList(new String[] {"clear", "rain", "thunder"});
-        List<String> list1 = new ArrayList();
+        List<String> list = Arrays.<String>asList("clear", "rain", "thunder");
+        List<String> list1 = new ArrayList<String>();
         String[] astring = Config.tokenize(str, " ");
 
         for (int i = 0; i < astring.length; ++i)
@@ -405,14 +404,14 @@ public class CustomSkyLayer
 
             if (this.biomes != null)
             {
-                BiomeGenBase biomegenbase = world.getBiomeGenForCoords(blockpos);
+                Biome biome = world.getBiome(blockpos);
 
-                if (biomegenbase == null)
+                if (biome == null)
                 {
                     return 0.0F;
                 }
 
-                if (!Matches.biome(biomegenbase, this.biomes))
+                if (!Matches.biome(biome, this.biomes))
                 {
                     return 0.0F;
                 }
@@ -473,14 +472,14 @@ public class CustomSkyLayer
 
     private void renderSide(Tessellator tess, int side)
     {
-        WorldRenderer worldrenderer = tess.getWorldRenderer();
+        BufferBuilder bufferbuilder = tess.getBuffer();
         double d0 = (double)(side % 3) / 3.0D;
         double d1 = (double)(side / 3) / 2.0D;
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        worldrenderer.pos(-100.0D, -100.0D, -100.0D).tex(d0, d1).endVertex();
-        worldrenderer.pos(-100.0D, -100.0D, 100.0D).tex(d0, d1 + 0.5D).endVertex();
-        worldrenderer.pos(100.0D, -100.0D, 100.0D).tex(d0 + 0.3333333333333333D, d1 + 0.5D).endVertex();
-        worldrenderer.pos(100.0D, -100.0D, -100.0D).tex(d0 + 0.3333333333333333D, d1).endVertex();
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+        bufferbuilder.pos(-100.0D, -100.0D, -100.0D).tex(d0, d1).endVertex();
+        bufferbuilder.pos(-100.0D, -100.0D, 100.0D).tex(d0, d1 + 0.5D).endVertex();
+        bufferbuilder.pos(100.0D, -100.0D, 100.0D).tex(d0 + 0.3333333333333333D, d1 + 0.5D).endVertex();
+        bufferbuilder.pos(100.0D, -100.0D, -100.0D).tex(d0 + 0.3333333333333333D, d1).endVertex();
         tess.draw();
     }
 
@@ -523,7 +522,14 @@ public class CustomSkyLayer
 
     private boolean timeBetween(int timeOfDay, int timeStart, int timeEnd)
     {
-        return timeStart <= timeEnd ? timeOfDay >= timeStart && timeOfDay <= timeEnd : timeOfDay >= timeStart || timeOfDay <= timeEnd;
+        if (timeStart <= timeEnd)
+        {
+            return timeOfDay >= timeStart && timeOfDay <= timeEnd;
+        }
+        else
+        {
+            return timeOfDay >= timeStart || timeOfDay <= timeEnd;
+        }
     }
 
     public String toString()

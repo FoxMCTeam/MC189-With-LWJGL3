@@ -1,5 +1,6 @@
 package net.optifine;
 
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 
 public class LightMapPack
@@ -38,9 +39,9 @@ public class LightMapPack
         }
         else
         {
-            int i = world.provider.getDimensionId();
+            DimensionType dimensiontype = world.provider.getDimensionType();
 
-            if (i != 1 && i != -1)
+            if (dimensiontype != DimensionType.THE_END && dimensiontype != DimensionType.NETHER)
             {
                 float f = world.getRainStrength(partialTicks);
                 float f1 = world.getThunderStrength(partialTicks);
@@ -68,29 +69,36 @@ public class LightMapPack
                         this.colorBuffer2 = new int[lmColors.length];
                     }
 
-                    int j = 0;
+                    int i = 0;
                     int[][] aint = new int[][] {lmColors, this.colorBuffer1, this.colorBuffer2};
                     float[] afloat = new float[3];
 
-                    if (f3 > f2 && this.lightMap.updateLightmap(world, torchFlickerX, aint[j], nightvision))
+                    if (f3 > f2 && this.lightMap.updateLightmap(world, torchFlickerX, aint[i], nightvision))
                     {
-                        afloat[j] = f3;
-                        ++j;
+                        afloat[i] = f3;
+                        ++i;
                     }
 
-                    if (f4 > f2 && this.lightMapRain != null && this.lightMapRain.updateLightmap(world, torchFlickerX, aint[j], nightvision))
+                    if (f4 > f2 && this.lightMapRain != null && this.lightMapRain.updateLightmap(world, torchFlickerX, aint[i], nightvision))
                     {
-                        afloat[j] = f4;
-                        ++j;
+                        afloat[i] = f4;
+                        ++i;
                     }
 
-                    if (f1 > f2 && this.lightMapThunder != null && this.lightMapThunder.updateLightmap(world, torchFlickerX, aint[j], nightvision))
+                    if (f1 > f2 && this.lightMapThunder != null && this.lightMapThunder.updateLightmap(world, torchFlickerX, aint[i], nightvision))
                     {
-                        afloat[j] = f1;
-                        ++j;
+                        afloat[i] = f1;
+                        ++i;
                     }
 
-                    return j == 2 ? this.blend(aint[0], afloat[0], aint[1], afloat[1]) : (j == 3 ? this.blend(aint[0], afloat[0], aint[1], afloat[1], aint[2], afloat[2]) : true);
+                    if (i == 2)
+                    {
+                        return this.blend(aint[0], afloat[0], aint[1], afloat[1]);
+                    }
+                    else
+                    {
+                        return i == 3 ? this.blend(aint[0], afloat[0], aint[1], afloat[1], aint[2], afloat[2]) : true;
+                    }
                 }
             }
             else

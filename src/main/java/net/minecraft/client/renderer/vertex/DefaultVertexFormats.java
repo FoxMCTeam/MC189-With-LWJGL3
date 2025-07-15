@@ -1,11 +1,10 @@
 package net.minecraft.client.renderer.vertex;
 
-import net.minecraft.src.Config;
+import java.lang.reflect.Field;
+import net.optifine.Config;
 import net.optifine.reflect.ReflectorClass;
 import net.optifine.reflect.ReflectorField;
 import net.optifine.shaders.SVertexFormat;
-
-import java.lang.reflect.Field;
 
 public class DefaultVertexFormats
 {

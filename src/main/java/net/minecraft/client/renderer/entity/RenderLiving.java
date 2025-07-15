@@ -1,19 +1,19 @@
 package net.minecraft.client.renderer.entity;
 
 import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityHanging;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.optifine.shaders.Shaders;
 
-public abstract class RenderLiving<T extends EntityLiving> extends RendererLivingEntity<T>
+public abstract class RenderLiving<T extends EntityLiving> extends RenderLivingBase<T>
 {
     public RenderLiving(RenderManager rendermanagerIn, ModelBase modelbaseIn, float shadowsizeIn)
     {
@@ -31,10 +31,10 @@ public abstract class RenderLiving<T extends EntityLiving> extends RendererLivin
         {
             return true;
         }
-        else if (livingEntity.getLeashed() && livingEntity.getLeashedToEntity() != null)
+        else if (livingEntity.getLeashed() && livingEntity.getLeashHolder() != null)
         {
-            Entity entity = livingEntity.getLeashedToEntity();
-            return camera.isBoundingBoxInFrustum(entity.getEntityBoundingBox());
+            Entity entity = livingEntity.getLeashHolder();
+            return camera.isBoundingBoxInFrustum(entity.getRenderBoundingBox());
         }
         else
         {
@@ -43,25 +43,24 @@ public abstract class RenderLiving<T extends EntityLiving> extends RendererLivin
     }
 
     /**
-     * Actually renders the given argument. This is a synthetic bridge method, always casting down its argument and then
-     * handing it off to a worker function which does the actual work. In all probabilty, the class Render is generic
-     * (Render<T extends Entity>) and this method has signature public void doRender(T entity, double d, double d1,
-     * double d2, float f, float f1). But JAD is pre 1.5 so doe
-     *  
-     * @param entityYaw The yaw rotation of the passed entity
+     * Renders the desired {@code T} type Entity.
      */
     public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
-        this.renderLeash(entity, x, y, z, entityYaw, partialTicks);
+
+        if (!this.renderOutlines)
+        {
+            this.renderLeash(entity, x, y, z, entityYaw, partialTicks);
+        }
     }
 
-    public void func_177105_a(T entityLivingIn, float partialTicks)
+    public void setLightmap(T entityLivingIn)
     {
-        int i = entityLivingIn.getBrightnessForRender(partialTicks);
+        int i = entityLivingIn.getBrightnessForRender();
         int j = i % 65536;
         int k = i / 65536;
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j / 1.0F, (float)k / 1.0F);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
     }
 
     /**
@@ -76,13 +75,13 @@ public abstract class RenderLiving<T extends EntityLiving> extends RendererLivin
     {
         if (!Config.isShaders() || !Shaders.isShadowPass)
         {
-            Entity entity = entityLivingIn.getLeashedToEntity();
+            Entity entity = entityLivingIn.getLeashHolder();
 
             if (entity != null)
             {
                 y = y - (1.6D - (double)entityLivingIn.height) * 0.5D;
                 Tessellator tessellator = Tessellator.getInstance();
-                WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+                BufferBuilder bufferbuilder = tessellator.getBuffer();
                 double d0 = this.interpolateValue((double)entity.prevRotationYaw, (double)entity.rotationYaw, (double)(partialTicks * 0.5F)) * 0.01745329238474369D;
                 double d1 = this.interpolateValue((double)entity.prevRotationPitch, (double)entity.rotationPitch, (double)(partialTicks * 0.5F)) * 0.01745329238474369D;
                 double d2 = Math.cos(d0);
@@ -122,7 +121,7 @@ public abstract class RenderLiving<T extends EntityLiving> extends RendererLivin
 
                 int i = 24;
                 double d16 = 0.025D;
-                worldrenderer.begin(5, DefaultVertexFormats.POSITION_COLOR);
+                bufferbuilder.begin(5, DefaultVertexFormats.POSITION_COLOR);
 
                 for (int j = 0; j <= 24; ++j)
                 {
@@ -138,12 +137,12 @@ public abstract class RenderLiving<T extends EntityLiving> extends RendererLivin
                     }
 
                     float f3 = (float)j / 24.0F;
-                    worldrenderer.pos(x + d13 * (double)f3 + 0.0D, y + d14 * (double)(f3 * f3 + f3) * 0.5D + (double)((24.0F - (float)j) / 18.0F + 0.125F), z + d15 * (double)f3).color(f, f1, f2, 1.0F).endVertex();
-                    worldrenderer.pos(x + d13 * (double)f3 + 0.025D, y + d14 * (double)(f3 * f3 + f3) * 0.5D + (double)((24.0F - (float)j) / 18.0F + 0.125F) + 0.025D, z + d15 * (double)f3).color(f, f1, f2, 1.0F).endVertex();
+                    bufferbuilder.pos(x + d13 * (double)f3 + 0.0D, y + d14 * (double)(f3 * f3 + f3) * 0.5D + (double)((24.0F - (float)j) / 18.0F + 0.125F), z + d15 * (double)f3).color(f, f1, f2, 1.0F).endVertex();
+                    bufferbuilder.pos(x + d13 * (double)f3 + 0.025D, y + d14 * (double)(f3 * f3 + f3) * 0.5D + (double)((24.0F - (float)j) / 18.0F + 0.125F) + 0.025D, z + d15 * (double)f3).color(f, f1, f2, 1.0F).endVertex();
                 }
 
                 tessellator.draw();
-                worldrenderer.begin(5, DefaultVertexFormats.POSITION_COLOR);
+                bufferbuilder.begin(5, DefaultVertexFormats.POSITION_COLOR);
 
                 for (int k = 0; k <= 24; ++k)
                 {
@@ -159,8 +158,8 @@ public abstract class RenderLiving<T extends EntityLiving> extends RendererLivin
                     }
 
                     float f7 = (float)k / 24.0F;
-                    worldrenderer.pos(x + d13 * (double)f7 + 0.0D, y + d14 * (double)(f7 * f7 + f7) * 0.5D + (double)((24.0F - (float)k) / 18.0F + 0.125F) + 0.025D, z + d15 * (double)f7).color(f4, f5, f6, 1.0F).endVertex();
-                    worldrenderer.pos(x + d13 * (double)f7 + 0.025D, y + d14 * (double)(f7 * f7 + f7) * 0.5D + (double)((24.0F - (float)k) / 18.0F + 0.125F), z + d15 * (double)f7 + 0.025D).color(f4, f5, f6, 1.0F).endVertex();
+                    bufferbuilder.pos(x + d13 * (double)f7 + 0.0D, y + d14 * (double)(f7 * f7 + f7) * 0.5D + (double)((24.0F - (float)k) / 18.0F + 0.125F) + 0.025D, z + d15 * (double)f7).color(f4, f5, f6, 1.0F).endVertex();
+                    bufferbuilder.pos(x + d13 * (double)f7 + 0.025D, y + d14 * (double)(f7 * f7 + f7) * 0.5D + (double)((24.0F - (float)k) / 18.0F + 0.125F), z + d15 * (double)f7 + 0.025D).color(f4, f5, f6, 1.0F).endVertex();
                 }
 
                 tessellator.draw();

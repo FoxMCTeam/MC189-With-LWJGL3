@@ -1,8 +1,8 @@
 package net.optifine.shaders.uniform;
 
-import net.minecraft.src.Config;
-import net.minecraft.util.BlockPos;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.optifine.Config;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.biome.Biome;
 import net.optifine.shaders.Shaders;
 
 public enum ShaderParameterFloat
@@ -73,7 +73,7 @@ public enum ShaderParameterFloat
         this.name = uniform.getName();
         this.uniform = uniform;
 
-        if (!instanceOf(uniform, new Class[] {ShaderUniform1f.class, ShaderUniform1i.class}))
+        if (!instanceOf(uniform, ShaderUniform1f.class, ShaderUniform1i.class))
         {
             throw new IllegalArgumentException("Invalid uniform type for enum: " + this + ", uniform: " + uniform.getClass().getName());
         }
@@ -85,7 +85,7 @@ public enum ShaderParameterFloat
         this.uniform = uniform;
         this.indexNames1 = indexNames1;
 
-        if (!instanceOf(uniform, new Class[] {ShaderUniform2i.class, ShaderUniform2f.class, ShaderUniform3f.class, ShaderUniform4f.class}))
+        if (!instanceOf(uniform, ShaderUniform2i.class, ShaderUniform2f.class, ShaderUniform3f.class, ShaderUniform4f.class))
         {
             throw new IllegalArgumentException("Invalid uniform type for enum: " + this + ", uniform: " + uniform.getClass().getName());
         }
@@ -98,7 +98,7 @@ public enum ShaderParameterFloat
         this.indexNames1 = indexNames1;
         this.indexNames2 = indexNames2;
 
-        if (!instanceOf(uniform, new Class[] {ShaderUniformM4.class}))
+        if (!instanceOf(uniform, ShaderUniformM4.class))
         {
             throw new IllegalArgumentException("Invalid uniform type for enum: " + this + ", uniform: " + uniform.getClass().getName());
         }
@@ -134,18 +134,18 @@ public enum ShaderParameterFloat
                 {
                     case BIOME:
                         BlockPos blockpos2 = Shaders.getCameraPosition();
-                        BiomeGenBase biomegenbase2 = Shaders.getCurrentWorld().getBiomeGenForCoords(blockpos2);
-                        return (float)biomegenbase2.biomeID;
+                        Biome biome2 = Shaders.getCurrentWorld().getBiome(blockpos2);
+                        return (float)Biome.getIdForBiome(biome2);
 
                     case TEMPERATURE:
                         BlockPos blockpos1 = Shaders.getCameraPosition();
-                        BiomeGenBase biomegenbase1 = Shaders.getCurrentWorld().getBiomeGenForCoords(blockpos1);
-                        return biomegenbase1 != null ? biomegenbase1.getFloatTemperature(blockpos1) : 0.0F;
+                        Biome biome1 = Shaders.getCurrentWorld().getBiome(blockpos1);
+                        return biome1 != null ? biome1.getTemperature(blockpos1) : 0.0F;
 
                     case RAINFALL:
-                        BlockPos pos = Shaders.getCameraPosition();
-                        BiomeGenBase biome = Shaders.getCurrentWorld().getBiomeGenForCoords(pos);
-                        return biome != null ? biome.getFloatRainfall() : 0.0F;
+                        BlockPos blockpos = Shaders.getCameraPosition();
+                        Biome biome = Shaders.getCurrentWorld().getBiome(blockpos);
+                        return biome != null ? biome.getRainfall() : 0.0F;
 
                     default:
                         if (this.uniform instanceof ShaderUniform1f)

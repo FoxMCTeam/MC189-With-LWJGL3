@@ -1,27 +1,30 @@
 package net.minecraft.client.audio;
 
 import com.google.common.collect.Maps;
-import net.minecraft.util.RegistrySimple;
-import net.minecraft.util.ResourceLocation;
-
 import java.util.Map;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.RegistrySimple;
 
-public class SoundRegistry extends RegistrySimple<ResourceLocation, SoundEventAccessorComposite> {
-    private Map<ResourceLocation, SoundEventAccessorComposite> soundRegistry;
+public class SoundRegistry extends RegistrySimple<ResourceLocation, SoundEventAccessor>
+{
+    private Map<ResourceLocation, SoundEventAccessor> soundRegistry;
 
-    protected Map<ResourceLocation, SoundEventAccessorComposite> createUnderlyingMap() {
-        this.soundRegistry = Maps.newHashMap();
+    protected Map<ResourceLocation, SoundEventAccessor> createUnderlyingMap()
+    {
+        this.soundRegistry = Maps.<ResourceLocation, SoundEventAccessor>newHashMap();
         return this.soundRegistry;
     }
 
-    public void registerSound(SoundEventAccessorComposite p_148762_1_) {
-        this.putObject(p_148762_1_.getSoundEventLocation(), p_148762_1_);
+    public void add(SoundEventAccessor accessor)
+    {
+        this.putObject(accessor.getLocation(), accessor);
     }
 
     /**
      * Reset the underlying sound map (Called on resource manager reload)
      */
-    public void clearMap() {
+    public void clearMap()
+    {
         this.soundRegistry.clear();
     }
 }

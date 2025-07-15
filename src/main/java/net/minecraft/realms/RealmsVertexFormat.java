@@ -1,6 +1,6 @@
 package net.minecraft.realms;
 
-import java.util.ArrayList;
+import com.google.common.collect.Lists;
 import java.util.List;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
@@ -9,9 +9,9 @@ public class RealmsVertexFormat
 {
     private VertexFormat v;
 
-    public RealmsVertexFormat(VertexFormat p_i46456_1_)
+    public RealmsVertexFormat(VertexFormat vIn)
     {
-        this.v = p_i46456_1_;
+        this.v = vIn;
     }
 
     public RealmsVertexFormat from(VertexFormat p_from_1_)
@@ -32,7 +32,7 @@ public class RealmsVertexFormat
 
     public int getUvOffset(int p_getUvOffset_1_)
     {
-        return this.v.getElementOffsetById(p_getUvOffset_1_);
+        return this.v.getUvOffsetById(p_getUvOffset_1_);
     }
 
     public int getElementCount()
@@ -47,7 +47,7 @@ public class RealmsVertexFormat
 
     public boolean hasUv(int p_hasUv_1_)
     {
-        return this.v.hasElementOffset(p_hasUv_1_);
+        return this.v.hasUvOffset(p_hasUv_1_);
     }
 
     public RealmsVertexFormatElement getElement(int p_getElement_1_)
@@ -67,7 +67,7 @@ public class RealmsVertexFormat
 
     public List<RealmsVertexFormatElement> getElements()
     {
-        List<RealmsVertexFormatElement> list = new ArrayList();
+        List<RealmsVertexFormatElement> list = Lists.<RealmsVertexFormatElement>newArrayList();
 
         for (VertexFormatElement vertexformatelement : this.v.getElements())
         {
@@ -84,12 +84,12 @@ public class RealmsVertexFormat
 
     public int getVertexSize()
     {
-        return this.v.getNextOffset();
+        return this.v.getSize();
     }
 
     public int getOffset(int p_getOffset_1_)
     {
-        return this.v.func_181720_d(p_getOffset_1_);
+        return this.v.getOffset(p_getOffset_1_);
     }
 
     public int getNormalOffset()
@@ -99,7 +99,7 @@ public class RealmsVertexFormat
 
     public int getIntegerSize()
     {
-        return this.v.func_181719_f();
+        return this.v.getIntegerSize();
     }
 
     public boolean equals(Object p_equals_1_)

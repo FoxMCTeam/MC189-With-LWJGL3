@@ -3,9 +3,8 @@ package net.minecraft.client.renderer;
 import java.nio.IntBuffer;
 import net.minecraft.client.renderer.chunk.ListedRenderChunk;
 import net.minecraft.client.renderer.chunk.RenderChunk;
-import net.minecraft.src.Config;
-import net.minecraft.util.EnumWorldBlockLayer;
-import org.lwjgl.opengl.GL11;
+import net.optifine.Config;
+import net.minecraft.util.BlockRenderLayer;
 
 public class RenderList extends ChunkRenderContainer
 {
@@ -14,7 +13,7 @@ public class RenderList extends ChunkRenderContainer
     private double viewEntityZ;
     IntBuffer bufferLists = GLAllocation.createDirectIntBuffer(16);
 
-    public void renderChunkLayer(EnumWorldBlockLayer layer)
+    public void renderChunkLayer(BlockRenderLayer layer)
     {
         if (this.initialized)
         {
@@ -25,7 +24,7 @@ public class RenderList extends ChunkRenderContainer
                     ListedRenderChunk listedrenderchunk1 = (ListedRenderChunk)renderchunk1;
                     GlStateManager.pushMatrix();
                     this.preRenderChunk(renderchunk1);
-                    GL11.glCallList(listedrenderchunk1.getDisplayList(layer, listedrenderchunk1.getCompiledChunk()));
+                    GlStateManager.callList(listedrenderchunk1.getDisplayList(layer, listedrenderchunk1.getCompiledChunk()));
                     GlStateManager.popMatrix();
                 }
             }

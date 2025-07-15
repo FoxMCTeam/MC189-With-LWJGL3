@@ -1,11 +1,10 @@
 package net.optifine;
 
 import java.util.Properties;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.src.Config;
 import net.minecraft.util.ResourceLocation;
 
 public class CustomLoadingScreen
@@ -118,7 +117,7 @@ public class CustomLoadingScreen
         GlStateManager.disableLighting();
         GlStateManager.disableFog();
         Tessellator tessellator = Tessellator.getInstance();
-        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
         Config.getTextureManager().bindTexture(this.locationTexture);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         double d0 = (double)(16 * this.scale);
@@ -155,11 +154,11 @@ public class CustomLoadingScreen
                 d4 = 0.0D;
         }
 
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-        worldrenderer.pos(0.0D, (double)height, 0.0D).tex(d3, d4 + d2).color(255, 255, 255, 255).endVertex();
-        worldrenderer.pos((double)width, (double)height, 0.0D).tex(d3 + d1, d4 + d2).color(255, 255, 255, 255).endVertex();
-        worldrenderer.pos((double)width, 0.0D, 0.0D).tex(d3 + d1, d4).color(255, 255, 255, 255).endVertex();
-        worldrenderer.pos(0.0D, 0.0D, 0.0D).tex(d3, d4).color(255, 255, 255, 255).endVertex();
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+        bufferbuilder.pos(0.0D, (double)height, 0.0D).tex(d3, d4 + d2).color(255, 255, 255, 255).endVertex();
+        bufferbuilder.pos((double)width, (double)height, 0.0D).tex(d3 + d1, d4 + d2).color(255, 255, 255, 255).endVertex();
+        bufferbuilder.pos((double)width, 0.0D, 0.0D).tex(d3 + d1, d4).color(255, 255, 255, 255).endVertex();
+        bufferbuilder.pos(0.0D, 0.0D, 0.0D).tex(d3, d4).color(255, 255, 255, 255).endVertex();
         tessellator.draw();
     }
 }

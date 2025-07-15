@@ -3,7 +3,7 @@ package net.optifine.shaders;
 import java.util.Iterator;
 import net.minecraft.client.renderer.ViewFrustum;
 import net.minecraft.client.renderer.chunk.RenderChunk;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.optifine.BlockPosM;
 
 public class IteratorRenderChunks implements Iterator<RenderChunk>

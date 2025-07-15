@@ -19,8 +19,7 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.entity.Entity;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.minecraft.util.ResourceLocation;
 import net.optifine.entity.model.anim.ModelResolver;
 import net.optifine.entity.model.anim.ModelUpdater;
@@ -59,7 +58,7 @@ public class CustomEntityModels
                 for (int i = 0; i < aresourcelocation.length; ++i)
                 {
                     ResourceLocation resourcelocation = aresourcelocation[i];
-                    Config.dbg("CustomEntityModel: " + resourcelocation.getResourcePath());
+                    Config.dbg("CustomEntityModel: " + resourcelocation.getPath());
                     IEntityRenderer ientityrenderer = parseEntityRender(resourcelocation);
 
                     if (ientityrenderer != null)
@@ -102,7 +101,7 @@ public class CustomEntityModels
         {
             if (originalEntityRenderMap == null)
             {
-                originalEntityRenderMap = new HashMap<>(map);
+                originalEntityRenderMap = new HashMap<Class, Render>(map);
             }
 
             return map;
@@ -111,11 +110,11 @@ public class CustomEntityModels
 
     private static Map<Class, TileEntitySpecialRenderer> getTileEntityRenderMap()
     {
-        Map<Class, TileEntitySpecialRenderer> map = TileEntityRendererDispatcher.instance.mapSpecialRenderers;
+        Map<Class, TileEntitySpecialRenderer> map = TileEntityRendererDispatcher.instance.renderers;
 
         if (originalTileEntityRenderMap == null)
         {
-            originalTileEntityRenderMap = new HashMap<>(map);
+            originalTileEntityRenderMap = new HashMap<Class, TileEntitySpecialRenderer>(map);
         }
 
         return map;
@@ -125,7 +124,7 @@ public class CustomEntityModels
     {
         String s = "optifine/cem/";
         String s1 = ".jem";
-        List<ResourceLocation> list = new ArrayList<>();
+        List<ResourceLocation> list = new ArrayList<ResourceLocation>();
         String[] astring = CustomModelRegistry.getModelNames();
 
         for (int i = 0; i < astring.length; ++i)
@@ -140,7 +139,7 @@ public class CustomEntityModels
             }
         }
 
-        ResourceLocation[] aresourcelocation = (ResourceLocation[])((ResourceLocation[])list.toArray(new ResourceLocation[list.size()]));
+        ResourceLocation[] aresourcelocation = (ResourceLocation[])list.toArray(new ResourceLocation[list.size()]);
         return aresourcelocation;
     }
 
@@ -149,7 +148,7 @@ public class CustomEntityModels
         try
         {
             JsonObject jsonobject = CustomEntityModelParser.loadJson(location);
-            IEntityRenderer ientityrenderer = parseEntityRender(jsonobject, location.getResourcePath());
+            IEntityRenderer ientityrenderer = parseEntityRender(jsonobject, location.getPath());
             return ientityrenderer;
         }
         catch (IOException ioexception)
@@ -279,7 +278,7 @@ public class CustomEntityModels
                 {
                     ModelRenderer[] amodelrenderer = modelAdapter.getModelRenderers(model);
                     Set<ModelRenderer> set = Collections.<ModelRenderer>newSetFromMap(new IdentityHashMap());
-                    set.addAll(Arrays.<ModelRenderer>asList(amodelrenderer));
+                    set.addAll(Arrays.asList(amodelrenderer));
                     List<ModelRenderer> list = modelrenderer.childModels;
                     Iterator iterator = list.iterator();
 
