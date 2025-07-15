@@ -3,8 +3,8 @@ package net.optifine.util;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.src.Config;
-import net.minecraft.util.BlockPos;
+import net.optifine.Config;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.optifine.reflect.Reflector;
@@ -24,7 +24,7 @@ public class ChunkUtils
 
     public static int getPrecipitationHeight(Chunk chunk, BlockPos pos)
     {
-        int[] aint = (int[])((int[])Reflector.getFieldValue(chunk, fieldPrecipitationHeightMap));
+        int[] aint = (int[])Reflector.getFieldValue(chunk, fieldPrecipitationHeightMap);
 
         if (aint != null && aint.length == 256)
         {
@@ -73,24 +73,22 @@ public class ChunkUtils
             chunk.setHasEntities(false);
             List list2 = new ArrayList();
 
-            for (Object e : list)
+            for (Object field1 : list)
             {
-                Field field1 = (Field) e;
-                list2.add(field1.get(chunk));
+                list2.add(((Field) field1).get(chunk));
             }
 
             chunk.setHasEntities(true);
             List list3 = new ArrayList();
 
-            for (Object e: list)
+            for (Object field2 : list)
             {
-                Field field2 = (Field) e;
-                list3.add(field2.get(chunk));
+                list3.add(((Field) field2).get(chunk));
             }
 
             List list4 = new ArrayList();
 
-            for (int j = 0; j < ((List)list).size(); ++j)
+            for (int j = 0; j < list.size(); ++j)
             {
                 Field field3 = (Field)list.get(j);
                 Boolean obool = (Boolean)list2.get(j);

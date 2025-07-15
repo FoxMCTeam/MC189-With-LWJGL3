@@ -41,11 +41,6 @@ public class CustomTexture implements ICustomTexture
         TextureUtil.deleteTexture(this.texture.getGlTextureId());
     }
 
-    public int getTarget()
-    {
-        return 3553;
-    }
-
     public String toString()
     {
         return "textureUnit: " + this.textureUnit + ", path: " + this.path + ", glTextureId: " + this.getTextureId();

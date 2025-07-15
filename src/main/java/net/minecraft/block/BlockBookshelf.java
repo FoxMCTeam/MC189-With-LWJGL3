@@ -11,8 +11,8 @@ public class BlockBookshelf extends Block
 {
     public BlockBookshelf()
     {
-        super(Material.wood);
-        this.setCreativeTab(CreativeTabs.tabBlock);
+        super(Material.WOOD);
+        this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
 
     /**
@@ -25,11 +25,9 @@ public class BlockBookshelf extends Block
 
     /**
      * Get the Item that this Block should drop when harvested.
-     *  
-     * @param fortune the level of the Fortune enchantment on the player's tool
      */
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Items.book;
+        return Items.BOOK;
     }
 }

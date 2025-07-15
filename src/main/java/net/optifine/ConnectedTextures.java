@@ -22,17 +22,16 @@ import net.minecraft.block.state.BlockStateBase;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.IResourcePack;
-import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.init.Blocks;
-import net.minecraft.src.Config;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import net.optifine.config.Matches;
 import net.optifine.model.BlockModelUtils;
 import net.optifine.model.ListQuadsOverlay;
@@ -60,7 +59,7 @@ public class ConnectedTextures
     private static final int Y_AXIS = 0;
     private static final int Z_AXIS = 1;
     private static final int X_AXIS = 2;
-    public static final IBlockState AIR_DEFAULT_STATE = Blocks.air.getDefaultState();
+    public static final IBlockState AIR_DEFAULT_STATE = Blocks.AIR.getDefaultState();
     private static TextureAtlasSprite emptySprite = null;
     private static final BlockDir[] SIDES_Y_NEG_DOWN = new BlockDir[] {BlockDir.WEST, BlockDir.EAST, BlockDir.NORTH, BlockDir.SOUTH};
     private static final BlockDir[] SIDES_Y_POS_UP = new BlockDir[] {BlockDir.WEST, BlockDir.EAST, BlockDir.SOUTH, BlockDir.NORTH};
@@ -112,17 +111,6 @@ public class ConnectedTextures
 
         if (block instanceof BlockPane)
         {
-            TextureAtlasSprite textureatlassprite = quad.getSprite();
-
-            if (textureatlassprite.getIconName().startsWith("minecraft:blocks/glass_pane_top"))
-            {
-                IBlockState iblockstate1 = blockAccess.getBlockState(blockPos.offset(quad.getFace()));
-                return iblockstate1 == blockState;
-            }
-        }
-
-        if (block instanceof BlockPane)
-        {
             EnumFacing enumfacing = quad.getFace();
 
             if (enumfacing != EnumFacing.UP && enumfacing != EnumFacing.DOWN)
@@ -143,12 +131,12 @@ public class ConnectedTextures
                 return false;
             }
 
-            if (block == Blocks.stained_glass_pane && iblockstate.getValue(BlockStainedGlassPane.COLOR) != blockState.getValue(BlockStainedGlassPane.COLOR))
+            if (block == Blocks.STAINED_GLASS_PANE && iblockstate.getValue(BlockStainedGlassPane.COLOR) != blockState.getValue(BlockStainedGlassPane.COLOR))
             {
                 return false;
             }
 
-            iblockstate = iblockstate.getBlock().getActualState(iblockstate, blockAccess, blockpos);
+            iblockstate = iblockstate.getActualState(blockAccess, blockpos);
             double d0 = (double)quad.getMidX();
 
             if (d0 < 0.4D)
@@ -335,7 +323,7 @@ public class ConnectedTextures
 
             for (int i = 0; i < list.size(); ++i)
             {
-                BakedQuad bakedquad = (BakedQuad)list.get(i);
+                BakedQuad bakedquad = list.get(i);
                 BakedQuad bakedquad1 = bakedquad;
 
                 for (int j = 0; j < 3; ++j)
@@ -355,7 +343,7 @@ public class ConnectedTextures
 
             for (int k = 0; k < abakedquad.length; ++k)
             {
-                abakedquad[k] = (BakedQuad)list.get(k);
+                abakedquad[k] = list.get(k);
             }
 
             return abakedquad;
@@ -558,9 +546,9 @@ public class ConnectedTextures
             {
                 if (cp.biomes != null)
                 {
-                    BiomeGenBase biomegenbase = blockAccess.getBiomeGenForCoords(blockPos);
+                    Biome biome = blockAccess.getBiome(blockPos);
 
-                    if (!cp.matchesBiome(biomegenbase))
+                    if (!cp.matchesBiome(biome))
                     {
                         return null;
                     }
@@ -1726,20 +1714,40 @@ public class ConnectedTextures
             }
 
             IBlockState iblockstate1 = iblockaccess.getBlockState(blockPos.offset(getFacing(side)));
-            return iblockstate1.getBlock().isOpaqueCube() ? false : (side == 1 && iblockstate1.getBlock() == Blocks.snow_layer ? false : !isNeighbour(cp, iblockaccess, blockState, blockPos, iblockstate, side, icon, metadata));
+
+            if (iblockstate1.isOpaqueCube())
+            {
+                return false;
+            }
+            else if (side == 1 && iblockstate1.getBlock() == Blocks.SNOW_LAYER)
+            {
+                return false;
+            }
+            else
+            {
+                return !isNeighbour(cp, iblockaccess, blockState, blockPos, iblockstate, side, icon, metadata);
+            }
         }
     }
 
     private static boolean isFullCubeModel(IBlockState state)
     {
-        if (state.getBlock().isFullCube())
+        if (state.isFullCube())
         {
             return true;
         }
         else
         {
             Block block = state.getBlock();
-            return block instanceof BlockGlass ? true : block instanceof BlockStainedGlass;
+
+            if (block instanceof BlockGlass)
+            {
+                return true;
+            }
+            else
+            {
+                return block instanceof BlockStainedGlass;
+            }
         }
     }
 
@@ -1774,7 +1782,15 @@ public class ConnectedTextures
             }
 
             IBlockState iblockstate1 = iblockaccess.getBlockState(blockPos.offset(getFacing(side)));
-            return iblockstate1.getBlock().isOpaqueCube() ? false : side != 1 || iblockstate1.getBlock() != Blocks.snow_layer;
+
+            if (iblockstate1.isOpaqueCube())
+            {
+                return false;
+            }
+            else
+            {
+                return side != 1 || iblockstate1.getBlock() != Blocks.SNOW_LAYER;
+            }
         }
     }
 
@@ -1808,7 +1824,18 @@ public class ConnectedTextures
         }
         else if (cp.connect == 3)
         {
-            return neighbourState == null ? false : (neighbourState == AIR_DEFAULT_STATE ? false : neighbourState.getBlock().getMaterial() == blockState.getBlock().getMaterial());
+            if (neighbourState == null)
+            {
+                return false;
+            }
+            else if (neighbourState == AIR_DEFAULT_STATE)
+            {
+                return false;
+            }
+            else
+            {
+                return neighbourState.getMaterial() == blockState.getMaterial();
+            }
         }
         else if (!(neighbourState instanceof BlockStateBase))
         {
@@ -1836,11 +1863,11 @@ public class ConnectedTextures
         {
             if (Reflector.ForgeBlock_getExtendedState.exists())
             {
-                neighbourState = (IBlockState)Reflector.call(neighbourState.getBlock(), Reflector.ForgeBlock_getExtendedState, new Object[] {neighbourState, iblockaccess, blockPos});
+                neighbourState = (IBlockState)Reflector.call(neighbourState.getBlock(), Reflector.ForgeBlock_getExtendedState, neighbourState, iblockaccess, blockPos);
             }
 
             EnumFacing enumfacing = getFacing(side);
-            List list = ibakedmodel.getFaceQuads(enumfacing);
+            List list = ibakedmodel.getQuads(neighbourState, enumfacing, 0L);
 
             if (list == null)
             {
@@ -1860,7 +1887,7 @@ public class ConnectedTextures
                 }
                 else
                 {
-                    List list1 = ibakedmodel.getGeneralQuads();
+                    List list1 = ibakedmodel.getQuads(neighbourState, (EnumFacing)null, 0L);
 
                     if (list1 == null)
                     {
@@ -1891,7 +1918,7 @@ public class ConnectedTextures
         boolean flag1;
         flag = false;
         flag1 = false;
-        label0:
+        label49:
 
         switch (vertAxis)
         {
@@ -1901,34 +1928,34 @@ public class ConnectedTextures
                     case 0:
                         flag = isNeighbour(cp, blockAccess, blockState, blockPos.west(), side, icon, metadata);
                         flag1 = isNeighbour(cp, blockAccess, blockState, blockPos.east(), side, icon, metadata);
-                        break label0;
+                        break label49;
 
                     case 1:
                         flag = isNeighbour(cp, blockAccess, blockState, blockPos.west(), side, icon, metadata);
                         flag1 = isNeighbour(cp, blockAccess, blockState, blockPos.east(), side, icon, metadata);
-                        break label0;
+                        break label49;
 
                     case 2:
                         flag = isNeighbour(cp, blockAccess, blockState, blockPos.east(), side, icon, metadata);
                         flag1 = isNeighbour(cp, blockAccess, blockState, blockPos.west(), side, icon, metadata);
-                        break label0;
+                        break label49;
 
                     case 3:
                         flag = isNeighbour(cp, blockAccess, blockState, blockPos.west(), side, icon, metadata);
                         flag1 = isNeighbour(cp, blockAccess, blockState, blockPos.east(), side, icon, metadata);
-                        break label0;
+                        break label49;
 
                     case 4:
                         flag = isNeighbour(cp, blockAccess, blockState, blockPos.north(), side, icon, metadata);
                         flag1 = isNeighbour(cp, blockAccess, blockState, blockPos.south(), side, icon, metadata);
-                        break label0;
+                        break label49;
 
                     case 5:
                         flag = isNeighbour(cp, blockAccess, blockState, blockPos.south(), side, icon, metadata);
                         flag1 = isNeighbour(cp, blockAccess, blockState, blockPos.north(), side, icon, metadata);
 
                     default:
-                        break label0;
+                        break label49;
                 }
 
             case 1:
@@ -1937,34 +1964,34 @@ public class ConnectedTextures
                     case 0:
                         flag = isNeighbour(cp, blockAccess, blockState, blockPos.east(), side, icon, metadata);
                         flag1 = isNeighbour(cp, blockAccess, blockState, blockPos.west(), side, icon, metadata);
-                        break label0;
+                        break label49;
 
                     case 1:
                         flag = isNeighbour(cp, blockAccess, blockState, blockPos.west(), side, icon, metadata);
                         flag1 = isNeighbour(cp, blockAccess, blockState, blockPos.east(), side, icon, metadata);
-                        break label0;
+                        break label49;
 
                     case 2:
                         flag = isNeighbour(cp, blockAccess, blockState, blockPos.west(), side, icon, metadata);
                         flag1 = isNeighbour(cp, blockAccess, blockState, blockPos.east(), side, icon, metadata);
-                        break label0;
+                        break label49;
 
                     case 3:
                         flag = isNeighbour(cp, blockAccess, blockState, blockPos.west(), side, icon, metadata);
                         flag1 = isNeighbour(cp, blockAccess, blockState, blockPos.east(), side, icon, metadata);
-                        break label0;
+                        break label49;
 
                     case 4:
                         flag = isNeighbour(cp, blockAccess, blockState, blockPos.down(), side, icon, metadata);
                         flag1 = isNeighbour(cp, blockAccess, blockState, blockPos.up(), side, icon, metadata);
-                        break label0;
+                        break label49;
 
                     case 5:
                         flag = isNeighbour(cp, blockAccess, blockState, blockPos.up(), side, icon, metadata);
                         flag1 = isNeighbour(cp, blockAccess, blockState, blockPos.down(), side, icon, metadata);
 
                     default:
-                        break label0;
+                        break label49;
                 }
 
             case 2:
@@ -2126,7 +2153,19 @@ public class ConnectedTextures
         else
         {
             TextureAtlasSprite textureatlassprite1 = getConnectedTextureVertical(cp, blockAccess, blockState, blockPos, vertAxis, side, icon, metadata);
-            return textureatlassprite1 == atextureatlassprite[0] ? atextureatlassprite[4] : (textureatlassprite1 == atextureatlassprite[1] ? atextureatlassprite[5] : (textureatlassprite1 == atextureatlassprite[2] ? atextureatlassprite[6] : textureatlassprite1));
+
+            if (textureatlassprite1 == atextureatlassprite[0])
+            {
+                return atextureatlassprite[4];
+            }
+            else if (textureatlassprite1 == atextureatlassprite[1])
+            {
+                return atextureatlassprite[5];
+            }
+            else
+            {
+                return textureatlassprite1 == atextureatlassprite[2] ? atextureatlassprite[6] : textureatlassprite1;
+            }
         }
     }
 
@@ -2142,7 +2181,19 @@ public class ConnectedTextures
         else
         {
             TextureAtlasSprite textureatlassprite1 = getConnectedTextureHorizontal(cp, blockAccess, blockState, blockPos, vertAxis, side, icon, metadata);
-            return textureatlassprite1 == atextureatlassprite[0] ? atextureatlassprite[4] : (textureatlassprite1 == atextureatlassprite[1] ? atextureatlassprite[5] : (textureatlassprite1 == atextureatlassprite[2] ? atextureatlassprite[6] : textureatlassprite1));
+
+            if (textureatlassprite1 == atextureatlassprite[0])
+            {
+                return atextureatlassprite[4];
+            }
+            else if (textureatlassprite1 == atextureatlassprite[1])
+            {
+                return atextureatlassprite[5];
+            }
+            else
+            {
+                return textureatlassprite1 == atextureatlassprite[2] ? atextureatlassprite[6] : textureatlassprite1;
+            }
         }
     }
 
@@ -2254,6 +2305,7 @@ public class ConnectedTextures
                 {
                     Properties properties = new PropertiesOrdered();
                     properties.load(inputstream);
+                    inputstream.close();
                     ConnectedProperties connectedproperties = new ConnectedProperties(properties, s);
 
                     if (connectedproperties.isValid(s))
@@ -2327,7 +2379,7 @@ public class ConnectedTextures
             }
         }
 
-        ConnectedProperties[] aconnectedproperties1 = (ConnectedProperties[])((ConnectedProperties[])list.toArray(new ConnectedProperties[list.size()]));
+        ConnectedProperties[] aconnectedproperties1 = (ConnectedProperties[])list.toArray(new ConnectedProperties[list.size()]);
         Set set1 = new HashSet();
         Set set = new HashSet();
 
@@ -2350,16 +2402,22 @@ public class ConnectedTextures
         return !set1.isEmpty();
     }
 
-    private static ConnectedProperties[][] propertyListToArray(final List list) {
-        final ConnectedProperties[][] propArr = new ConnectedProperties[list.size()][];
-        for (int i = 0; i < list.size(); ++i) {
-            final List subList = (List) list.get(i);
-            if (subList != null) {
-                final ConnectedProperties[] subArr = (ConnectedProperties[]) subList.toArray(new ConnectedProperties[subList.size()]);
-                propArr[i] = subArr;
+    private static ConnectedProperties[][] propertyListToArray(List list)
+    {
+        ConnectedProperties[][] aconnectedproperties = new ConnectedProperties[list.size()][];
+
+        for (int i = 0; i < list.size(); ++i)
+        {
+            List subList = (List)list.get(i);
+
+            if (subList != null)
+            {
+                ConnectedProperties[] aconnectedproperties1 = (ConnectedProperties[])subList.toArray(new ConnectedProperties[subList.size()]);
+                aconnectedproperties[i] = aconnectedproperties1;
             }
         }
-        return propArr;
+
+        return aconnectedproperties;
     }
 
     private static void addToTileList(ConnectedProperties cp, List tileList)
@@ -2415,18 +2473,18 @@ public class ConnectedTextures
     {
         while (id >= list.size())
         {
-            list.add(null);
+            list.add((Object)null);
         }
 
-        List l = (List)list.get(id);
+        List subList = (List)list.get(id);
 
-        if (l == null)
+        if (subList == null)
         {
-            l = new ArrayList();
-            list.set(id, l);
+            subList = new ArrayList();
+            list.set(id, subList);
         }
 
-        l.add(cp);
+        subList.add(cp);
     }
 
     private static String[] getDefaultCtmPaths()
@@ -2463,7 +2521,7 @@ public class ConnectedTextures
             }
         }
 
-        String[] astring1 = (String[])((String[])list.toArray(new String[list.size()]));
+        String[] astring1 = (String[])list.toArray(new String[list.size()]);
         return astring1;
     }
 }

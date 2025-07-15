@@ -1,9 +1,10 @@
 package net.optifine.reflect;
 
 import java.lang.reflect.Constructor;
-import net.minecraft.src.Config;
+import net.optifine.Log;
+import net.optifine.util.ArrayUtils;
 
-public class ReflectorConstructor
+public class ReflectorConstructor implements IResolvable
 {
     private ReflectorClass reflectorClass = null;
     private Class[] parameterTypes = null;
@@ -14,7 +15,7 @@ public class ReflectorConstructor
     {
         this.reflectorClass = reflectorClass;
         this.parameterTypes = parameterTypes;
-        Constructor constructor = this.getTargetConstructor();
+        ReflectorResolver.register(this);
     }
 
     public Constructor getTargetConstructor()
@@ -40,7 +41,7 @@ public class ReflectorConstructor
 
                     if (this.targetConstructor == null)
                     {
-                        Config.dbg("(Reflector) Constructor not present: " + oclass.getName() + ", params: " + Config.arrayToString((Object[])this.parameterTypes));
+                        Log.dbg("(Reflector) Constructor not present: " + oclass.getName() + ", params: " + ArrayUtils.arrayToString((Object[])this.parameterTypes));
                     }
 
                     if (this.targetConstructor != null)
@@ -78,12 +79,29 @@ public class ReflectorConstructor
 
     public boolean exists()
     {
-        return this.checked ? this.targetConstructor != null : this.getTargetConstructor() != null;
+        if (this.checked)
+        {
+            return this.targetConstructor != null;
+        }
+        else
+        {
+            return this.getTargetConstructor() != null;
+        }
     }
 
     public void deactivate()
     {
         this.checked = true;
         this.targetConstructor = null;
+    }
+
+    public Object newInstance(Object... params)
+    {
+        return Reflector.newInstance(this, params);
+    }
+
+    public void resolve()
+    {
+        Constructor constructor = this.getTargetConstructor();
     }
 }

@@ -2,7 +2,7 @@ package net.optifine.shaders.config;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.optifine.Lang;
 import net.optifine.util.StrUtils;
 
@@ -24,7 +24,15 @@ public class ShaderOptionSwitch extends ShaderOption
     public String getValueText(String val)
     {
         String s = super.getValueText(val);
-        return s != val ? s : (isTrue(val) ? Lang.getOn() : Lang.getOff());
+
+        if (s != val)
+        {
+            return s;
+        }
+        else
+        {
+            return isTrue(val) ? Lang.getOn() : Lang.getOff();
+        }
     }
 
     public String getValueColor(String val)

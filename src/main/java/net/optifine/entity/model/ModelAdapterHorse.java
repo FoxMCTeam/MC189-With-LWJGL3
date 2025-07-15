@@ -66,7 +66,7 @@ public class ModelAdapterHorse extends ModelAdapter
         }
         else
         {
-            mapPartFields = new HashMap();
+            mapPartFields = new HashMap<String, Integer>();
             mapPartFields.put("head", Integer.valueOf(0));
             mapPartFields.put("upper_mouth", Integer.valueOf(1));
             mapPartFields.put("lower_mouth", Integer.valueOf(2));
@@ -113,7 +113,9 @@ public class ModelAdapterHorse extends ModelAdapter
     public IEntityRenderer makeEntityRender(ModelBase modelBase, float shadowSize)
     {
         RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
-        RenderHorse renderhorse = new RenderHorse(rendermanager, (ModelHorse)modelBase, shadowSize);
+        RenderHorse renderhorse = new RenderHorse(rendermanager);
+        renderhorse.mainModel = modelBase;
+        renderhorse.shadowSize = shadowSize;
         return renderhorse;
     }
 }

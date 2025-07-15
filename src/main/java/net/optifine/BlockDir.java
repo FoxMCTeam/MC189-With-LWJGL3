@@ -1,7 +1,7 @@
 package net.optifine;
 
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 
 public enum BlockDir
 {
@@ -62,11 +62,11 @@ public enum BlockDir
 
     public int getOffsetX()
     {
-        int i = this.facing1.getFrontOffsetX();
+        int i = this.facing1.getXOffset();
 
         if (this.facing2 != null)
         {
-            i += this.facing2.getFrontOffsetX();
+            i += this.facing2.getXOffset();
         }
 
         return i;
@@ -74,11 +74,11 @@ public enum BlockDir
 
     public int getOffsetY()
     {
-        int i = this.facing1.getFrontOffsetY();
+        int i = this.facing1.getYOffset();
 
         if (this.facing2 != null)
         {
-            i += this.facing2.getFrontOffsetY();
+            i += this.facing2.getYOffset();
         }
 
         return i;
@@ -86,11 +86,11 @@ public enum BlockDir
 
     public int getOffsetZ()
     {
-        int i = this.facing1.getFrontOffsetZ();
+        int i = this.facing1.getZOffset();
 
         if (this.facing2 != null)
         {
-            i += this.facing2.getFrontOffsetZ();
+            i += this.facing2.getZOffset();
         }
 
         return i;

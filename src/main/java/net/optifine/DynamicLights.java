@@ -19,12 +19,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.src.Config;
-import net.minecraft.util.BlockPos;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.optifine.config.ConnectedParser;
 import net.optifine.config.EntityClassLocator;
@@ -36,8 +38,8 @@ import net.optifine.util.PropertiesOrdered;
 public class DynamicLights
 {
     private static DynamicLightsMap mapDynamicLights = new DynamicLightsMap();
-    private static Map<Class, Integer> mapEntityLightLevels = new HashMap();
-    private static Map<Item, Integer> mapItemLightLevels = new HashMap();
+    private static Map<Class, Integer> mapEntityLightLevels = new HashMap<Class, Integer>();
+    private static Map<Item, Integer> mapItemLightLevels = new HashMap<Item, Integer>();
     private static long timeUpdateMs = 0L;
     private static final double MAX_DIST = 7.5D;
     private static final double MAX_DIST_SQ = 56.25D;
@@ -48,6 +50,7 @@ public class DynamicLights
     private static final int LIGHT_LEVEL_MAGMA_CUBE_CORE = 13;
     private static final int LIGHT_LEVEL_GLOWSTONE_DUST = 8;
     private static final int LIGHT_LEVEL_PRISMARINE_CRYSTALS = 8;
+    private static final DataParameter<ItemStack> PARAMETER_ITEM_STACK = new DataParameter<ItemStack>(6, DataSerializers.ITEM_STACK);
     private static boolean initialized;
 
     public static void entityAdded(Entity entityIn, RenderGlobal renderGlobal)
@@ -90,7 +93,7 @@ public class DynamicLights
 
                     for (int j = 0; j < list.size(); ++j)
                     {
-                        DynamicLight dynamiclight = (DynamicLight)list.get(j);
+                        DynamicLight dynamiclight = list.get(j);
                         dynamiclight.update(renderGlobal);
                     }
                 }
@@ -186,7 +189,7 @@ public class DynamicLights
 
                         if (j >= 0 && j <= 15)
                         {
-                            mapLightLevels.put(object, j);
+                            mapLightLevels.put(object, new Integer(j));
                         }
                         else
                         {
@@ -271,13 +274,14 @@ public class DynamicLights
         synchronized (mapDynamicLights)
         {
             List<DynamicLight> list = mapDynamicLights.valueList();
+            int i = list.size();
 
-            for (int i = 0; i < list.size(); ++i)
+            for (int j = 0; j < i; ++j)
             {
-                DynamicLight dynamiclight = (DynamicLight)list.get(i);
-                int j = dynamiclight.getLastLightLevel();
+                DynamicLight dynamiclight = list.get(j);
+                int k = dynamiclight.getLastLightLevel();
 
-                if (j > 0)
+                if (k > 0)
                 {
                     double d1 = dynamiclight.getLastPosX();
                     double d2 = dynamiclight.getLastPosY();
@@ -289,7 +293,7 @@ public class DynamicLights
 
                     if (dynamiclight.isUnderwater() && !Config.isClearWater())
                     {
-                        j = Config.limit(j - 2, 0, 15);
+                        k = Config.limit(k - 2, 0, 15);
                         d7 *= 2.0D;
                     }
 
@@ -297,7 +301,7 @@ public class DynamicLights
                     {
                         double d8 = Math.sqrt(d7);
                         double d9 = 1.0D - d8 / 7.5D;
-                        double d10 = d9 * (double)j;
+                        double d10 = d9 * (double)k;
 
                         if (d10 > d0)
                         {
@@ -329,37 +333,37 @@ public class DynamicLights
 
                 if (block != null)
                 {
-                    return block.getLightValue();
+                    return block.getLightValue(block.getDefaultState());
                 }
             }
 
-            if (item == Items.lava_bucket)
+            if (item == Items.LAVA_BUCKET)
             {
-                return Blocks.lava.getLightValue();
+                return Blocks.LAVA.getLightValue(Blocks.LAVA.getDefaultState());
             }
-            else if (item != Items.blaze_rod && item != Items.blaze_powder)
+            else if (item != Items.BLAZE_ROD && item != Items.BLAZE_POWDER)
             {
-                if (item == Items.glowstone_dust)
+                if (item == Items.GLOWSTONE_DUST)
                 {
                     return 8;
                 }
-                else if (item == Items.prismarine_crystals)
+                else if (item == Items.PRISMARINE_CRYSTALS)
                 {
                     return 8;
                 }
-                else if (item == Items.magma_cream)
+                else if (item == Items.MAGMA_CREAM)
                 {
                     return 8;
                 }
-                else if (item == Items.nether_star)
+                else if (item == Items.NETHER_STAR)
                 {
-                    return Blocks.beacon.getLightValue() / 2;
+                    return Blocks.BEACON.getLightValue(Blocks.BEACON.getDefaultState()) / 2;
                 }
                 else
                 {
                     if (!mapItemLightLevels.isEmpty())
                     {
-                        Integer integer = (Integer)mapItemLightLevels.get(item);
+                        Integer integer = mapItemLightLevels.get(item);
 
                         if (integer != null)
                         {
@@ -403,7 +407,7 @@ public class DynamicLights
             {
                 if (!mapEntityLightLevels.isEmpty())
                 {
-                    Integer integer = (Integer)mapEntityLightLevels.get(entity.getClass());
+                    Integer integer = mapEntityLightLevels.get(entity.getClass());
 
                     if (integer != null)
                     {
@@ -422,7 +426,7 @@ public class DynamicLights
                 else if (entity instanceof EntityBlaze)
                 {
                     EntityBlaze entityblaze = (EntityBlaze)entity;
-                    return entityblaze.func_70845_n() ? 15 : 10;
+                    return entityblaze.isCharged() ? 15 : 10;
                 }
                 else if (entity instanceof EntityMagmaCube)
                 {
@@ -444,11 +448,14 @@ public class DynamicLights
                     if (entity instanceof EntityLivingBase)
                     {
                         EntityLivingBase entitylivingbase = (EntityLivingBase)entity;
-                        ItemStack itemstack2 = entitylivingbase.getHeldItem();
-                        int i = getLightLevel(itemstack2);
-                        ItemStack itemstack1 = entitylivingbase.getEquipmentInSlot(4);
+                        ItemStack itemstack3 = entitylivingbase.getHeldItemMainhand();
+                        int i = getLightLevel(itemstack3);
+                        ItemStack itemstack1 = entitylivingbase.getHeldItemOffhand();
                         int j = getLightLevel(itemstack1);
-                        return Math.max(i, j);
+                        ItemStack itemstack2 = entitylivingbase.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+                        int k = getLightLevel(itemstack2);
+                        int l = Math.max(i, j);
+                        return Math.max(l, k);
                     }
                     else if (entity instanceof EntityItem)
                     {
@@ -473,7 +480,7 @@ public class DynamicLights
 
             for (int i = 0; i < list.size(); ++i)
             {
-                DynamicLight dynamiclight = (DynamicLight)list.get(i);
+                DynamicLight dynamiclight = list.get(i);
                 dynamiclight.updateLitChunks(renderGlobal);
             }
 
@@ -499,7 +506,7 @@ public class DynamicLights
 
     public static ItemStack getItemStack(EntityItem entityItem)
     {
-        ItemStack itemstack = entityItem.getDataWatcher().getWatchableObjectItemStack(10);
+        ItemStack itemstack = (ItemStack)entityItem.getDataManager().get(PARAMETER_ITEM_STACK);
         return itemstack;
     }
 }

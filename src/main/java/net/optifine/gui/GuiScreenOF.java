@@ -35,14 +35,14 @@ public class GuiScreenOF extends GuiScreen
     {
         for (int i = 0; i < listButtons.size(); ++i)
         {
-            GuiButton guibutton = (GuiButton)listButtons.get(i);
+            GuiButton guibutton = listButtons.get(i);
 
             if (guibutton.visible)
             {
                 int j = GuiVideoSettings.getButtonWidth(guibutton);
                 int k = GuiVideoSettings.getButtonHeight(guibutton);
 
-                if (x >= guibutton.xPosition && y >= guibutton.yPosition && x < guibutton.xPosition + j && y < guibutton.yPosition + k)
+                if (x >= guibutton.x && y >= guibutton.y && x < guibutton.x + j && y < guibutton.y + k)
                 {
                     return guibutton;
                 }

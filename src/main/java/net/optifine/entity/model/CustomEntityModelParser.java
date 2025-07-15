@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.minecraft.util.ResourceLocation;
 import net.optifine.config.ConnectedParser;
 import net.optifine.entity.model.anim.ModelUpdater;
@@ -80,7 +80,7 @@ public class CustomEntityModelParser
             }
         }
 
-        CustomModelRenderer[] acustommodelrenderer = (CustomModelRenderer[])((CustomModelRenderer[])list.toArray(new CustomModelRenderer[list.size()]));
+        CustomModelRenderer[] acustommodelrenderer = (CustomModelRenderer[])list.toArray(new CustomModelRenderer[list.size()]);
         ResourceLocation resourcelocation = null;
 
         if (s2 != null)
@@ -150,9 +150,9 @@ public class CustomEntityModelParser
     {
         for (Entry<String, JsonElement> entry : objFrom.entrySet())
         {
-            if (!((String)entry.getKey()).equals("id") && !objTo.has((String)entry.getKey()))
+            if (!((String)entry.getKey()).equals("id") && !objTo.has(entry.getKey()))
             {
-                objTo.add((String)entry.getKey(), (JsonElement)entry.getValue());
+                objTo.add(entry.getKey(), entry.getValue());
             }
         }
     }
@@ -219,7 +219,7 @@ public class CustomEntityModelParser
 
         if (jsonarray != null)
         {
-            List<ModelVariableUpdater> list = new ArrayList();
+            List<ModelVariableUpdater> list = new ArrayList<ModelVariableUpdater>();
 
             for (int i = 0; i < jsonarray.size(); ++i)
             {
@@ -227,7 +227,7 @@ public class CustomEntityModelParser
 
                 for (Entry<String, JsonElement> entry : jsonobject.entrySet())
                 {
-                    String s1 = (String)entry.getKey();
+                    String s1 = entry.getKey();
                     String s2 = ((JsonElement)entry.getValue()).getAsString();
                     ModelVariableUpdater modelvariableupdater = new ModelVariableUpdater(s1, s2);
                     list.add(modelvariableupdater);
@@ -236,7 +236,7 @@ public class CustomEntityModelParser
 
             if (list.size() > 0)
             {
-                ModelVariableUpdater[] amodelvariableupdater = (ModelVariableUpdater[])((ModelVariableUpdater[])list.toArray(new ModelVariableUpdater[list.size()]));
+                ModelVariableUpdater[] amodelvariableupdater = (ModelVariableUpdater[])list.toArray(new ModelVariableUpdater[list.size()]);
                 modelupdater = new ModelUpdater(amodelvariableupdater);
             }
         }

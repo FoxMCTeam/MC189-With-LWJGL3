@@ -2,7 +2,7 @@ package net.optifine.shaders.uniform;
 
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import net.optifine.expr.ConstantFloat;
 import net.optifine.expr.IExpression;
 import net.optifine.expr.IExpressionResolver;
@@ -10,7 +10,7 @@ import net.optifine.shaders.SMCLog;
 
 public class ShaderExpressionResolver implements IExpressionResolver
 {
-    private Map<String, IExpression> mapExpressions = new HashMap();
+    private Map<String, IExpression> mapExpressions = new HashMap<String, IExpression>();
 
     public ShaderExpressionResolver(Map<String, IExpression> map)
     {
@@ -18,7 +18,7 @@ public class ShaderExpressionResolver implements IExpressionResolver
 
         for (String s : map.keySet())
         {
-            IExpression iexpression = (IExpression)map.get(s);
+            IExpression iexpression = map.get(s);
             this.registerExpression(s, iexpression);
         }
     }
@@ -41,11 +41,11 @@ public class ShaderExpressionResolver implements IExpressionResolver
             this.mapExpressions.put(shaderparameterbool.getName(), shaderparameterbool);
         }
 
-        for (BiomeGenBase biomegenbase : BiomeGenBase.BIOME_ID_MAP.values())
+        for (Biome biome : Biome.REGISTRY)
         {
-            String s = biomegenbase.biomeName.trim();
+            String s = biome.getBiomeName().trim();
             s = "BIOME_" + s.toUpperCase().replace(' ', '_');
-            int j = biomegenbase.biomeID;
+            int j = Biome.getIdForBiome(biome);
             IExpression iexpression = new ConstantFloat((float)j);
             this.registerExpression(s, iexpression);
         }
@@ -98,7 +98,7 @@ public class ShaderExpressionResolver implements IExpressionResolver
 
     public IExpression getExpression(String name)
     {
-        return (IExpression)this.mapExpressions.get(name);
+        return this.mapExpressions.get(name);
     }
 
     public boolean hasExpression(String name)

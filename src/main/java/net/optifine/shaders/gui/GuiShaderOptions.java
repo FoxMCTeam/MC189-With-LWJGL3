@@ -5,8 +5,8 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
-import net.minecraft.src.Config;
-import net.minecraft.util.MathHelper;
+import net.optifine.Config;
+import net.minecraft.util.math.MathHelper;
 import net.optifine.Lang;
 import net.optifine.gui.GuiScreenOF;
 import net.optifine.gui.TooltipManager;
@@ -57,7 +57,7 @@ public class GuiShaderOptions extends GuiScreenOF
      */
     public void initGui()
     {
-        this.title = I18n.format("of.options.shaderOptionsTitle", new Object[0]);
+        this.title = I18n.format("of.options.shaderOptionsTitle");
         int i = 100;
         int j = 0;
         int k = 30;
@@ -69,7 +69,7 @@ public class GuiShaderOptions extends GuiScreenOF
 
         if (ashaderoption != null)
         {
-            int l1 = MathHelper.ceiling_double_int((double)ashaderoption.length / 9.0D);
+            int l1 = MathHelper.ceil((double)ashaderoption.length / 9.0D);
 
             if (k1 < l1)
             {
@@ -107,8 +107,8 @@ public class GuiShaderOptions extends GuiScreenOF
             }
         }
 
-        this.buttonList.add(new GuiButton(201, this.width / 2 - i1 - 20, this.height / 6 + 168 + 11, i1, j1, I18n.format("controls.reset", new Object[0])));
-        this.buttonList.add(new GuiButton(200, this.width / 2 + 20, this.height / 6 + 168 + 11, i1, j1, I18n.format("gui.done", new Object[0])));
+        this.buttonList.add(new GuiButton(201, this.width / 2 - i1 - 20, this.height / 6 + 168 + 11, i1, j1, I18n.format("controls.reset")));
+        this.buttonList.add(new GuiButton(200, this.width / 2 + 20, this.height / 6 + 168 + 11, i1, j1, I18n.format("gui.done")));
     }
 
     public static String getButtonText(ShaderOption so, int btnWidth)
@@ -122,9 +122,9 @@ public class GuiShaderOptions extends GuiScreenOF
         }
         else
         {
-            FontRenderer fontrenderer = Config.getMinecraft().fontRendererObj;
+            FontRenderer fontrenderer = Config.getMinecraft().fontRenderer;
 
-            for (int i = fontrenderer.getStringWidthInt(": " + Lang.getOff()) + 5; fontrenderer.getStringWidthInt(s) + i >= btnWidth && s.length() > 0; s = s.substring(0, s.length() - 1))
+            for (int i = fontrenderer.getStringWidth(": " + Lang.getOff()) + 5; fontrenderer.getStringWidth(s) + i >= btnWidth && s.length() > 0; s = s.substring(0, s.length() - 1))
             {
                 ;
             }
@@ -254,7 +254,7 @@ public class GuiShaderOptions extends GuiScreenOF
     }
 
     /**
-     * Draws the screen and all the components in it. Args : mouseX, mouseY, renderPartialTicks
+     * Draws the screen and all the components in it.
      */
     public void drawScreen(int x, int y, float f)
     {
@@ -262,11 +262,11 @@ public class GuiShaderOptions extends GuiScreenOF
 
         if (this.screenText != null)
         {
-            this.drawCenteredString(this.fontRendererObj, this.screenText, this.width / 2, 15, 16777215);
+            this.drawCenteredString(this.fontRenderer, this.screenText, this.width / 2, 15, 16777215);
         }
         else
         {
-            this.drawCenteredString(this.fontRendererObj, this.title, this.width / 2, 15, 16777215);
+            this.drawCenteredString(this.fontRenderer, this.title, this.width / 2, 15, 16777215);
         }
 
         super.drawScreen(x, y, f);

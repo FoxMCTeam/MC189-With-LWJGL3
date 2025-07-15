@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.optifine.expr.ExpressionParser;
 import net.optifine.expr.ExpressionType;
 import net.optifine.expr.IExpression;
@@ -21,9 +21,9 @@ import net.optifine.expr.ParseException;
 public class MacroState
 {
     private boolean active = true;
-    private Deque<Boolean> dequeState = new ArrayDeque();
-    private Deque<Boolean> dequeResolved = new ArrayDeque();
-    private Map<String, String> mapMacroValues = new HashMap();
+    private Deque<Boolean> dequeState = new ArrayDeque<Boolean>();
+    private Deque<Boolean> dequeResolved = new ArrayDeque<Boolean>();
+    private Map<String, String> mapMacroValues = new HashMap<String, String>();
     private static final Pattern PATTERN_DIRECTIVE = Pattern.compile("\\s*#\\s*(\\w+)\\s*(.*)");
     private static final Pattern PATTERN_DEFINED = Pattern.compile("defined\\s+(\\w+)");
     private static final Pattern PATTERN_DEFINED_FUNC = Pattern.compile("defined\\s*\\(\\s*(\\w+)\\s*\\)");
@@ -36,7 +36,7 @@ public class MacroState
     private static final String ELSE = "else";
     private static final String ELIF = "elif";
     private static final String ENDIF = "endif";
-    private static final List<String> MACRO_NAMES = Arrays.<String>asList(new String[] {"define", "undef", "ifdef", "ifndef", "if", "else", "elif", "endif"});
+    private static final List<String> MACRO_NAMES = Arrays.<String>asList("define", "undef", "ifdef", "ifndef", "if", "else", "elif", "endif");
 
     public boolean processLine(String line)
     {
@@ -168,9 +168,9 @@ public class MacroState
                 {
                     char c0 = s.charAt(0);
 
-                    if ((Character.isLetter(c0) || c0 == 95) && this.mapMacroValues.containsKey(s))
+                    if ((Character.isLetter(c0) || c0 == '_') && this.mapMacroValues.containsKey(s))
                     {
-                        String s1 = (String)this.mapMacroValues.get(s);
+                        String s1 = this.mapMacroValues.get(s);
 
                         if (s1 == null)
                         {

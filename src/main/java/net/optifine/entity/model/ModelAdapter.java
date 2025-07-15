@@ -58,7 +58,7 @@ public abstract class ModelAdapter
     public ModelRenderer[] getModelRenderers(ModelBase model)
     {
         String[] astring = this.getModelRendererNames();
-        List<ModelRenderer> list = new ArrayList();
+        List<ModelRenderer> list = new ArrayList<ModelRenderer>();
 
         for (int i = 0; i < astring.length; ++i)
         {
@@ -71,7 +71,7 @@ public abstract class ModelAdapter
             }
         }
 
-        ModelRenderer[] amodelrenderer = (ModelRenderer[])((ModelRenderer[])list.toArray(new ModelRenderer[list.size()]));
+        ModelRenderer[] amodelrenderer = (ModelRenderer[])list.toArray(new ModelRenderer[list.size()]);
         return amodelrenderer;
     }
 }

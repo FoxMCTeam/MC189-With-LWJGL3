@@ -1,7 +1,7 @@
 package net.optifine.config;
 
 import net.minecraft.block.state.BlockStateBase;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 
 public class MatchBlock
 {
@@ -41,12 +41,26 @@ public class MatchBlock
 
     public boolean matches(BlockStateBase blockState)
     {
-        return blockState.getBlockId() != this.blockId ? false : Matches.metadata(blockState.getMetadata(), this.metadatas);
+        if (blockState.getBlockId() != this.blockId)
+        {
+            return false;
+        }
+        else
+        {
+            return Matches.metadata(blockState.getMetadata(), this.metadatas);
+        }
     }
 
     public boolean matches(int id, int metadata)
     {
-        return id != this.blockId ? false : Matches.metadata(metadata, this.metadatas);
+        if (id != this.blockId)
+        {
+            return false;
+        }
+        else
+        {
+            return Matches.metadata(metadata, this.metadatas);
+        }
     }
 
     public void addMetadata(int metadata)

@@ -1,9 +1,8 @@
 package net.optifine;
 
-import net.minecraft.src.Config;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.biome.Biome;
 import net.optifine.util.TileEntityUtils;
 
 public class RandomTileEntity implements IRandomEntity
@@ -26,9 +25,9 @@ public class RandomTileEntity implements IRandomEntity
         return s;
     }
 
-    public BiomeGenBase getSpawnBiome()
+    public Biome getSpawnBiome()
     {
-        return this.tileEntity.getWorld().getBiomeGenForCoords(this.tileEntity.getPos());
+        return this.tileEntity.getWorld().getBiome(this.tileEntity.getPos());
     }
 
     public int getHealth()

@@ -8,11 +8,11 @@ public class SetVisibility
     private static final int COUNT_FACES = EnumFacing.values().length;
     private long bits;
 
-    public void setManyVisible(Set<EnumFacing> p_178620_1_)
+    public void setManyVisible(Set<EnumFacing> facing)
     {
-        for (EnumFacing enumfacing : p_178620_1_)
+        for (EnumFacing enumfacing : facing)
         {
-            for (EnumFacing enumfacing1 : p_178620_1_)
+            for (EnumFacing enumfacing1 : facing)
             {
                 this.setVisible(enumfacing, enumfacing1, true);
             }

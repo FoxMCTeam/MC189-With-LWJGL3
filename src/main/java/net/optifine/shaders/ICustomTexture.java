@@ -8,5 +8,8 @@ public interface ICustomTexture
 
     void deleteTexture();
 
-    int getTarget();
+default int getTarget()
+    {
+        return 3553;
+    }
 }

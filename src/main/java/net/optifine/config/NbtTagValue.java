@@ -12,7 +12,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.optifine.util.StrUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -87,7 +87,14 @@ public class NbtTagValue
 
     public boolean matches(NBTTagCompound nbt)
     {
-        return this.negative ? !this.matchesCompound(nbt) : this.matchesCompound(nbt);
+        if (this.negative)
+        {
+            return !this.matchesCompound(nbt);
+        }
+        else
+        {
+            return this.matchesCompound(nbt);
+        }
     }
 
     public boolean matchesCompound(NBTTagCompound nbt)

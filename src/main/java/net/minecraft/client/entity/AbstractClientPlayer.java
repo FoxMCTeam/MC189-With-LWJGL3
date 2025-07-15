@@ -2,6 +2,7 @@ package net.minecraft.client.entity;
 
 import com.mojang.authlib.GameProfile;
 import java.io.File;
+import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.ImageBufferDownload;
@@ -11,26 +12,30 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.passive.EntityShoulderRiding;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.src.Config;
+import net.minecraft.item.ItemBow;
+import net.optifine.Config;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
-import net.minecraft.util.Vec3;
+import net.minecraft.world.GameType;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldSettings;
 import net.optifine.player.CapeUtils;
 import net.optifine.player.PlayerConfigurations;
 import net.optifine.reflect.Reflector;
-import org.lwjglx.util.vector.Vector2f;
 
 public abstract class AbstractClientPlayer extends EntityPlayer
 {
     private NetworkPlayerInfo playerInfo;
+    public float rotateElytraX;
+    public float rotateElytraY;
+    public float rotateElytraZ;
     private ResourceLocation locationOfCape = null;
     private long reloadCapeTimeMs = 0L;
     private boolean elytraOfCape = false;
     private String nameClear = null;
+    public EntityShoulderRiding entityShoulderLeft;
+    public EntityShoulderRiding entityShoulderRight;
     private static final ResourceLocation TEXTURE_ELYTRA = new ResourceLocation("textures/entity/elytra.png");
 
     public AbstractClientPlayer(World worldIn, GameProfile playerProfile)
@@ -52,8 +57,14 @@ public abstract class AbstractClientPlayer extends EntityPlayer
      */
     public boolean isSpectator()
     {
-        NetworkPlayerInfo networkplayerinfo = Minecraft.getMinecraft().getNetHandler().getPlayerInfo(this.getGameProfile().getId());
-        return networkplayerinfo != null && networkplayerinfo.getGameType() == WorldSettings.GameType.SPECTATOR;
+        NetworkPlayerInfo networkplayerinfo = Minecraft.getMinecraft().getConnection().getPlayerInfo(this.getGameProfile().getId());
+        return networkplayerinfo != null && networkplayerinfo.getGameType() == GameType.SPECTATOR;
+    }
+
+    public boolean isCreative()
+    {
+        NetworkPlayerInfo networkplayerinfo = Minecraft.getMinecraft().getConnection().getPlayerInfo(this.getGameProfile().getId());
+        return networkplayerinfo != null && networkplayerinfo.getGameType() == GameType.CREATIVE;
     }
 
     /**
@@ -64,11 +75,12 @@ public abstract class AbstractClientPlayer extends EntityPlayer
         return this.getPlayerInfo() != null;
     }
 
+    @Nullable
     protected NetworkPlayerInfo getPlayerInfo()
     {
         if (this.playerInfo == null)
         {
-            this.playerInfo = Minecraft.getMinecraft().getNetHandler().getPlayerInfo(this.getUniqueID());
+            this.playerInfo = Minecraft.getMinecraft().getConnection().getPlayerInfo(this.getUniqueID());
         }
 
         return this.playerInfo;
@@ -84,7 +96,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
     }
 
     /**
-     * Returns true if the player instance has an associated skin.
+     * Returns the ResourceLocation associated with the player's skin
      */
     public ResourceLocation getLocationSkin()
     {
@@ -92,6 +104,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
         return networkplayerinfo == null ? DefaultPlayerSkin.getDefaultSkin(this.getUniqueID()) : networkplayerinfo.getLocationSkin();
     }
 
+    @Nullable
     public ResourceLocation getLocationCape()
     {
         if (!Config.isShowCapes())
@@ -118,6 +131,22 @@ public abstract class AbstractClientPlayer extends EntityPlayer
         }
     }
 
+    public boolean isPlayerInfoSet()
+    {
+        return this.getPlayerInfo() != null;
+    }
+
+    @Nullable
+
+    /**
+     * Gets the special Elytra texture for the player.
+     */
+    public ResourceLocation getLocationElytra()
+    {
+        NetworkPlayerInfo networkplayerinfo = this.getPlayerInfo();
+        return networkplayerinfo == null ? null : networkplayerinfo.getLocationElytra();
+    }
+
     public static ThreadDownloadImageData getDownloadImageSkin(ResourceLocation resourceLocationIn, String username)
     {
         TextureManager texturemanager = Minecraft.getMinecraft().getTextureManager();
@@ -125,7 +154,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
 
         if (itextureobject == null)
         {
-            itextureobject = new ThreadDownloadImageData((File)null, String.format("http://skins.minecraft.net/MinecraftSkins/%s.png", new Object[] {StringUtils.stripControlCodes(username)}), DefaultPlayerSkin.getDefaultSkin(getOfflineUUID(username)), new ImageBufferDownload());
+            itextureobject = new ThreadDownloadImageData((File)null, String.format("http://skins.minecraft.net/MinecraftSkins/%s.png", StringUtils.stripControlCodes(username)), DefaultPlayerSkin.getDefaultSkin(getOfflineUUID(username)), new ImageBufferDownload());
             texturemanager.loadTexture(resourceLocationIn, itextureobject);
         }
 
@@ -134,8 +163,6 @@ public abstract class AbstractClientPlayer extends EntityPlayer
 
     /**
      * Returns true if the username has an associated skin.
-     *  
-     * @param username The username of the player being checked.
      */
     public static ResourceLocation getLocationSkin(String username)
     {
@@ -157,7 +184,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
             f *= 1.1F;
         }
 
-        IAttributeInstance iattributeinstance = this.getEntityAttribute(SharedMonsterAttributes.movementSpeed);
+        IAttributeInstance iattributeinstance = this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
         f = (float)((double)f * ((iattributeinstance.getAttributeValue() / (double)this.capabilities.getWalkSpeed() + 1.0D) / 2.0D));
 
         if (this.capabilities.getWalkSpeed() == 0.0F || Float.isNaN(f) || Float.isInfinite(f))
@@ -165,9 +192,9 @@ public abstract class AbstractClientPlayer extends EntityPlayer
             f = 1.0F;
         }
 
-        if (this.isUsingItem() && this.getItemInUse().getItem() == Items.bow)
+        if (this.isHandActive() && this.getActiveItemStack().getItem() instanceof ItemBow)
         {
-            int i = this.getItemInUseDuration();
+            int i = this.getItemInUseMaxCount();
             float f1 = (float)i / 20.0F;
 
             if (f1 > 1.0F)
@@ -182,7 +209,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
             f *= 1.0F - f1 * 0.15F;
         }
 
-        return Reflector.ForgeHooksClient_getOffsetFOV.exists() ? Reflector.callFloat(Reflector.ForgeHooksClient_getOffsetFOV, new Object[] {this, Float.valueOf(f)}): f;
+        return Reflector.ForgeHooksClient_getOffsetFOV.exists() ? Reflector.callFloat(Reflector.ForgeHooksClient_getOffsetFOV, this, f) : f;
     }
 
     public String getNameClear()
@@ -203,7 +230,15 @@ public abstract class AbstractClientPlayer extends EntityPlayer
     public boolean hasElytraCape()
     {
         ResourceLocation resourcelocation = this.getLocationCape();
-        return resourcelocation == null ? false : (resourcelocation == this.locationOfCape ? this.elytraOfCape : true);
+
+        if (resourcelocation == null)
+        {
+            return false;
+        }
+        else
+        {
+            return resourcelocation == this.locationOfCape ? this.elytraOfCape : true;
+        }
     }
 
     public void setElytraOfCape(boolean p_setElytraOfCape_1_)
@@ -224,15 +259,5 @@ public abstract class AbstractClientPlayer extends EntityPlayer
     public void setReloadCapeTimeMs(long p_setReloadCapeTimeMs_1_)
     {
         this.reloadCapeTimeMs = p_setReloadCapeTimeMs_1_;
-    }
-
-    /**
-     * interpolated look vector
-     */
-    public Vec3 getLook(float partialTicks)
-    {
-        float yaw = this.rotationYaw;
-        float pitch = this.rotationPitch;
-        return this.getVectorForRotation(pitch, yaw);
     }
 }

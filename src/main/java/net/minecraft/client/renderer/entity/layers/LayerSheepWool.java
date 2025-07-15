@@ -5,7 +5,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderSheep;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.minecraft.util.ResourceLocation;
 import net.optifine.CustomColors;
 
@@ -20,7 +20,7 @@ public class LayerSheepWool implements LayerRenderer<EntitySheep>
         this.sheepRenderer = sheepRendererIn;
     }
 
-    public void doRenderLayer(EntitySheep entitylivingbaseIn, float p_177141_2_, float p_177141_3_, float partialTicks, float p_177141_5_, float p_177141_6_, float p_177141_7_, float scale)
+    public void doRenderLayer(EntitySheep entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)
     {
         if (!entitylivingbaseIn.getSheared() && !entitylivingbaseIn.isInvisible())
         {
@@ -34,8 +34,8 @@ public class LayerSheepWool implements LayerRenderer<EntitySheep>
                 int k = i % j;
                 int l = (i + 1) % j;
                 float f = ((float)(entitylivingbaseIn.ticksExisted % 25) + partialTicks) / 25.0F;
-                float[] afloat1 = EntitySheep.func_175513_a(EnumDyeColor.byMetadata(k));
-                float[] afloat2 = EntitySheep.func_175513_a(EnumDyeColor.byMetadata(l));
+                float[] afloat1 = EntitySheep.getDyeRgb(EnumDyeColor.byMetadata(k));
+                float[] afloat2 = EntitySheep.getDyeRgb(EnumDyeColor.byMetadata(l));
 
                 if (Config.isCustomColors())
                 {
@@ -47,7 +47,7 @@ public class LayerSheepWool implements LayerRenderer<EntitySheep>
             }
             else
             {
-                float[] afloat = EntitySheep.func_175513_a(entitylivingbaseIn.getFleeceColor());
+                float[] afloat = EntitySheep.getDyeRgb(entitylivingbaseIn.getFleeceColor());
 
                 if (Config.isCustomColors())
                 {
@@ -58,8 +58,8 @@ public class LayerSheepWool implements LayerRenderer<EntitySheep>
             }
 
             this.sheepModel.setModelAttributes(this.sheepRenderer.getMainModel());
-            this.sheepModel.setLivingAnimations(entitylivingbaseIn, p_177141_2_, p_177141_3_, partialTicks);
-            this.sheepModel.render(entitylivingbaseIn, p_177141_2_, p_177141_3_, p_177141_5_, p_177141_6_, p_177141_7_, scale);
+            this.sheepModel.setLivingAnimations(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks);
+            this.sheepModel.render(entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
         }
     }
 

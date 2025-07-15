@@ -15,15 +15,15 @@ public class GuiButtonDownloadShaders extends GuiButton
     /**
      * Draws this button to the screen.
      */
-    public void drawButton(Minecraft mc, int mouseX, int mouseY)
+    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks)
     {
         if (this.visible)
         {
-            super.drawButton(mc, mouseX, mouseY);
+            super.drawButton(mc, mouseX, mouseY, partialTicks);
             ResourceLocation resourcelocation = new ResourceLocation("optifine/textures/icons.png");
             mc.getTextureManager().bindTexture(resourcelocation);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            this.drawTexturedModalRect(this.xPosition + 3, this.yPosition + 2, 0, 0, 16, 16);
+            this.drawTexturedModalRect(this.x + 3, this.y + 2, 0, 0, 16, 16);
         }
     }
 }

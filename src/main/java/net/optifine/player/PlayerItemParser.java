@@ -13,9 +13,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.src.Config;
-import net.minecraft.util.MathHelper;
+import net.optifine.Config;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.optifine.entity.model.CustomEntityModelParser;
 import net.optifine.util.Json;
 
@@ -94,9 +94,9 @@ public class PlayerItemParser
 
                     for (Entry<String, JsonElement> entry : jsonobject1.entrySet())
                     {
-                        if (!jsonobject.has((String)entry.getKey()))
+                        if (!jsonobject.has(entry.getKey()))
                         {
-                            jsonobject.add((String)entry.getKey(), (JsonElement)entry.getValue());
+                            jsonobject.add(entry.getKey(), entry.getValue());
                         }
                     }
                 }
@@ -123,7 +123,7 @@ public class PlayerItemParser
                 }
             }
 
-            PlayerItemRenderer[] aplayeritemrenderer = (PlayerItemRenderer[])((PlayerItemRenderer[])list.toArray(new PlayerItemRenderer[list.size()]));
+            PlayerItemRenderer[] aplayeritemrenderer = (PlayerItemRenderer[])list.toArray(new PlayerItemRenderer[list.size()]);
             return new PlayerItemModel(dimension, flag, aplayeritemrenderer);
         }
     }

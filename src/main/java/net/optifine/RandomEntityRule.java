@@ -6,11 +6,10 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.src.Config;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import net.optifine.config.ConnectedParser;
 import net.optifine.config.Matches;
 import net.optifine.config.NbtTagValue;
@@ -30,7 +29,7 @@ public class RandomEntityRule
     private int[] textures = null;
     private ResourceLocation[] resourceLocations = null;
     private int[] weights = null;
-    private BiomeGenBase[] biomes = null;
+    private Biome[] biomes = null;
     private RangeListInt heights = null;
     private RangeListInt healthRange = null;
     private boolean healthPercent = false;
@@ -144,7 +143,7 @@ public class RandomEntityRule
 
                 if (resourcelocation == null)
                 {
-                    Config.warn("Invalid path: " + this.baseResLoc.getResourcePath());
+                    Config.warn("Invalid path: " + this.baseResLoc.getPath());
                     return false;
                 }
                 else
@@ -163,13 +162,13 @@ public class RandomEntityRule
 
                             if (resourcelocation1 == null)
                             {
-                                Config.warn("Invalid path: " + this.baseResLoc.getResourcePath());
+                                Config.warn("Invalid path: " + this.baseResLoc.getPath());
                                 return false;
                             }
 
                             if (!Config.hasResource(resourcelocation1))
                             {
-                                Config.warn("Texture not found: " + resourcelocation1.getResourcePath());
+                                Config.warn("Texture not found: " + resourcelocation1.getPath());
                                 return false;
                             }
 
@@ -375,7 +374,7 @@ public class RandomEntityRule
 
             if (this.moonPhases != null)
             {
-                World world = Config.getMinecraft().theWorld;
+                World world = Config.getMinecraft().world;
 
                 if (world != null)
                 {
@@ -390,7 +389,7 @@ public class RandomEntityRule
 
             if (this.dayTimes != null)
             {
-                World world1 = Config.getMinecraft().theWorld;
+                World world1 = Config.getMinecraft().world;
 
                 if (world1 != null)
                 {
@@ -405,7 +404,7 @@ public class RandomEntityRule
 
             if (this.weatherList != null)
             {
-                World world2 = Config.getMinecraft().theWorld;
+                World world2 = Config.getMinecraft().world;
 
                 if (world2 != null)
                 {

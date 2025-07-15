@@ -7,6 +7,7 @@ import com.google.common.collect.Iterables;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.util.ResourceLocation;
@@ -14,9 +15,10 @@ import net.minecraft.util.ResourceLocation;
 public abstract class BlockStateBase implements IBlockState
 {
     private static final Joiner COMMA_JOINER = Joiner.on(',');
-    private static final Function<Entry<IProperty, Comparable>, String> MAP_ENTRY_TO_STRING = new Function<Entry<IProperty, Comparable>, String>()
+    private static final Function < Entry < IProperty<?>, Comparable<? >> , String > MAP_ENTRY_TO_STRING = new Function < Entry < IProperty<?>, Comparable<? >> , String > ()
     {
-        public String apply(Entry<IProperty, Comparable> p_apply_1_)
+        @Nullable
+        public String apply(@Nullable Entry < IProperty<?>, Comparable<? >> p_apply_1_)
         {
             if (p_apply_1_ == null)
             {
@@ -24,9 +26,13 @@ public abstract class BlockStateBase implements IBlockState
             }
             else
             {
-                IProperty iproperty = (IProperty)p_apply_1_.getKey();
-                return iproperty.getName() + "=" + iproperty.getName((Comparable)p_apply_1_.getValue());
+                IProperty<?> iproperty = (IProperty)p_apply_1_.getKey();
+                return iproperty.getName() + "=" + this.getPropertyName(iproperty, p_apply_1_.getValue());
             }
+        }
+        private <T extends Comparable<T>> String getPropertyName(IProperty<T> property, Comparable<?> entry)
+        {
+            return property.getName((T) entry);
         }
     };
     private int blockId = -1;
@@ -68,7 +74,7 @@ public abstract class BlockStateBase implements IBlockState
     {
         if (this.blockLocation == null)
         {
-            this.blockLocation = (ResourceLocation)Block.blockRegistry.getNameForObject(this.getBlock());
+            this.blockLocation = Block.REGISTRY.getNameForObject(this.getBlock());
         }
 
         return this.blockLocation;
@@ -94,20 +100,20 @@ public abstract class BlockStateBase implements IBlockState
             {
                 if (iterator.hasNext())
                 {
-                    return (T)iterator.next();
+                    return iterator.next();
                 }
 
-                return (T)values.iterator().next();
+                return values.iterator().next();
             }
         }
 
-        return (T)iterator.next();
+        return iterator.next();
     }
 
     public String toString()
     {
         StringBuilder stringbuilder = new StringBuilder();
-        stringbuilder.append(Block.blockRegistry.getNameForObject(this.getBlock()));
+        stringbuilder.append(Block.REGISTRY.getNameForObject(this.getBlock()));
 
         if (!this.getProperties().isEmpty())
         {

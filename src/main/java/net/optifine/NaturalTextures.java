@@ -6,9 +6,8 @@ import java.util.ArrayList;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.src.Config;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.optifine.util.TextureUtils;
 
 public class NaturalTextures
@@ -95,7 +94,7 @@ public class NaturalTextures
                                     {
                                         while (arraylist.size() <= j)
                                         {
-                                            arraylist.add(null);
+                                            arraylist.add((Object)null);
                                         }
 
                                         arraylist.set(j, naturalproperties);
@@ -107,7 +106,7 @@ public class NaturalTextures
                     }
                 }
 
-                propertiesByIndex = (NaturalProperties[])((NaturalProperties[])arraylist.toArray(new NaturalProperties[arraylist.size()]));
+                propertiesByIndex = (NaturalProperties[])arraylist.toArray(new NaturalProperties[arraylist.size()]);
             }
             catch (FileNotFoundException var17)
             {

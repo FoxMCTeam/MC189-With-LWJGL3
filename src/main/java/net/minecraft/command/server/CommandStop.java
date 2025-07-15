@@ -10,34 +10,29 @@ public class CommandStop extends CommandBase
     /**
      * Gets the name of the command
      */
-    public String getCommandName()
+    public String getName()
     {
         return "stop";
     }
 
     /**
      * Gets the usage string for the command.
-     *  
-     * @param sender The {@link ICommandSender} who is requesting usage details.
      */
-    public String getCommandUsage(ICommandSender sender)
+    public String getUsage(ICommandSender sender)
     {
         return "commands.stop.usage";
     }
 
     /**
-     * Callback when the command is invoked
-     *  
-     * @param sender The {@link ICommandSender sender} who executed the command
-     * @param args The arguments that were passed with the command
+     * Callback for when the command is executed
      */
-    public void processCommand(ICommandSender sender, String[] args) throws CommandException
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
-        if (MinecraftServer.getServer().worldServers != null)
+        if (server.worlds != null)
         {
-            notifyOperators(sender, this, "commands.stop.start", new Object[0]);
+            notifyCommandListener(sender, this, "commands.stop.start", new Object[0]);
         }
 
-        MinecraftServer.getServer().initiateShutdown();
+        server.initiateShutdown();
     }
 }

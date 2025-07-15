@@ -2,7 +2,7 @@ package net.optifine.player;
 
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.model.ModelBiped;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 
 public class PlayerConfiguration
 {
@@ -38,6 +38,6 @@ public class PlayerConfiguration
 
     public void addPlayerItemModel(PlayerItemModel playerItemModel)
     {
-        this.playerItemModels = (PlayerItemModel[])((PlayerItemModel[])Config.addObjectToArray(this.playerItemModels, playerItemModel));
+        this.playerItemModels = (PlayerItemModel[])Config.addObjectToArray(this.playerItemModels, playerItemModel);
     }
 }

@@ -6,7 +6,7 @@ import net.minecraft.client.model.ModelSign;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySignRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.minecraft.tileentity.TileEntitySign;
 import net.optifine.reflect.Reflector;
 
@@ -31,7 +31,15 @@ public class ModelAdapterSign extends ModelAdapter
         else
         {
             ModelSign modelsign = (ModelSign)model;
-            return modelPart.equals("board") ? modelsign.signBoard : (modelPart.equals("stick") ? modelsign.signStick : null);
+
+            if (modelPart.equals("board"))
+            {
+                return modelsign.signBoard;
+            }
+            else
+            {
+                return modelPart.equals("stick") ? modelsign.signStick : null;
+            }
         }
     }
 
@@ -43,7 +51,7 @@ public class ModelAdapterSign extends ModelAdapter
     public IEntityRenderer makeEntityRender(ModelBase modelBase, float shadowSize)
     {
         TileEntityRendererDispatcher tileentityrendererdispatcher = TileEntityRendererDispatcher.instance;
-        TileEntitySpecialRenderer tileentityspecialrenderer = tileentityrendererdispatcher.getSpecialRendererByClass(TileEntitySign.class);
+        TileEntitySpecialRenderer tileentityspecialrenderer = tileentityrendererdispatcher.getRenderer(TileEntitySign.class);
 
         if (!(tileentityspecialrenderer instanceof TileEntitySignRenderer))
         {

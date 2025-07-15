@@ -37,11 +37,14 @@ public class UserListWhitelist extends UserList<GameProfile, UserListWhitelistEn
         return obj.getId().toString();
     }
 
-    public GameProfile func_152706_a(String p_152706_1_)
+    /**
+     * Get a GameProfile entry by its name
+     */
+    public GameProfile getByName(String profileName)
     {
         for (UserListWhitelistEntry userlistwhitelistentry : this.getValues().values())
         {
-            if (p_152706_1_.equalsIgnoreCase(((GameProfile)userlistwhitelistentry.getValue()).getName()))
+            if (profileName.equalsIgnoreCase(((GameProfile)userlistwhitelistentry.getValue()).getName()))
             {
                 return (GameProfile)userlistwhitelistentry.getValue();
             }

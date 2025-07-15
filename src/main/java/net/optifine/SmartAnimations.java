@@ -1,7 +1,7 @@
 package net.optifine;
 
 import java.util.BitSet;
-import net.minecraft.src.Config;
+
 import net.optifine.shaders.Shaders;
 
 public class SmartAnimations
@@ -22,7 +22,10 @@ public class SmartAnimations
 
     public static void spriteRendered(int animationIndex)
     {
-        spritesRendered.set(animationIndex);
+        if (animationIndex >= 0)
+        {
+            spritesRendered.set(animationIndex);
+        }
     }
 
     public static void spritesRendered(BitSet animationIndexes)
@@ -35,7 +38,7 @@ public class SmartAnimations
 
     public static boolean isSpriteRendered(int animationIndex)
     {
-        return spritesRendered.get(animationIndex);
+        return animationIndex < 0 ? false : spritesRendered.get(animationIndex);
     }
 
     public static void resetSpritesRendered()

@@ -1,10 +1,10 @@
 package net.minecraft.client.renderer.vertex;
 
 import java.nio.ByteBuffer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.optifine.render.VboRange;
 import net.optifine.render.VboRegion;
-import org.lwjgl.opengl.GL11;
 
 public class VertexBuffer
 {
@@ -26,18 +26,18 @@ public class VertexBuffer
         OpenGlHelper.glBindBuffer(OpenGlHelper.GL_ARRAY_BUFFER, this.glBufferId);
     }
 
-    public void func_181722_a(ByteBuffer p_181722_1_)
+    public void bufferData(ByteBuffer data)
     {
         if (this.vboRegion != null)
         {
-            this.vboRegion.bufferData(p_181722_1_, this.vboRange);
+            this.vboRegion.bufferData(data, this.vboRange);
         }
         else
         {
             this.bindBuffer();
-            OpenGlHelper.glBufferData(OpenGlHelper.GL_ARRAY_BUFFER, p_181722_1_, 35044);
+            OpenGlHelper.glBufferData(OpenGlHelper.GL_ARRAY_BUFFER, data, 35044);
             this.unbindBuffer();
-            this.count = p_181722_1_.limit() / this.vertexFormat.getNextOffset();
+            this.count = data.limit() / this.vertexFormat.getSize();
         }
     }
 
@@ -54,7 +54,7 @@ public class VertexBuffer
         }
         else
         {
-            GL11.glDrawArrays(mode, 0, this.count);
+            GlStateManager.glDrawArrays(mode, 0, this.count);
         }
     }
 

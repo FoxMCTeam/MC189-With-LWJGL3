@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.optifine.util.StrUtils;
 
 public class ShaderPackZip implements IShaderPack
@@ -72,7 +72,7 @@ public class ShaderPackZip implements IShaderPack
 
     private String resolveRelative(String name)
     {
-        Deque<String> deque = new ArrayDeque();
+        Deque<String> deque = new ArrayDeque<String>();
         String[] astring = Config.tokenize(name, "/");
 
         for (int i = 0; i < astring.length; ++i)
@@ -113,7 +113,7 @@ public class ShaderPackZip implements IShaderPack
 
             while (enumeration.hasMoreElements())
             {
-                ZipEntry zipentry1 = (ZipEntry)enumeration.nextElement();
+                ZipEntry zipentry1 = enumeration.nextElement();
                 String s = zipentry1.getName();
                 Matcher matcher = pattern.matcher(s);
 

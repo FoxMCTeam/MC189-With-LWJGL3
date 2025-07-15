@@ -18,11 +18,10 @@ import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.BlockTorch;
 import net.minecraft.block.BlockWall;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.resources.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.init.Blocks;
-import net.minecraft.src.Config;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
 public class BetterSnow
@@ -31,7 +30,7 @@ public class BetterSnow
 
     public static void update()
     {
-        modelSnowLayer = Config.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(Blocks.snow_layer.getDefaultState());
+        modelSnowLayer = Config.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(Blocks.SNOW_LAYER.getDefaultState());
     }
 
     public static IBakedModel getModelSnowLayer()
@@ -41,7 +40,7 @@ public class BetterSnow
 
     public static IBlockState getStateSnowLayer()
     {
-        return Blocks.snow_layer.getDefaultState();
+        return Blocks.SNOW_LAYER.getDefaultState();
     }
 
     public static boolean shouldRender(IBlockAccess blockAccess, IBlockState blockState, BlockPos blockPos)
@@ -52,17 +51,17 @@ public class BetterSnow
 
     private static boolean hasSnowNeighbours(IBlockAccess blockAccess, BlockPos pos)
     {
-        Block block = Blocks.snow_layer;
-        return blockAccess.getBlockState(pos.north()).getBlock() != block && blockAccess.getBlockState(pos.south()).getBlock() != block && blockAccess.getBlockState(pos.west()).getBlock() != block && blockAccess.getBlockState(pos.east()).getBlock() != block ? false : blockAccess.getBlockState(pos.down()).getBlock().isOpaqueCube();
+        Block block = Blocks.SNOW_LAYER;
+        return blockAccess.getBlockState(pos.north()).getBlock() != block && blockAccess.getBlockState(pos.south()).getBlock() != block && blockAccess.getBlockState(pos.west()).getBlock() != block && blockAccess.getBlockState(pos.east()).getBlock() != block ? false : blockAccess.getBlockState(pos.down()).isOpaqueCube();
     }
 
     private static boolean checkBlock(Block block, IBlockState blockState)
     {
-        if (block.isFullCube())
+        if (blockState.isFullCube())
         {
             return false;
         }
-        else if (block.isOpaqueCube())
+        else if (blockState.isOpaqueCube())
         {
             return false;
         }

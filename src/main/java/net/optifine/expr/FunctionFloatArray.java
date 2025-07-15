@@ -16,11 +16,6 @@ public class FunctionFloatArray implements IExpressionFloatArray
         return this.type.evalFloatArray(this.arguments);
     }
 
-    public ExpressionType getExpressionType()
-    {
-        return ExpressionType.FLOAT_ARRAY;
-    }
-
     public String toString()
     {
         return "" + this.type + "()";

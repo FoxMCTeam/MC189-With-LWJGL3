@@ -3,13 +3,13 @@ package net.optifine;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.profiler.Profiler;
-import net.minecraft.src.Config;
+import net.optifine.util.MemoryMonitor;
 import org.lwjgl.opengl.GL11;
 
 public class Lagometer
@@ -37,53 +37,6 @@ public class Lagometer
     private static int numRecordedFrameTimes = 0;
     private static long prevFrameTimeNano = -1L;
     private static long renderTimeNano = 0L;
-    private static long memTimeStartMs = System.currentTimeMillis();
-    private static long memStart = getMemoryUsed();
-    private static long memTimeLast = memTimeStartMs;
-    private static long memLast = memStart;
-    private static long memTimeDiffMs = 1L;
-    private static long memDiff = 0L;
-    private static int memMbSec = 0;
-
-    public static boolean updateMemoryAllocation()
-    {
-        long i = System.currentTimeMillis();
-        long j = getMemoryUsed();
-        boolean flag = false;
-
-        if (j < memLast)
-        {
-            double d0 = (double)memDiff / 1000000.0D;
-            double d1 = (double)memTimeDiffMs / 1000.0D;
-            int k = (int)(d0 / d1);
-
-            if (k > 0)
-            {
-                memMbSec = k;
-            }
-
-            memTimeStartMs = i;
-            memStart = j;
-            memTimeDiffMs = 0L;
-            memDiff = 0L;
-            flag = true;
-        }
-        else
-        {
-            memTimeDiffMs = i - memTimeStartMs;
-            memDiff = j - memStart;
-        }
-
-        memTimeLast = i;
-        memLast = j;
-        return flag;
-    }
-
-    private static long getMemoryUsed()
-    {
-        Runtime runtime = Runtime.getRuntime();
-        return runtime.totalMemory() - runtime.freeMemory();
-    }
 
     public static void updateLagometer()
     {
@@ -91,7 +44,7 @@ public class Lagometer
         {
             mc = Minecraft.getMinecraft();
             gameSettings = mc.gameSettings;
-            profiler = mc.mcProfiler;
+            profiler = mc.profiler;
         }
 
         if (gameSettings.showDebugInfo && (gameSettings.ofLagometer || gameSettings.showLagometer))
@@ -107,7 +60,7 @@ public class Lagometer
             {
                 int j = numRecordedFrameTimes & timesFrame.length - 1;
                 ++numRecordedFrameTimes;
-                boolean flag = updateMemoryAllocation();
+                boolean flag = MemoryMonitor.isGcEvent();
                 timesFrame[j] = timeNowNano - prevFrameTimeNano - renderTimeNano;
                 timesTick[j] = timerTick.timeNano;
                 timesScheduledExecutables[j] = timerScheduledExecutables.timeNano;
@@ -154,8 +107,8 @@ public class Lagometer
                 GL11.glLineWidth(1.0F);
                 GlStateManager.disableTexture2D();
                 Tessellator tessellator = Tessellator.getInstance();
-                WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-                worldrenderer.begin(1, DefaultVertexFormats.POSITION_COLOR);
+                BufferBuilder bufferbuilder = tessellator.getBuffer();
+                bufferbuilder.begin(1, DefaultVertexFormats.POSITION_COLOR);
 
                 for (int j = 0; j < timesFrame.length; ++j)
                 {
@@ -166,37 +119,37 @@ public class Lagometer
 
                     if (gcs[j])
                     {
-                        renderTime(j, timesFrame[j], k, k / 2, 0, f, worldrenderer);
+                        renderTime(j, timesFrame[j], k, k / 2, 0, f, bufferbuilder);
                     }
                     else
                     {
-                        renderTime(j, timesFrame[j], k, k, k, f, worldrenderer);
-                        f = f - (float)renderTime(j, timesServer[j], k / 2, k / 2, k / 2, f, worldrenderer);
-                        f = f - (float)renderTime(j, timesTerrain[j], 0, k, 0, f, worldrenderer);
-                        f = f - (float)renderTime(j, timesVisibility[j], k, k, 0, f, worldrenderer);
-                        f = f - (float)renderTime(j, timesChunkUpdate[j], k, 0, 0, f, worldrenderer);
-                        f = f - (float)renderTime(j, timesChunkUpload[j], k, 0, k, f, worldrenderer);
-                        f = f - (float)renderTime(j, timesScheduledExecutables[j], 0, 0, k, f, worldrenderer);
-                        float f2 = f - (float)renderTime(j, timesTick[j], 0, k, k, f, worldrenderer);
+                        renderTime(j, timesFrame[j], k, k, k, f, bufferbuilder);
+                        f = f - (float)renderTime(j, timesServer[j], k / 2, k / 2, k / 2, f, bufferbuilder);
+                        f = f - (float)renderTime(j, timesTerrain[j], 0, k, 0, f, bufferbuilder);
+                        f = f - (float)renderTime(j, timesVisibility[j], k, k, 0, f, bufferbuilder);
+                        f = f - (float)renderTime(j, timesChunkUpdate[j], k, 0, 0, f, bufferbuilder);
+                        f = f - (float)renderTime(j, timesChunkUpload[j], k, 0, k, f, bufferbuilder);
+                        f = f - (float)renderTime(j, timesScheduledExecutables[j], 0, 0, k, f, bufferbuilder);
+                        float f2 = f - (float)renderTime(j, timesTick[j], 0, k, k, f, bufferbuilder);
                     }
                 }
 
-                renderTimeDivider(0, timesFrame.length, 33333333L, 196, 196, 196, (float)mc.displayHeight, worldrenderer);
-                renderTimeDivider(0, timesFrame.length, 16666666L, 196, 196, 196, (float)mc.displayHeight, worldrenderer);
+                renderTimeDivider(0, timesFrame.length, 33333333L, 196, 196, 196, (float)mc.displayHeight, bufferbuilder);
+                renderTimeDivider(0, timesFrame.length, 16666666L, 196, 196, 196, (float)mc.displayHeight, bufferbuilder);
                 tessellator.draw();
                 GlStateManager.enableTexture2D();
                 int j2 = mc.displayHeight - 80;
                 int k2 = mc.displayHeight - 160;
-                mc.fontRendererObj.drawString("30", 2, k2 + 1, -8947849);
-                mc.fontRendererObj.drawString("30", 1, k2, -3881788);
-                mc.fontRendererObj.drawString("60", 2, j2 + 1, -8947849);
-                mc.fontRendererObj.drawString("60", 1, j2, -3881788);
+                mc.fontRenderer.drawString("30", 2, k2 + 1, -8947849);
+                mc.fontRenderer.drawString("30", 1, k2, -3881788);
+                mc.fontRenderer.drawString("60", 2, j2 + 1, -8947849);
+                mc.fontRenderer.drawString("60", 1, j2, -3881788);
                 GlStateManager.matrixMode(5889);
                 GlStateManager.popMatrix();
                 GlStateManager.matrixMode(5888);
                 GlStateManager.popMatrix();
                 GlStateManager.enableTexture2D();
-                float f1 = 1.0F - (float)((double)(System.currentTimeMillis() - memTimeStartMs) / 1000.0D);
+                float f1 = 1.0F - (float)((double)(System.currentTimeMillis() - MemoryMonitor.getStartTimeMs()) / 1000.0D);
                 f1 = Config.limit(f1, 0.0F, 1.0F);
                 int l2 = (int)(170.0F + f1 * 85.0F);
                 int i1 = (int)(100.0F + f1 * 55.0F);
@@ -206,13 +159,13 @@ public class Lagometer
                 int i2 = mc.displayHeight / scaledResolution.getScaleFactor() - 8;
                 GuiIngame guiingame = mc.ingameGUI;
                 GuiIngame.drawRect(l1 - 1, i2 - 1, l1 + 50, i2 + 10, -1605349296);
-                mc.fontRendererObj.drawString(" " + memMbSec + " MB/s", l1, i2, k1);
+                mc.fontRenderer.drawString(" " + MemoryMonitor.getAllocationRateMb() + " MB/s", l1, i2, k1);
                 renderTimeNano = System.nanoTime() - i;
             }
         }
     }
 
-    private static long renderTime(int frameNum, long time, int r, int g, int b, float baseHeight, WorldRenderer tessellator)
+    private static long renderTime(int frameNum, long time, int r, int g, int b, float baseHeight, BufferBuilder tessellator)
     {
         long i = time / 200000L;
 
@@ -228,7 +181,7 @@ public class Lagometer
         }
     }
 
-    private static long renderTimeDivider(int frameStart, int frameEnd, long time, int r, int g, int b, float baseHeight, WorldRenderer tessellator)
+    private static long renderTimeDivider(int frameStart, int frameEnd, long time, int r, int g, int b, float baseHeight, BufferBuilder tessellator)
     {
         long i = time / 200000L;
 

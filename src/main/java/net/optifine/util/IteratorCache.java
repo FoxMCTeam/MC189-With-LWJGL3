@@ -7,7 +7,7 @@ import java.util.List;
 
 public class IteratorCache
 {
-    private static Deque<IteratorCache.IteratorReusable<Object>> dequeIterators = new ArrayDeque();
+    private static Deque<IteratorCache.IteratorReusable<Object>> dequeIterators = new ArrayDeque<IteratorCache.IteratorReusable<Object>>();
 
     public static Iterator<Object> getReadOnly(List list)
     {
@@ -31,7 +31,7 @@ public class IteratorCache
         {
             if (dequeIterators.size() <= 1000)
             {
-                iterator.setList(null);
+                iterator.setList((List)null);
                 dequeIterators.addLast(iterator);
             }
         }
@@ -92,11 +92,6 @@ public class IteratorCache
             {
                 return this.hasNext;
             }
-        }
-
-        public void remove()
-        {
-            throw new UnsupportedOperationException("remove");
         }
     }
 

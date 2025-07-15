@@ -9,7 +9,7 @@ public class KeyUtils
 {
     public static void fixKeyConflicts(KeyBinding[] keys, KeyBinding[] keysPrio)
     {
-        Set<Integer> set = new HashSet();
+        Set<Integer> set = new HashSet<Integer>();
 
         for (int i = 0; i < keysPrio.length; ++i)
         {
@@ -17,12 +17,12 @@ public class KeyUtils
             set.add(Integer.valueOf(keybinding.getKeyCode()));
         }
 
-        Set<KeyBinding> set1 = new HashSet(Arrays.asList(keys));
+        Set<KeyBinding> set1 = new HashSet<KeyBinding>(Arrays.asList(keys));
         set1.removeAll(Arrays.asList(keysPrio));
 
         for (KeyBinding keybinding1 : set1)
         {
-            Integer integer = Integer.valueOf(keybinding1.getKeyCode());
+            Integer integer = keybinding1.getKeyCode();
 
             if (set.contains(integer))
             {

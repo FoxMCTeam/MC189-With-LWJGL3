@@ -1,7 +1,5 @@
 package net.optifine;
 
-import net.minecraft.src.Config;
-
 public class GlErrors
 {
     private static boolean frameStarted = false;

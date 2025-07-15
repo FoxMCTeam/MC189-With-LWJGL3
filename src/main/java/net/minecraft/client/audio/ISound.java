@@ -1,9 +1,19 @@
 package net.minecraft.client.audio;
 
+import javax.annotation.Nullable;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
 
-public interface ISound {
+public interface ISound
+{
     ResourceLocation getSoundLocation();
+
+    @Nullable
+    SoundEventAccessor createAccessor(SoundHandler handler);
+
+    Sound getSound();
+
+    SoundCategory getCategory();
 
     boolean canRepeat();
 
@@ -19,19 +29,22 @@ public interface ISound {
 
     float getZPosF();
 
-    AttenuationType getAttenuationType();
+    ISound.AttenuationType getAttenuationType();
 
-    enum AttenuationType {
+    public static enum AttenuationType
+    {
         NONE(0),
         LINEAR(2);
 
         private final int type;
 
-        AttenuationType(int typeIn) {
+        private AttenuationType(int typeIn)
+        {
             this.type = typeIn;
         }
 
-        public int getTypeInt() {
+        public int getTypeInt()
+        {
             return this.type;
         }
     }

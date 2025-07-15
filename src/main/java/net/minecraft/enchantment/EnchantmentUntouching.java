@@ -1,14 +1,13 @@
 package net.minecraft.enchantment;
 
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.init.Enchantments;
+import net.minecraft.inventory.EntityEquipmentSlot;
 
 public class EnchantmentUntouching extends Enchantment
 {
-    protected EnchantmentUntouching(int p_i45763_1_, ResourceLocation p_i45763_2_, int p_i45763_3_)
+    protected EnchantmentUntouching(Enchantment.Rarity rarityIn, EntityEquipmentSlot... slots)
     {
-        super(p_i45763_1_, p_i45763_2_, p_i45763_3_, EnumEnchantmentType.DIGGER);
+        super(rarityIn, EnumEnchantmentType.DIGGER, slots);
         this.setName("untouching");
     }
 
@@ -38,21 +37,9 @@ public class EnchantmentUntouching extends Enchantment
 
     /**
      * Determines if the enchantment passed can be applyied together with this enchantment.
-     *  
-     * @param ench A possible enchantment that may be applied along side this enchantment, depending on the results.
      */
     public boolean canApplyTogether(Enchantment ench)
     {
-        return super.canApplyTogether(ench) && ench.effectId != fortune.effectId;
-    }
-
-    /**
-     * Determines if this enchantment can be applied to a specific ItemStack.
-     *  
-     * @param stack The ItemStack that is attempting to become enchanted with with enchantment.
-     */
-    public boolean canApply(ItemStack stack)
-    {
-        return stack.getItem() == Items.shears ? true : super.canApply(stack);
+        return super.canApplyTogether(ench) && ench != Enchantments.FORTUNE;
     }
 }

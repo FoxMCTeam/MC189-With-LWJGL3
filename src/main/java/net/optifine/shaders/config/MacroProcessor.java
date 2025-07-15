@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.optifine.shaders.Shaders;
 
 public class MacroProcessor
@@ -94,7 +94,7 @@ public class MacroProcessor
 
                 if (list1 == null)
                 {
-                    list1 = new ArrayList(Arrays.asList(ShaderMacros.getExtensions()));
+                    list1 = new ArrayList<ShaderMacro>(Arrays.asList(ShaderMacros.getExtensions()));
                 }
 
                 Iterator iterator = list1.iterator();
@@ -116,7 +116,7 @@ public class MacroProcessor
 
     private static List<ShaderOption> getMacroOptions()
     {
-        List<ShaderOption> list = new ArrayList();
+        List<ShaderOption> list = new ArrayList<ShaderOption>();
         ShaderOption[] ashaderoption = Shaders.getShaderPackOptions();
 
         for (int i = 0; i < ashaderoption.length; ++i)

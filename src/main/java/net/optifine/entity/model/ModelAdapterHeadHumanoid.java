@@ -6,7 +6,7 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySkullRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.optifine.reflect.Reflector;
 
@@ -31,7 +31,19 @@ public class ModelAdapterHeadHumanoid extends ModelAdapter
         else
         {
             ModelHumanoidHead modelhumanoidhead = (ModelHumanoidHead)model;
-            return modelPart.equals("head") ? modelhumanoidhead.skeletonHead : (modelPart.equals("head2") ? (!Reflector.ModelHumanoidHead_head.exists() ? null : (ModelRenderer)Reflector.getFieldValue(modelhumanoidhead, Reflector.ModelHumanoidHead_head)) : null);
+
+            if (modelPart.equals("head"))
+            {
+                return modelhumanoidhead.skeletonHead;
+            }
+            else if (modelPart.equals("head2"))
+            {
+                return !Reflector.ModelHumanoidHead_head.exists() ? null : (ModelRenderer)Reflector.getFieldValue(modelhumanoidhead, Reflector.ModelHumanoidHead_head);
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 
@@ -43,7 +55,7 @@ public class ModelAdapterHeadHumanoid extends ModelAdapter
     public IEntityRenderer makeEntityRender(ModelBase modelBase, float shadowSize)
     {
         TileEntityRendererDispatcher tileentityrendererdispatcher = TileEntityRendererDispatcher.instance;
-        TileEntitySpecialRenderer tileentityspecialrenderer = tileentityrendererdispatcher.getSpecialRendererByClass(TileEntitySkull.class);
+        TileEntitySpecialRenderer tileentityspecialrenderer = tileentityrendererdispatcher.getRenderer(TileEntitySkull.class);
 
         if (!(tileentityspecialrenderer instanceof TileEntitySkullRenderer))
         {

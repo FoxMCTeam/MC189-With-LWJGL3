@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import net.minecraft.client.ClientBrandRetriever;
-import net.minecraft.src.Config;
 
 public class VersionCheckThread extends Thread
 {
@@ -20,15 +19,15 @@ public class VersionCheckThread extends Thread
         try
         {
             Config.dbg("Checking for new version");
-            URL url = new URL("http://optifine.net/version/1.8.9/HD_U.txt");
+            URL url = new URL("http://optifine.net/version/1.12.2/HD_U.txt");
             httpurlconnection = (HttpURLConnection)url.openConnection();
 
             if (Config.getGameSettings().snooperEnabled)
             {
-                httpurlconnection.setRequestProperty("OF-MC-Version", "1.8.9");
+                httpurlconnection.setRequestProperty("OF-MC-Version", "1.12.2");
                 httpurlconnection.setRequestProperty("OF-MC-Brand", "" + ClientBrandRetriever.getClientModName());
                 httpurlconnection.setRequestProperty("OF-Edition", "HD_U");
-                httpurlconnection.setRequestProperty("OF-Release", "M5");
+                httpurlconnection.setRequestProperty("OF-Release", "G5");
                 httpurlconnection.setRequestProperty("OF-Java-Version", "" + System.getProperty("java.version"));
                 httpurlconnection.setRequestProperty("OF-CpuCount", "" + Config.getAvailableProcessors());
                 httpurlconnection.setRequestProperty("OF-OpenGL-Version", "" + Config.openGlVersion);
@@ -51,7 +50,7 @@ public class VersionCheckThread extends Thread
                     String s1 = astring[0].trim();
                     Config.dbg("Version found: " + s1);
 
-                    if (Config.compareRelease(s1, "M5") <= 0)
+                    if (Config.compareRelease(s1, "G5") <= 0)
                     {
                         return;
                     }

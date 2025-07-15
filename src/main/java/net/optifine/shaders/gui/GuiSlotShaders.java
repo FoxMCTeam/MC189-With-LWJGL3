@@ -7,7 +7,7 @@ import net.minecraft.client.gui.GuiSlot;
 import net.minecraft.client.gui.GuiYesNo;
 import net.minecraft.client.gui.GuiYesNoCallback;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.optifine.Lang;
 import net.optifine.shaders.IShaderPack;
 import net.optifine.shaders.Shaders;
@@ -107,7 +107,7 @@ class GuiSlotShaders extends GuiSlot
             }
             else
             {
-                String s = "version.1.8.9";
+                String s = "version.1.12.2";
                 String s1 = properties.getProperty(s);
 
                 if (s1 == null)
@@ -117,7 +117,7 @@ class GuiSlotShaders extends GuiSlot
                 else
                 {
                     s1 = s1.trim();
-                    String s2 = "M5";
+                    String s2 = "G5";
                     int i = Config.compareRelease(s2, s1);
 
                     if (i >= 0)
@@ -127,8 +127,8 @@ class GuiSlotShaders extends GuiSlot
                     else
                     {
                         String s3 = ("HD_U_" + s1).replace('_', ' ');
-                        String s4 = I18n.format("of.message.shaders.nv1", new Object[] {s3});
-                        String s5 = I18n.format("of.message.shaders.nv2", new Object[0]);
+                        String s4 = I18n.format("of.message.shaders.nv1", s3);
+                        String s5 = I18n.format("of.message.shaders.nv2");
                         GuiYesNoCallback guiyesnocallback = new GuiYesNoCallback()
                         {
                             public void confirmClicked(boolean result, int id)
@@ -175,7 +175,7 @@ class GuiSlotShaders extends GuiSlot
     {
     }
 
-    protected void drawSlot(int index, int posX, int posY, int contentY, int mouseX, int mouseY)
+    protected void drawSlot(int index, int posX, int posY, int contentY, int mouseX, int mouseY, float partialTicks)
     {
         String s = (String)this.shaderslist.get(index);
 

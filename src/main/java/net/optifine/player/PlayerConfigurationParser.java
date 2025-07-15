@@ -8,10 +8,9 @@ import com.google.gson.JsonParser;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import javax.imageio.ImageIO;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.minecraft.util.ResourceLocation;
 import net.optifine.http.HttpPipeline;
 import net.optifine.http.HttpUtils;
@@ -108,7 +107,7 @@ public class PlayerConfigurationParser
         try
         {
             byte[] abyte = HttpPipeline.get(s, Minecraft.getMinecraft().getProxy());
-            BufferedImage bufferedimage = ImageIO.read((InputStream)(new ByteArrayInputStream(abyte)));
+            BufferedImage bufferedimage = ImageIO.read(new ByteArrayInputStream(abyte));
             return bufferedimage;
         }
         catch (IOException ioexception)

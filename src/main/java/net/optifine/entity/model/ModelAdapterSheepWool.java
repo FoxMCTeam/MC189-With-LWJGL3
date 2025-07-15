@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.entity.RenderSheep;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.client.renderer.entity.layers.LayerSheepWool;
 import net.minecraft.entity.passive.EntitySheep;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 
 public class ModelAdapterSheepWool extends ModelAdapterQuadruped
 {
@@ -40,11 +40,14 @@ public class ModelAdapterSheepWool extends ModelAdapterQuadruped
         {
             if (render.getEntityClass() == null)
             {
-                render = new RenderSheep(rendermanager, new ModelSheep2(), 0.7F);
+                RenderSheep rendersheep = new RenderSheep(rendermanager);
+                rendersheep.mainModel = new ModelSheep2();
+                rendersheep.shadowSize = 0.7F;
+                render = rendersheep;
             }
 
-            RenderSheep rendersheep = (RenderSheep)render;
-            List<LayerRenderer<EntitySheep>> list = rendersheep.getLayerRenderers();
+            RenderSheep rendersheep1 = (RenderSheep)render;
+            List<LayerRenderer<EntitySheep>> list = rendersheep1.getLayerRenderers();
             Iterator iterator = list.iterator();
 
             while (iterator.hasNext())
@@ -57,10 +60,10 @@ public class ModelAdapterSheepWool extends ModelAdapterQuadruped
                 }
             }
 
-            LayerSheepWool layersheepwool = new LayerSheepWool(rendersheep);
+            LayerSheepWool layersheepwool = new LayerSheepWool(rendersheep1);
             layersheepwool.sheepModel = (ModelSheep1)modelBase;
-            rendersheep.addLayer(layersheepwool);
-            return rendersheep;
+            rendersheep1.addLayer(layersheepwool);
+            return rendersheep1;
         }
     }
 }

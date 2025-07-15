@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.optifine.expr.ExpressionType;
 import net.optifine.expr.IExpressionBool;
 
 public enum ShaderParameterBool implements IExpressionBool
@@ -39,11 +38,6 @@ public enum ShaderParameterBool implements IExpressionBool
         return this.name;
     }
 
-    public ExpressionType getExpressionType()
-    {
-        return ExpressionType.BOOL;
-    }
-
     public boolean eval()
     {
         Entity entity = Minecraft.getMinecraft().getRenderViewEntity();
@@ -63,6 +57,9 @@ public enum ShaderParameterBool implements IExpressionBool
                 case IS_CHILD:
                     return entitylivingbase.isChild();
 
+                case IS_GLOWING:
+                    return entitylivingbase.isGlowing();
+
                 case IS_HURT:
                     return entitylivingbase.hurtTime > 0;
 
@@ -79,7 +76,7 @@ public enum ShaderParameterBool implements IExpressionBool
                     return entitylivingbase.onGround;
 
                 case IS_RIDDEN:
-                    return entitylivingbase.riddenByEntity != null;
+                    return entitylivingbase.isBeingRidden();
 
                 case IS_RIDING:
                     return entitylivingbase.isRiding();

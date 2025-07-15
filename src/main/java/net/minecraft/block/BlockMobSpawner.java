@@ -3,18 +3,21 @@ package net.minecraft.block;
 import java.util.Random;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumWorldBlockLayer;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BlockMobSpawner extends BlockContainer
 {
     protected BlockMobSpawner()
     {
-        super(Material.rock);
+        super(Material.ROCK);
     }
 
     /**
@@ -27,12 +30,10 @@ public class BlockMobSpawner extends BlockContainer
 
     /**
      * Get the Item that this Block should drop when harvested.
-     *  
-     * @param fortune the level of the Fortune enchantment on the player's tool
      */
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return null;
+        return Items.AIR;
     }
 
     /**
@@ -45,9 +46,6 @@ public class BlockMobSpawner extends BlockContainer
 
     /**
      * Spawns this Block's drops into the World as EntityItems.
-     *  
-     * @param chance The chance that each Item is actually spawned (1.0 = always, 0.0 = never)
-     * @param fortune The player's fortune level
      */
     public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
     {
@@ -58,30 +56,34 @@ public class BlockMobSpawner extends BlockContainer
 
     /**
      * Used to determine ambient occlusion and culling when rebuilding chunks for render
+     * @deprecated call via {@link IBlockState#isOpaqueCube()} whenever possible. Implementing/overriding is fine.
      */
-    public boolean isOpaqueCube()
+    public boolean isOpaqueCube(IBlockState state)
     {
         return false;
     }
 
     /**
-     * The type of render function called. 3 for standard block models, 2 for TESR's, 1 for liquids, -1 is no render
+     * The type of render function called. MODEL for mixed tesr and static model, MODELBLOCK_ANIMATED for TESR-only,
+     * LIQUID for vanilla liquids, INVISIBLE to skip all rendering
+     * @deprecated call via {@link IBlockState#getRenderType()} whenever possible. Implementing/overriding is fine.
      */
-    public int getRenderType()
+    public EnumBlockRenderType getRenderType(IBlockState state)
     {
-        return 3;
-    }
-
-    public EnumWorldBlockLayer getBlockLayer()
-    {
-        return EnumWorldBlockLayer.CUTOUT;
+        return EnumBlockRenderType.MODEL;
     }
 
     /**
-     * Used by pick block on the client to get a block's item form, if it exists.
+     * Gets the render layer this block will render on. SOLID for solid blocks, CUTOUT or CUTOUT_MIPPED for on-off
+     * transparency (glass, reeds), TRANSLUCENT for fully blended transparency (stained glass)
      */
-    public Item getItem(World worldIn, BlockPos pos)
+    public BlockRenderLayer getRenderLayer()
     {
-        return null;
+        return BlockRenderLayer.CUTOUT;
+    }
+
+    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
+    {
+        return ItemStack.EMPTY;
     }
 }

@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.ArrayList;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.IResourceManager;
@@ -17,9 +16,9 @@ import net.minecraft.client.resources.data.AnimationMetadataSection;
 import net.minecraft.client.resources.data.AnimationMetadataSectionSerializer;
 import net.minecraft.client.resources.data.FontMetadataSection;
 import net.minecraft.client.resources.data.FontMetadataSectionSerializer;
-import net.minecraft.client.resources.data.IMetadataSerializer;
 import net.minecraft.client.resources.data.LanguageMetadataSection;
 import net.minecraft.client.resources.data.LanguageMetadataSectionSerializer;
+import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraft.client.resources.data.PackMetadataSection;
 import net.minecraft.client.resources.data.PackMetadataSectionSerializer;
 import net.minecraft.client.resources.data.TextureMetadataSection;
@@ -29,7 +28,7 @@ import org.apache.commons.io.IOUtils;
 public class SimpleShaderTexture extends AbstractTexture
 {
     private String texturePath;
-    private static final IMetadataSerializer METADATA_SERIALIZER = makeMetadataSerializer();
+    private static final MetadataSerializer METADATA_SERIALIZER = makeMetadataSerializer();
 
     public SimpleShaderTexture(String texturePath)
     {
@@ -50,7 +49,7 @@ public class SimpleShaderTexture extends AbstractTexture
             try
             {
                 BufferedImage bufferedimage = TextureUtil.readBufferedImage(inputstream);
-                TextureMetadataSection texturemetadatasection = this.loadTextureMetadataSection();
+                TextureMetadataSection texturemetadatasection = loadTextureMetadataSection(this.texturePath, new TextureMetadataSection(false, false));
                 TextureUtil.uploadTextureImageAllocate(this.getGlTextureId(), bufferedimage, texturemetadatasection.getTextureBlur(), texturemetadatasection.getTextureClamp());
             }
             finally
@@ -60,26 +59,26 @@ public class SimpleShaderTexture extends AbstractTexture
         }
     }
 
-    private TextureMetadataSection loadTextureMetadataSection()
+    public static TextureMetadataSection loadTextureMetadataSection(String texturePath, TextureMetadataSection def)
     {
-        String s = this.texturePath + ".mcmeta";
+        String s = texturePath + ".mcmeta";
         String s1 = "texture";
         InputStream inputstream = Shaders.getShaderPackResourceStream(s);
 
         if (inputstream != null)
         {
-            IMetadataSerializer imetadataserializer = METADATA_SERIALIZER;
+            MetadataSerializer metadataserializer = METADATA_SERIALIZER;
             BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(inputstream));
             TextureMetadataSection texturemetadatasection1;
 
             try
             {
-                JsonObject jsonobject = (new JsonParser()).parse((Reader)bufferedreader).getAsJsonObject();
-                TextureMetadataSection texturemetadatasection = (TextureMetadataSection)imetadataserializer.parseMetadataSection(s1, jsonobject);
+                JsonObject jsonobject = (new JsonParser()).parse(bufferedreader).getAsJsonObject();
+                TextureMetadataSection texturemetadatasection = (TextureMetadataSection)metadataserializer.parseMetadataSection(s1, jsonobject);
 
                 if (texturemetadatasection == null)
                 {
-                    return new TextureMetadataSection(false, false, new ArrayList());
+                    return def;
                 }
 
                 texturemetadatasection1 = texturemetadatasection;
@@ -88,7 +87,7 @@ public class SimpleShaderTexture extends AbstractTexture
             {
                 SMCLog.warning("Error reading metadata: " + s);
                 SMCLog.warning("" + runtimeexception.getClass().getName() + ": " + runtimeexception.getMessage());
-                return new TextureMetadataSection(false, false, new ArrayList());
+                return def;
             }
             finally
             {
@@ -100,18 +99,18 @@ public class SimpleShaderTexture extends AbstractTexture
         }
         else
         {
-            return new TextureMetadataSection(false, false, new ArrayList());
+            return def;
         }
     }
 
-    private static IMetadataSerializer makeMetadataSerializer()
+    private static MetadataSerializer makeMetadataSerializer()
     {
-        IMetadataSerializer imetadataserializer = new IMetadataSerializer();
-        imetadataserializer.registerMetadataSectionType(new TextureMetadataSectionSerializer(), TextureMetadataSection.class);
-        imetadataserializer.registerMetadataSectionType(new FontMetadataSectionSerializer(), FontMetadataSection.class);
-        imetadataserializer.registerMetadataSectionType(new AnimationMetadataSectionSerializer(), AnimationMetadataSection.class);
-        imetadataserializer.registerMetadataSectionType(new PackMetadataSectionSerializer(), PackMetadataSection.class);
-        imetadataserializer.registerMetadataSectionType(new LanguageMetadataSectionSerializer(), LanguageMetadataSection.class);
-        return imetadataserializer;
+        MetadataSerializer metadataserializer = new MetadataSerializer();
+        metadataserializer.registerMetadataSectionType(new TextureMetadataSectionSerializer(), TextureMetadataSection.class);
+        metadataserializer.registerMetadataSectionType(new FontMetadataSectionSerializer(), FontMetadataSection.class);
+        metadataserializer.registerMetadataSectionType(new AnimationMetadataSectionSerializer(), AnimationMetadataSection.class);
+        metadataserializer.registerMetadataSectionType(new PackMetadataSectionSerializer(), PackMetadataSection.class);
+        metadataserializer.registerMetadataSectionType(new LanguageMetadataSectionSerializer(), LanguageMetadataSection.class);
+        return metadataserializer;
     }
 }

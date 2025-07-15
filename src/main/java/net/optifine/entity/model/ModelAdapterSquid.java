@@ -7,7 +7,7 @@ import net.minecraft.client.model.ModelSquid;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderSquid;
 import net.minecraft.entity.passive.EntitySquid;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.optifine.reflect.Reflector;
 
 public class ModelAdapterSquid extends ModelAdapter
@@ -42,7 +42,7 @@ public class ModelAdapterSquid extends ModelAdapter
 
                 if (modelPart.startsWith(s))
                 {
-                    ModelRenderer[] amodelrenderer = (ModelRenderer[])((ModelRenderer[])Reflector.getFieldValue(modelsquid, Reflector.ModelSquid_tentacles));
+                    ModelRenderer[] amodelrenderer = (ModelRenderer[])Reflector.getFieldValue(modelsquid, Reflector.ModelSquid_tentacles);
 
                     if (amodelrenderer == null)
                     {
@@ -72,7 +72,9 @@ public class ModelAdapterSquid extends ModelAdapter
     public IEntityRenderer makeEntityRender(ModelBase modelBase, float shadowSize)
     {
         RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
-        RenderSquid rendersquid = new RenderSquid(rendermanager, modelBase, shadowSize);
+        RenderSquid rendersquid = new RenderSquid(rendermanager);
+        rendersquid.mainModel = modelBase;
+        rendersquid.shadowSize = shadowSize;
         return rendersquid;
     }
 }

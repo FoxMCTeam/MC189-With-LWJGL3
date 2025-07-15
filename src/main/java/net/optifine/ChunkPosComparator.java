@@ -1,10 +1,10 @@
 package net.optifine;
 
 import java.util.Comparator;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MathHelper;
 
-public class ChunkPosComparator implements Comparator<ChunkCoordIntPair>
+public class ChunkPosComparator implements Comparator<ChunkPos>
 {
     private int chunkPosX;
     private int chunkPosZ;
@@ -16,22 +16,22 @@ public class ChunkPosComparator implements Comparator<ChunkCoordIntPair>
         this.chunkPosX = chunkPosX;
         this.chunkPosZ = chunkPosZ;
         this.yawRad = yawRad;
-        this.pitchNorm = 1.0D - MathHelper.clamp_double(Math.abs(pitchRad) / (Math.PI / 2D), 0.0D, 1.0D);
+        this.pitchNorm = 1.0D - MathHelper.clamp(Math.abs(pitchRad) / (Math.PI / 2D), 0.0D, 1.0D);
     }
 
-    public int compare(ChunkCoordIntPair cp1, ChunkCoordIntPair cp2)
+    public int compare(ChunkPos cp1, ChunkPos cp2)
     {
         int i = this.getDistSq(cp1);
         int j = this.getDistSq(cp2);
         return i - j;
     }
 
-    private int getDistSq(ChunkCoordIntPair cp)
+    private int getDistSq(ChunkPos cp)
     {
-        int i = cp.chunkXPos - this.chunkPosX;
-        int j = cp.chunkZPos - this.chunkPosZ;
+        int i = cp.x - this.chunkPosX;
+        int j = cp.z - this.chunkPosZ;
         int k = i * i + j * j;
-        double d0 = MathHelper.func_181159_b((double)j, (double)i);
+        double d0 = MathHelper.atan2((double)j, (double)i);
         double d1 = Math.abs(d0 - this.yawRad);
 
         if (d1 > Math.PI)

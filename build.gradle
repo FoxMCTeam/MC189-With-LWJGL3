@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'net.minecraft'
-version = '1.8.9'
+version = '1.12.2'
 
 project.ext.lwjglVersion = "3.4.0-SNAPSHOT"
 project.ext.lwjglNatives = "natives-windows"
@@ -16,6 +16,7 @@ repositories {
     maven { url "https://repo.viaversion.com/everything" }
     maven { url "https://repo.codemc.io/repository/maven-snapshots/" }
     maven { url "https://nexus.velocitypowered.com/repository/maven-public/" }
+    maven { url "https://maven.indexdata.com/"}
     flatDir { dirs 'libs' }
 }
 
@@ -43,7 +44,7 @@ dependencies {
     implementation("com.paulscode:codecjorbis:20101023")
     implementation("com.paulscode:codecwav:20101023")
     implementation("com.paulscode:soundsystem:20120107")
-    implementation("com.mojang:authlib:1.5.21")
+    implementation("com.mojang:authlib:1.5.25")
 
     implementation("commons-codec:commons-codec:1.15")
     implementation('org.apache.commons:commons-compress:1.26.0')
@@ -78,6 +79,11 @@ dependencies {
     implementation("oshi-project:oshi-core:1.1")
     implementation("javax.vecmath:vecmath:1.5.2")
 
+    implementation("it.unimi.dsi:fastutil:8.5.16")
+    implementation("it.unimi.dsi:fastutil-core:8.5.16")
+    implementation("com.ibm.icu:icu4j:77.1")
+    implementation("com.ibm.icu.text:normalizer:1.3.1")
+    implementation("com.mojang:text2speech:1.10.3")
     //Lombok 注解处理器
     annotationProcessor 'org.projectlombok:lombok:1.18.32'
     testCompileOnly 'org.projectlombok:lombok:1.18.32'

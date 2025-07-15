@@ -5,7 +5,6 @@ import java.util.Map;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
-import net.minecraft.src.Config;
 import net.optifine.http.FileUploadThread;
 import net.optifine.http.IFileUploadListener;
 import net.optifine.shaders.Shaders;
@@ -28,13 +27,12 @@ public class CrashReporter
                 return;
             }
 
-            extendCrashReport(category);
-
             if (throwable.getClass() == Throwable.class)
             {
                 return;
             }
 
+            extendCrashReport(category);
             GameSettings gamesettings = Config.getGameSettings();
 
             if (gamesettings == null)
@@ -99,7 +97,7 @@ public class CrashReporter
                 s = astacktraceelement[0].toString().trim();
             }
 
-            String s1 = throwable.getClass().getName() + ": " + throwable.getMessage() + " (" + crashReport.getDescription() + ")" + " [" + s + "]";
+            String s1 = throwable.getClass().getName() + ": " + throwable.getMessage() + " (" + crashReport.getDescription() + ") [" + s + "]";
             return s1;
         }
     }

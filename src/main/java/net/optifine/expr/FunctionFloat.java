@@ -50,11 +50,6 @@ public class FunctionFloat implements IExpressionFloat
         return f;
     }
 
-    public ExpressionType getExpressionType()
-    {
-        return ExpressionType.FLOAT;
-    }
-
     public String toString()
     {
         return "" + this.type + "()";

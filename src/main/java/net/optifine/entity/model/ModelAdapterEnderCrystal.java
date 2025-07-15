@@ -5,10 +5,10 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelEnderCrystal;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderEnderCrystal;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.tileentity.RenderEnderCrystal;
 import net.minecraft.entity.item.EntityEnderCrystal;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.optifine.reflect.Reflector;
 
 public class ModelAdapterEnderCrystal extends ModelAdapter
@@ -37,7 +37,19 @@ public class ModelAdapterEnderCrystal extends ModelAdapter
         else
         {
             ModelEnderCrystal modelendercrystal = (ModelEnderCrystal)model;
-            return modelPart.equals("cube") ? (ModelRenderer)Reflector.getFieldValue(modelendercrystal, Reflector.ModelEnderCrystal_ModelRenderers, 0) : (modelPart.equals("glass") ? (ModelRenderer)Reflector.getFieldValue(modelendercrystal, Reflector.ModelEnderCrystal_ModelRenderers, 1) : (modelPart.equals("base") ? (ModelRenderer)Reflector.getFieldValue(modelendercrystal, Reflector.ModelEnderCrystal_ModelRenderers, 2) : null));
+
+            if (modelPart.equals("cube"))
+            {
+                return (ModelRenderer)Reflector.getFieldValue(modelendercrystal, Reflector.ModelEnderCrystal_ModelRenderers, 0);
+            }
+            else if (modelPart.equals("glass"))
+            {
+                return (ModelRenderer)Reflector.getFieldValue(modelendercrystal, Reflector.ModelEnderCrystal_ModelRenderers, 1);
+            }
+            else
+            {
+                return modelPart.equals("base") ? (ModelRenderer)Reflector.getFieldValue(modelendercrystal, Reflector.ModelEnderCrystal_ModelRenderers, 2) : null;
+            }
         }
     }
 

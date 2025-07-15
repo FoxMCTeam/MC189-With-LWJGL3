@@ -28,7 +28,7 @@ public class GuiOtherSettingsOF extends GuiScreen implements GuiYesNoCallback
      */
     public void initGui()
     {
-        this.title = I18n.format("of.options.otherTitle", new Object[0]);
+        this.title = I18n.format("of.options.otherTitle");
         this.buttonList.clear();
 
         for (int i = 0; i < enumOptions.length; ++i)
@@ -37,18 +37,18 @@ public class GuiOtherSettingsOF extends GuiScreen implements GuiYesNoCallback
             int j = this.width / 2 - 155 + i % 2 * 160;
             int k = this.height / 6 + 21 * (i / 2) - 12;
 
-            if (!gamesettings$options.getEnumFloat())
+            if (!gamesettings$options.isFloat())
             {
-                this.buttonList.add(new GuiOptionButtonOF(gamesettings$options.returnEnumOrdinal(), j, k, gamesettings$options, this.settings.getKeyBinding(gamesettings$options)));
+                this.buttonList.add(new GuiOptionButtonOF(gamesettings$options.getOrdinal(), j, k, gamesettings$options, this.settings.getKeyBinding(gamesettings$options)));
             }
             else
             {
-                this.buttonList.add(new GuiOptionSliderOF(gamesettings$options.returnEnumOrdinal(), j, k, gamesettings$options));
+                this.buttonList.add(new GuiOptionSliderOF(gamesettings$options.getOrdinal(), j, k, gamesettings$options));
             }
         }
 
-        this.buttonList.add(new GuiButton(210, this.width / 2 - 100, this.height / 6 + 168 + 11 - 44, I18n.format("of.options.other.reset", new Object[0])));
-        this.buttonList.add(new GuiButton(200, this.width / 2 - 100, this.height / 6 + 168 + 11, I18n.format("gui.done", new Object[0])));
+        this.buttonList.add(new GuiButton(210, this.width / 2 - 100, this.height / 6 + 168 + 11 - 44, I18n.format("of.options.other.reset")));
+        this.buttonList.add(new GuiButton(200, this.width / 2 - 100, this.height / 6 + 168 + 11, I18n.format("gui.done")));
     }
 
     /**
@@ -60,8 +60,8 @@ public class GuiOtherSettingsOF extends GuiScreen implements GuiYesNoCallback
         {
             if (guibutton.id < 200 && guibutton instanceof GuiOptionButton)
             {
-                this.settings.setOptionValue(((GuiOptionButton)guibutton).returnEnumOptions(), 1);
-                guibutton.displayString = this.settings.getKeyBinding(GameSettings.Options.getEnumOptions(guibutton.id));
+                this.settings.setOptionValue(((GuiOptionButton)guibutton).getOption(), 1);
+                guibutton.displayString = this.settings.getKeyBinding(GameSettings.Options.byOrdinal(guibutton.id));
             }
 
             if (guibutton.id == 200)
@@ -73,7 +73,7 @@ public class GuiOtherSettingsOF extends GuiScreen implements GuiYesNoCallback
             if (guibutton.id == 210)
             {
                 this.mc.gameSettings.saveOptions();
-                GuiYesNo guiyesno = new GuiYesNo(this, I18n.format("of.message.other.reset", new Object[0]), "", 9999);
+                GuiYesNo guiyesno = new GuiYesNo(this, I18n.format("of.message.other.reset"), "", 9999);
                 this.mc.displayGuiScreen(guiyesno);
             }
         }
@@ -90,12 +90,12 @@ public class GuiOtherSettingsOF extends GuiScreen implements GuiYesNoCallback
     }
 
     /**
-     * Draws the screen and all the components in it. Args : mouseX, mouseY, renderPartialTicks
+     * Draws the screen and all the components in it.
      */
     public void drawScreen(int x, int y, float f)
     {
         this.drawDefaultBackground();
-        this.drawCenteredString(this.fontRendererObj, this.title, this.width / 2, 15, 16777215);
+        this.drawCenteredString(this.fontRenderer, this.title, this.width / 2, 15, 16777215);
         super.drawScreen(x, y, f);
         this.tooltipManager.drawTooltips(x, y, this.buttonList);
     }

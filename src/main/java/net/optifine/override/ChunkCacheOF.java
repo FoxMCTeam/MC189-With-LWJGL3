@@ -2,14 +2,15 @@ package net.optifine.override;
 
 import java.util.Arrays;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.src.Config;
+import net.optifine.Config;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.Chunk;
 import net.optifine.DynamicLights;
 import net.optifine.reflect.Reflector;
 import net.optifine.util.ArrayCache;
@@ -100,7 +101,7 @@ public class ChunkCacheOF implements IBlockAccess
     {
         int i = this.chunkCache.getCombinedLight(pos, lightValue);
 
-        if (this.dynamicLights && !this.getBlockState(pos).getBlock().isOpaqueCube())
+        if (this.dynamicLights && !this.getBlockState(pos).isOpaqueCube())
         {
             i = DynamicLights.getCombinedLight(pos, i);
         }
@@ -134,14 +135,14 @@ public class ChunkCacheOF implements IBlockAccess
     {
         if (this.combinedLights == null)
         {
-            this.combinedLights = (int[])((int[])cacheCombinedLights.allocate(this.arraySize));
+            this.combinedLights = (int[])cacheCombinedLights.allocate(this.arraySize);
         }
 
-        Arrays.fill((int[])this.combinedLights, (int) - 1);
+        Arrays.fill(this.combinedLights, -1);
 
         if (this.blockStates == null)
         {
-            this.blockStates = (IBlockState[])((IBlockState[])cacheBlockStates.allocate(this.arraySize));
+            this.blockStates = (IBlockState[])cacheBlockStates.allocate(this.arraySize);
         }
 
         Arrays.fill(this.blockStates, (Object)null);
@@ -155,17 +156,14 @@ public class ChunkCacheOF implements IBlockAccess
         this.blockStates = null;
     }
 
-    /**
-     * set by !chunk.getAreLevelsEmpty
-     */
-    public boolean extendedLevelsInChunkCache()
+    public boolean isEmpty()
     {
-        return this.chunkCache.extendedLevelsInChunkCache();
+        return this.chunkCache.isEmpty();
     }
 
-    public BiomeGenBase getBiomeGenForCoords(BlockPos pos)
+    public Biome getBiome(BlockPos pos)
     {
-        return this.chunkCache.getBiomeGenForCoords(pos);
+        return this.chunkCache.getBiome(pos);
     }
 
     public int getStrongPower(BlockPos pos, EnumFacing direction)
@@ -175,7 +173,12 @@ public class ChunkCacheOF implements IBlockAccess
 
     public TileEntity getTileEntity(BlockPos pos)
     {
-        return this.chunkCache.getTileEntity(pos);
+        return this.chunkCache.getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK);
+    }
+
+    public TileEntity getTileEntity(BlockPos pos, Chunk.EnumCreateEntityType type)
+    {
+        return this.chunkCache.getTileEntity(pos, type);
     }
 
     public WorldType getWorldType()
@@ -186,8 +189,6 @@ public class ChunkCacheOF implements IBlockAccess
     /**
      * Checks to see if an air block exists at the provided location. Note that this only checks to see if the blocks
      * material is set to air, meaning it is possible for non-vanilla blocks to still pass this check.
-     *  
-     * @param pos The position of the block being checked.
      */
     public boolean isAirBlock(BlockPos pos)
     {
@@ -196,6 +197,6 @@ public class ChunkCacheOF implements IBlockAccess
 
     public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default)
     {
-        return Reflector.callBoolean(this.chunkCache, Reflector.ForgeChunkCache_isSideSolid, new Object[] {pos, side, Boolean.valueOf(_default)});
+        return Reflector.callBoolean(this.chunkCache, Reflector.ForgeChunkCache_isSideSolid, pos, side, _default);
     }
 }

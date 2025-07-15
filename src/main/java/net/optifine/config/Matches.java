@@ -2,7 +2,7 @@ package net.optifine.config;
 
 import net.minecraft.block.state.BlockStateBase;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 
 public class Matches
 {
@@ -112,7 +112,7 @@ public class Matches
         }
     }
 
-    public static boolean biome(BiomeGenBase biome, BiomeGenBase[] biomes)
+    public static boolean biome(Biome biome, Biome[] biomes)
     {
         if (biomes == null)
         {

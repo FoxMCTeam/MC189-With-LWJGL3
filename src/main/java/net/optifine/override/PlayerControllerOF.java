@@ -7,11 +7,12 @@ import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class PlayerControllerOF extends PlayerControllerMP
@@ -27,9 +28,6 @@ public class PlayerControllerOF extends PlayerControllerMP
 
     /**
      * Called when the player is hitting a block with an item.
-     *  
-     * @param loc location of the block being clicked
-     * @param face Blockface being clicked
      */
     public boolean clickBlock(BlockPos loc, EnumFacing face)
     {
@@ -49,39 +47,39 @@ public class PlayerControllerOF extends PlayerControllerMP
         return flag;
     }
 
-    /**
-     * Notifies the server of things like consuming food, etc...
-     */
-    public boolean sendUseItem(EntityPlayer player, World worldIn, ItemStack stack)
+    public EnumActionResult processRightClick(EntityPlayer player, World worldIn, EnumHand hand)
     {
         this.acting = true;
-        boolean flag = super.sendUseItem(player, worldIn, stack);
+        EnumActionResult enumactionresult = super.processRightClick(player, worldIn, hand);
         this.acting = false;
-        return flag;
+        return enumactionresult;
     }
 
-    public boolean onPlayerRightClick(EntityPlayerSP p_178890_1, WorldClient p_178890_2, ItemStack p_178890_3, BlockPos p_178890_4, EnumFacing p_178890_5, Vec3 p_178890_6)
+    public EnumActionResult processRightClickBlock(EntityPlayerSP player, WorldClient worldIn, BlockPos pos, EnumFacing facing, Vec3d vec, EnumHand hand)
     {
         this.acting = true;
-        this.lastClickBlockPos = p_178890_4;
-        boolean flag = super.onPlayerRightClick(p_178890_1, p_178890_2, p_178890_3, p_178890_4, p_178890_5, p_178890_6);
+        this.lastClickBlockPos = pos;
+        EnumActionResult enumactionresult = super.processRightClickBlock(player, worldIn, pos, facing, vec, hand);
         this.acting = false;
-        return flag;
+        return enumactionresult;
     }
 
     /**
-     * Send packet to server - player is interacting with another entity (left click)
+     * Handles right clicking an entity, sends a packet to the server.
      */
-    public boolean interactWithEntitySendPacket(EntityPlayer player, Entity target)
+    public EnumActionResult interactWithEntity(EntityPlayer player, Entity target, EnumHand hand)
     {
         this.lastClickEntity = target;
-        return super.interactWithEntitySendPacket(player, target);
+        return super.interactWithEntity(player, target, hand);
     }
 
-    public boolean isPlayerRightClickingOnEntity(EntityPlayer player, Entity target, MovingObjectPosition ray)
+    /**
+     * Handles right clicking an entity from the entities side, sends a packet to the server.
+     */
+    public EnumActionResult interactWithEntity(EntityPlayer player, Entity target, RayTraceResult ray, EnumHand hand)
     {
         this.lastClickEntity = target;
-        return super.isPlayerRightClickingOnEntity(player, target, ray);
+        return super.interactWithEntity(player, target, ray, hand);
     }
 
     public boolean isActing()

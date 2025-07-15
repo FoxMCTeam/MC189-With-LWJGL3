@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.ClassInheritanceMultiMap;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
@@ -28,10 +28,10 @@ public class ChunkVisibility
 
     public static int getMaxChunkY(World world, Entity viewEntity, int renderDistanceChunks)
     {
-        int i = MathHelper.floor_double(viewEntity.posX) >> 4;
-        int j = MathHelper.floor_double(viewEntity.posY) >> 4;
-        int k = MathHelper.floor_double(viewEntity.posZ) >> 4;
-        Chunk chunk = world.getChunkFromChunkCoords(i, k);
+        int i = MathHelper.floor(viewEntity.posX) >> 4;
+        int j = MathHelper.floor(viewEntity.posY) >> 4;
+        int k = MathHelper.floor(viewEntity.posZ) >> 4;
+        Chunk chunk = world.getChunk(i, k);
         int l = i - renderDistanceChunks;
         int i1 = i + renderDistanceChunks;
         int j1 = k - renderDistanceChunks;
@@ -79,7 +79,7 @@ public class ChunkVisibility
         {
             for (int j2 = j1; j2 < k1; ++j2)
             {
-                Chunk chunk1 = world.getChunkFromChunkCoords(i2, j2);
+                Chunk chunk1 = world.getChunk(i2, j2);
 
                 if (!chunk1.isEmpty())
                 {
@@ -169,7 +169,7 @@ public class ChunkVisibility
 
         for (int j = 0; j < i; ++j)
         {
-            List<EnumFacing> list = new ArrayList();
+            List<EnumFacing> list = new ArrayList<EnumFacing>();
 
             for (int k = 0; k < EnumFacing.VALUES.length; ++k)
             {

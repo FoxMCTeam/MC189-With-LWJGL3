@@ -1,11 +1,11 @@
 package net.optifine.model;
 
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 public class ModelSprite
@@ -78,78 +78,78 @@ public class ModelSprite
         float f1 = maxV - minV;
         double d0 = (double)(MathHelper.abs(f) * (texWidth / 16.0F));
         double d1 = (double)(MathHelper.abs(f1) * (texHeight / 16.0F));
-        WorldRenderer worldrenderer = tess.getWorldRenderer();
+        BufferBuilder bufferbuilder = tess.getBuffer();
         GL11.glNormal3f(0.0F, 0.0F, -1.0F);
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        worldrenderer.pos(0.0D, d1, 0.0D).tex((double)minU, (double)maxV).endVertex();
-        worldrenderer.pos(d0, d1, 0.0D).tex((double)maxU, (double)maxV).endVertex();
-        worldrenderer.pos(d0, 0.0D, 0.0D).tex((double)maxU, (double)minV).endVertex();
-        worldrenderer.pos(0.0D, 0.0D, 0.0D).tex((double)minU, (double)minV).endVertex();
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+        bufferbuilder.pos(0.0D, d1, 0.0D).tex((double)minU, (double)maxV).endVertex();
+        bufferbuilder.pos(d0, d1, 0.0D).tex((double)maxU, (double)maxV).endVertex();
+        bufferbuilder.pos(d0, 0.0D, 0.0D).tex((double)maxU, (double)minV).endVertex();
+        bufferbuilder.pos(0.0D, 0.0D, 0.0D).tex((double)minU, (double)minV).endVertex();
         tess.draw();
         GL11.glNormal3f(0.0F, 0.0F, 1.0F);
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        worldrenderer.pos(0.0D, 0.0D, (double)width).tex((double)minU, (double)minV).endVertex();
-        worldrenderer.pos(d0, 0.0D, (double)width).tex((double)maxU, (double)minV).endVertex();
-        worldrenderer.pos(d0, d1, (double)width).tex((double)maxU, (double)maxV).endVertex();
-        worldrenderer.pos(0.0D, d1, (double)width).tex((double)minU, (double)maxV).endVertex();
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+        bufferbuilder.pos(0.0D, 0.0D, (double)width).tex((double)minU, (double)minV).endVertex();
+        bufferbuilder.pos(d0, 0.0D, (double)width).tex((double)maxU, (double)minV).endVertex();
+        bufferbuilder.pos(d0, d1, (double)width).tex((double)maxU, (double)maxV).endVertex();
+        bufferbuilder.pos(0.0D, d1, (double)width).tex((double)minU, (double)maxV).endVertex();
         tess.draw();
         float f2 = 0.5F * f / (float)sizeX;
         float f3 = 0.5F * f1 / (float)sizeY;
         GL11.glNormal3f(-1.0F, 0.0F, 0.0F);
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
 
         for (int i = 0; i < sizeX; ++i)
         {
             float f4 = (float)i / (float)sizeX;
             float f5 = minU + f * f4 + f2;
-            worldrenderer.pos((double)f4 * d0, d1, (double)width).tex((double)f5, (double)maxV).endVertex();
-            worldrenderer.pos((double)f4 * d0, d1, 0.0D).tex((double)f5, (double)maxV).endVertex();
-            worldrenderer.pos((double)f4 * d0, 0.0D, 0.0D).tex((double)f5, (double)minV).endVertex();
-            worldrenderer.pos((double)f4 * d0, 0.0D, (double)width).tex((double)f5, (double)minV).endVertex();
+            bufferbuilder.pos((double)f4 * d0, d1, (double)width).tex((double)f5, (double)maxV).endVertex();
+            bufferbuilder.pos((double)f4 * d0, d1, 0.0D).tex((double)f5, (double)maxV).endVertex();
+            bufferbuilder.pos((double)f4 * d0, 0.0D, 0.0D).tex((double)f5, (double)minV).endVertex();
+            bufferbuilder.pos((double)f4 * d0, 0.0D, (double)width).tex((double)f5, (double)minV).endVertex();
         }
 
         tess.draw();
         GL11.glNormal3f(1.0F, 0.0F, 0.0F);
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
 
         for (int j = 0; j < sizeX; ++j)
         {
             float f7 = (float)j / (float)sizeX;
             float f10 = minU + f * f7 + f2;
             float f6 = f7 + 1.0F / (float)sizeX;
-            worldrenderer.pos((double)f6 * d0, 0.0D, (double)width).tex((double)f10, (double)minV).endVertex();
-            worldrenderer.pos((double)f6 * d0, 0.0D, 0.0D).tex((double)f10, (double)minV).endVertex();
-            worldrenderer.pos((double)f6 * d0, d1, 0.0D).tex((double)f10, (double)maxV).endVertex();
-            worldrenderer.pos((double)f6 * d0, d1, (double)width).tex((double)f10, (double)maxV).endVertex();
+            bufferbuilder.pos((double)f6 * d0, 0.0D, (double)width).tex((double)f10, (double)minV).endVertex();
+            bufferbuilder.pos((double)f6 * d0, 0.0D, 0.0D).tex((double)f10, (double)minV).endVertex();
+            bufferbuilder.pos((double)f6 * d0, d1, 0.0D).tex((double)f10, (double)maxV).endVertex();
+            bufferbuilder.pos((double)f6 * d0, d1, (double)width).tex((double)f10, (double)maxV).endVertex();
         }
 
         tess.draw();
         GL11.glNormal3f(0.0F, 1.0F, 0.0F);
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
 
         for (int k = 0; k < sizeY; ++k)
         {
             float f8 = (float)k / (float)sizeY;
             float f11 = minV + f1 * f8 + f3;
             float f13 = f8 + 1.0F / (float)sizeY;
-            worldrenderer.pos(0.0D, (double)f13 * d1, (double)width).tex((double)minU, (double)f11).endVertex();
-            worldrenderer.pos(d0, (double)f13 * d1, (double)width).tex((double)maxU, (double)f11).endVertex();
-            worldrenderer.pos(d0, (double)f13 * d1, 0.0D).tex((double)maxU, (double)f11).endVertex();
-            worldrenderer.pos(0.0D, (double)f13 * d1, 0.0D).tex((double)minU, (double)f11).endVertex();
+            bufferbuilder.pos(0.0D, (double)f13 * d1, (double)width).tex((double)minU, (double)f11).endVertex();
+            bufferbuilder.pos(d0, (double)f13 * d1, (double)width).tex((double)maxU, (double)f11).endVertex();
+            bufferbuilder.pos(d0, (double)f13 * d1, 0.0D).tex((double)maxU, (double)f11).endVertex();
+            bufferbuilder.pos(0.0D, (double)f13 * d1, 0.0D).tex((double)minU, (double)f11).endVertex();
         }
 
         tess.draw();
         GL11.glNormal3f(0.0F, -1.0F, 0.0F);
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
 
         for (int l = 0; l < sizeY; ++l)
         {
             float f9 = (float)l / (float)sizeY;
             float f12 = minV + f1 * f9 + f3;
-            worldrenderer.pos(d0, (double)f9 * d1, (double)width).tex((double)maxU, (double)f12).endVertex();
-            worldrenderer.pos(0.0D, (double)f9 * d1, (double)width).tex((double)minU, (double)f12).endVertex();
-            worldrenderer.pos(0.0D, (double)f9 * d1, 0.0D).tex((double)minU, (double)f12).endVertex();
-            worldrenderer.pos(d0, (double)f9 * d1, 0.0D).tex((double)maxU, (double)f12).endVertex();
+            bufferbuilder.pos(d0, (double)f9 * d1, (double)width).tex((double)maxU, (double)f12).endVertex();
+            bufferbuilder.pos(0.0D, (double)f9 * d1, (double)width).tex((double)minU, (double)f12).endVertex();
+            bufferbuilder.pos(0.0D, (double)f9 * d1, 0.0D).tex((double)minU, (double)f12).endVertex();
+            bufferbuilder.pos(d0, (double)f9 * d1, 0.0D).tex((double)maxU, (double)f12).endVertex();
         }
 
         tess.draw();

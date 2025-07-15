@@ -4,8 +4,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderMinecartMobSpawner;
-import net.minecraft.entity.ai.EntityMinecartMobSpawner;
-import net.minecraft.src.Config;
+import net.minecraft.entity.item.EntityMinecartMobSpawner;
+import net.optifine.Config;
 import net.optifine.reflect.Reflector;
 
 public class ModelAdapterMinecartMobSpawner extends ModelAdapterMinecart

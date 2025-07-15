@@ -6,10 +6,10 @@ import java.nio.IntBuffer;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.BlockStateBase;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -32,7 +32,7 @@ public class SVertexBuilder
         this.entityData[this.entityDataIndex] = 0L;
     }
 
-    public static void initVertexBuilder(WorldRenderer wrr)
+    public static void initVertexBuilder(BufferBuilder wrr)
     {
         wrr.sVertexBuilder = new SVertexBuilder();
     }
@@ -49,7 +49,7 @@ public class SVertexBuilder
         --this.entityDataIndex;
     }
 
-    public static void pushEntity(IBlockState blockState, BlockPos blockPos, IBlockAccess blockAccess, WorldRenderer wrr)
+    public static void pushEntity(IBlockState blockState, BlockPos blockPos, IBlockAccess blockAccess, BufferBuilder wrr)
     {
         Block block = blockState.getBlock();
         int i;
@@ -74,37 +74,37 @@ public class SVertexBuilder
             i = j1;
         }
 
-        int k = block.getRenderType();
+        int k = block.getRenderType(blockState).ordinal();
         int l = ((k & 65535) << 16) + (i & 65535);
         int i1 = j & 65535;
         wrr.sVertexBuilder.pushEntity(((long)i1 << 32) + (long)l);
     }
 
-    public static void popEntity(WorldRenderer wrr)
+    public static void popEntity(BufferBuilder wrr)
     {
         wrr.sVertexBuilder.popEntity();
     }
 
-    public static boolean popEntity(boolean value, WorldRenderer wrr)
+    public static boolean popEntity(boolean value, BufferBuilder wrr)
     {
         wrr.sVertexBuilder.popEntity();
         return value;
     }
 
-    public static void endSetVertexFormat(WorldRenderer wrr)
+    public static void endSetVertexFormat(BufferBuilder wrr)
     {
         SVertexBuilder svertexbuilder = wrr.sVertexBuilder;
         VertexFormat vertexformat = wrr.getVertexFormat();
-        svertexbuilder.vertexSize = vertexformat.getNextOffset() / 4;
+        svertexbuilder.vertexSize = vertexformat.getSize() / 4;
         svertexbuilder.hasNormal = vertexformat.hasNormal();
         svertexbuilder.hasTangent = svertexbuilder.hasNormal;
-        svertexbuilder.hasUV = vertexformat.hasElementOffset(0);
+        svertexbuilder.hasUV = vertexformat.hasUvOffset(0);
         svertexbuilder.offsetNormal = svertexbuilder.hasNormal ? vertexformat.getNormalOffset() / 4 : 0;
-        svertexbuilder.offsetUV = svertexbuilder.hasUV ? vertexformat.getElementOffsetById(0) / 4 : 0;
+        svertexbuilder.offsetUV = svertexbuilder.hasUV ? vertexformat.getUvOffsetById(0) / 4 : 0;
         svertexbuilder.offsetUVCenter = 8;
     }
 
-    public static void beginAddVertex(WorldRenderer wrr)
+    public static void beginAddVertex(BufferBuilder wrr)
     {
         if (wrr.vertexCount == 0)
         {
@@ -112,7 +112,7 @@ public class SVertexBuilder
         }
     }
 
-    public static void endAddVertex(WorldRenderer wrr)
+    public static void endAddVertex(BufferBuilder wrr)
     {
         SVertexBuilder svertexbuilder = wrr.sVertexBuilder;
 
@@ -130,7 +130,7 @@ public class SVertexBuilder
         }
     }
 
-    public static void beginAddVertexData(WorldRenderer wrr, int[] data)
+    public static void beginAddVertexData(BufferBuilder wrr, int[] data)
     {
         if (wrr.vertexCount == 0)
         {
@@ -151,7 +151,7 @@ public class SVertexBuilder
         }
     }
 
-    public static void beginAddVertexData(WorldRenderer wrr, ByteBuffer byteBuffer)
+    public static void beginAddVertexData(BufferBuilder wrr, ByteBuffer byteBuffer)
     {
         if (wrr.vertexCount == 0)
         {
@@ -175,7 +175,7 @@ public class SVertexBuilder
         }
     }
 
-    public static void endAddVertexData(WorldRenderer wrr)
+    public static void endAddVertexData(BufferBuilder wrr)
     {
         SVertexBuilder svertexbuilder = wrr.sVertexBuilder;
 
@@ -185,7 +185,7 @@ public class SVertexBuilder
         }
     }
 
-    public void calcNormal(WorldRenderer wrr, int baseIndex)
+    public void calcNormal(BufferBuilder wrr, int baseIndex)
     {
         FloatBuffer floatbuffer = wrr.rawFloatBuffer;
         IntBuffer intbuffer = wrr.rawIntBuffer;
@@ -286,7 +286,7 @@ public class SVertexBuilder
         floatbuffer.put(baseIndex + 3 * this.vertexSize + 8 + 1, f48);
     }
 
-    public static void calcNormalChunkLayer(WorldRenderer wrr)
+    public static void calcNormalChunkLayer(BufferBuilder wrr)
     {
         if (wrr.getVertexFormat().hasNormal() && wrr.drawMode == 7 && wrr.vertexCount % 4 == 0)
         {
@@ -301,12 +301,12 @@ public class SVertexBuilder
         }
     }
 
-    public static void drawArrays(int drawMode, int first, int count, WorldRenderer wrr)
+    public static void drawArrays(int drawMode, int first, int count, BufferBuilder wrr)
     {
         if (count != 0)
         {
             VertexFormat vertexformat = wrr.getVertexFormat();
-            int i = vertexformat.getNextOffset();
+            int i = vertexformat.getSize();
 
             if (i == 56)
             {

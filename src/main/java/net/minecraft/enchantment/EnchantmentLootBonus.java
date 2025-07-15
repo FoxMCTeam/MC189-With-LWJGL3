@@ -1,18 +1,19 @@
 package net.minecraft.enchantment;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.init.Enchantments;
+import net.minecraft.inventory.EntityEquipmentSlot;
 
 public class EnchantmentLootBonus extends Enchantment
 {
-    protected EnchantmentLootBonus(int p_i45767_1_, ResourceLocation p_i45767_2_, int p_i45767_3_, EnumEnchantmentType p_i45767_4_)
+    protected EnchantmentLootBonus(Enchantment.Rarity rarityIn, EnumEnchantmentType typeIn, EntityEquipmentSlot... slots)
     {
-        super(p_i45767_1_, p_i45767_2_, p_i45767_3_, p_i45767_4_);
+        super(rarityIn, typeIn, slots);
 
-        if (p_i45767_4_ == EnumEnchantmentType.DIGGER)
+        if (typeIn == EnumEnchantmentType.DIGGER)
         {
             this.setName("lootBonusDigger");
         }
-        else if (p_i45767_4_ == EnumEnchantmentType.FISHING_ROD)
+        else if (typeIn == EnumEnchantmentType.FISHING_ROD)
         {
             this.setName("lootBonusFishing");
         }
@@ -48,11 +49,9 @@ public class EnchantmentLootBonus extends Enchantment
 
     /**
      * Determines if the enchantment passed can be applyied together with this enchantment.
-     *  
-     * @param ench A possible enchantment that may be applied along side this enchantment, depending on the results.
      */
     public boolean canApplyTogether(Enchantment ench)
     {
-        return super.canApplyTogether(ench) && ench.effectId != silkTouch.effectId;
+        return super.canApplyTogether(ench) && ench != Enchantments.SILK_TOUCH;
     }
 }
