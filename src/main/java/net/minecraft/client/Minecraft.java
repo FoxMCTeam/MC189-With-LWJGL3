@@ -157,9 +157,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.handshake.client.C00Handshake;
 import net.minecraft.network.login.client.CPacketLoginStart;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
-import net.minecraft.profiler.ISnooperInfo;
 import net.minecraft.profiler.Profiler;
-import net.minecraft.profiler.Snooper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.management.PlayerProfileCache;
@@ -218,7 +216,7 @@ import org.lwjglx.opengl.GLContext;
 import org.lwjglx.opengl.PixelFormat;
 import org.lwjglx.util.glu.GLU;
 
-public class Minecraft implements IThreadListener, ISnooperInfo
+public class Minecraft implements IThreadListener
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final ResourceLocation LOCATION_MOJANG_PNG = new ResourceLocation("textures/gui/title/mojang.png");
@@ -258,9 +256,6 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     /** True if the player is connected to a realms server */
     private boolean connectedToRealms;
     private final Timer timer = new Timer(20.0F);
-
-    /** Instance of PlayerUsageSnooper. */
-    private final Snooper usageSnooper = new Snooper("client", this, MinecraftServer.getCurrentTimeMillis());
     public WorldClient world;
     public RenderGlobal renderGlobal;
     private RenderManager renderManager;
@@ -1260,12 +1255,6 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             RenderChunk.renderChunksUpdated = 0;
             this.debugUpdateTime += 1000L;
             this.fpsCounter = 0;
-            this.usageSnooper.addMemoryStatsToSnooper();
-
-            if (!this.usageSnooper.isSnooperRunning())
-            {
-                this.usageSnooper.startSnooper();
-            }
         }
 
         if (this.isFramerateLimitBelowMax())
@@ -3013,33 +3002,6 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         });
     }
 
-    public void addServerStatsToSnooper(Snooper playerSnooper)
-    {
-        playerSnooper.addClientStat("fps", Integer.valueOf(debugFPS));
-        playerSnooper.addClientStat("vsync_enabled", Boolean.valueOf(this.gameSettings.enableVsync));
-        playerSnooper.addClientStat("display_frequency", Integer.valueOf(Display.getDisplayMode().getFrequency()));
-        playerSnooper.addClientStat("display_type", this.fullscreen ? "fullscreen" : "windowed");
-        playerSnooper.addClientStat("run_time", Long.valueOf((MinecraftServer.getCurrentTimeMillis() - playerSnooper.getMinecraftStartTimeMillis()) / 60L * 1000L));
-        playerSnooper.addClientStat("current_action", this.getCurrentAction());
-        playerSnooper.addClientStat("language", this.gameSettings.language == null ? "en_us" : this.gameSettings.language);
-        String s = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN ? "little" : "big";
-        playerSnooper.addClientStat("endianness", s);
-        playerSnooper.addClientStat("subtitles", Boolean.valueOf(this.gameSettings.showSubtitles));
-        playerSnooper.addClientStat("touch", this.gameSettings.touchscreen ? "touch" : "mouse");
-        playerSnooper.addClientStat("resource_packs", Integer.valueOf(this.resourcePackRepository.getRepositoryEntries().size()));
-        int i = 0;
-
-        for (ResourcePackRepository.Entry resourcepackrepository$entry : this.resourcePackRepository.getRepositoryEntries())
-        {
-            playerSnooper.addClientStat("resource_pack[" + i++ + "]", resourcepackrepository$entry.getResourcePackName());
-        }
-
-        if (this.integratedServer != null && this.integratedServer.getPlayerUsageSnooper() != null)
-        {
-            playerSnooper.addClientStat("snooper_partner", this.integratedServer.getPlayerUsageSnooper().getUniqueID());
-        }
-    }
-
     /**
      * Return the current action's name
      */
@@ -3059,10 +3021,6 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         }
     }
 
-    public void addServerTypeToSnooper(Snooper playerSnooper)
-    {
-
-    }
 
     /**
      * Used in the usage snooper.
@@ -3140,15 +3098,6 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             }
         }
     }
-
-    /**
-     * Returns the PlayerUsageSnooper instance.
-     */
-    public Snooper getPlayerUsageSnooper()
-    {
-        return this.usageSnooper;
-    }
-
     /**
      * Gets the system time in milliseconds.
      */

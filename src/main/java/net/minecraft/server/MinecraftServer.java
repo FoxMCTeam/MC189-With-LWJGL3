@@ -50,9 +50,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetworkSystem;
 import net.minecraft.network.ServerStatusResponse;
 import net.minecraft.network.play.server.SPacketTimeUpdate;
-import net.minecraft.profiler.ISnooperInfo;
 import net.minecraft.profiler.Profiler;
-import net.minecraft.profiler.Snooper;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraft.util.IProgressUpdate;
@@ -83,14 +81,11 @@ import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class MinecraftServer implements ICommandSender, Runnable, IThreadListener, ISnooperInfo
+public abstract class MinecraftServer implements ICommandSender, Runnable, IThreadListener
 {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final File USER_CACHE_FILE = new File("usercache.json");
     private final ISaveFormat anvilConverterForAnvilFile;
-
-    /** The PlayerUsageSnooper instance. */
-    private final Snooper usageSnooper = new Snooper("server", this, getCurrentTimeMillis());
     private final File anvilFile;
     private final List<ITickable> tickables = Lists.<ITickable>newArrayList();
     public final ICommandManager commandManager;
@@ -500,11 +495,6 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 }
             }
         }
-
-        if (this.usageSnooper.isSnooperRunning())
-        {
-            this.usageSnooper.stopSnooper();
-        }
     }
 
     public boolean isServerRunning()
@@ -729,19 +719,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         this.profiler.startSection("tallying");
         this.tickTimeArray[this.tickCounter % 100] = System.nanoTime() - i;
         this.profiler.endSection();
-        this.profiler.startSection("snooper");
 
-        if (!this.usageSnooper.isSnooperRunning() && this.tickCounter > 100)
-        {
-            this.usageSnooper.startSnooper();
-        }
-
-        if (this.tickCounter % 6000 == 0)
-        {
-            this.usageSnooper.addMemoryStatsToSnooper();
-        }
-
-        this.profiler.endSection();
         this.profiler.endSection();
     }
 
@@ -1002,9 +980,8 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
      * both IWorldNameable and ICommandSender):
      *  
      * <dl>
-     * <dt>{@link net.minecraft.util.INameable#getName() INameable.getName()}</dt>
-     * <dd>Returns the name of this inventory. If this {@linkplain net.minecraft.inventory#hasCustomName() has a custom
-     * name} then this <em>should</em> be a direct string; otherwise it <em>should</em> be a valid translation
+     * <dt> </dt>
+     * <dd>Returns the name of this inventory. If this  then this <em>should</em> be a direct string; otherwise it <em>should</em> be a valid translation
      * string.</dd>
      * <dd>However, note that <strong>the translation string may be invalid</strong>, as is the case for {@link
      * net.minecraft.tileentity.TileEntityBanner TileEntityBanner} (always returns nonexistent translation code
@@ -1177,67 +1154,9 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         return this.resourcePackHash;
     }
 
-    public void setResourcePack(String url, String hash)
-    {
+    public void setResourcePack(String url, String hash) {
         this.resourcePackUrl = url;
         this.resourcePackHash = hash;
-    }
-
-    public void addServerStatsToSnooper(Snooper playerSnooper)
-    {
-        playerSnooper.addClientStat("whitelist_enabled", Boolean.valueOf(false));
-        playerSnooper.addClientStat("whitelist_count", Integer.valueOf(0));
-
-        if (this.playerList != null)
-        {
-            playerSnooper.addClientStat("players_current", Integer.valueOf(this.getCurrentPlayerCount()));
-            playerSnooper.addClientStat("players_max", Integer.valueOf(this.getMaxPlayers()));
-            playerSnooper.addClientStat("players_seen", Integer.valueOf(this.playerList.getAvailablePlayerDat().length));
-        }
-
-        playerSnooper.addClientStat("uses_auth", Boolean.valueOf(this.onlineMode));
-        playerSnooper.addClientStat("gui_state", this.getGuiEnabled() ? "enabled" : "disabled");
-        playerSnooper.addClientStat("run_time", Long.valueOf((getCurrentTimeMillis() - playerSnooper.getMinecraftStartTimeMillis()) / 60L * 1000L));
-        playerSnooper.addClientStat("avg_tick_ms", Integer.valueOf((int)(MathHelper.average(this.tickTimeArray) * 1.0E-6D)));
-        int l = 0;
-
-        if (this.worlds != null)
-        {
-            for (WorldServer worldserver1 : this.worlds)
-            {
-                if (worldserver1 != null)
-                {
-                    WorldInfo worldinfo = worldserver1.getWorldInfo();
-                    playerSnooper.addClientStat("world[" + l + "][dimension]", Integer.valueOf(worldserver1.provider.getDimensionType().getId()));
-                    playerSnooper.addClientStat("world[" + l + "][mode]", worldinfo.getGameType());
-                    playerSnooper.addClientStat("world[" + l + "][difficulty]", worldserver1.getDifficulty());
-                    playerSnooper.addClientStat("world[" + l + "][hardcore]", Boolean.valueOf(worldinfo.isHardcoreModeEnabled()));
-                    playerSnooper.addClientStat("world[" + l + "][generator_name]", worldinfo.getTerrainType().getName());
-                    playerSnooper.addClientStat("world[" + l + "][generator_version]", Integer.valueOf(worldinfo.getTerrainType().getVersion()));
-                    playerSnooper.addClientStat("world[" + l + "][height]", Integer.valueOf(this.buildLimit));
-                    playerSnooper.addClientStat("world[" + l + "][chunks_loaded]", Integer.valueOf(worldserver1.getChunkProvider().getLoadedChunkCount()));
-                    ++l;
-                }
-            }
-        }
-
-        playerSnooper.addClientStat("worlds", Integer.valueOf(l));
-    }
-
-    public void addServerTypeToSnooper(Snooper playerSnooper)
-    {
-        playerSnooper.addStatToSnooper("singleplayer", Boolean.valueOf(this.isSinglePlayer()));
-        playerSnooper.addStatToSnooper("server_brand", this.getServerModName());
-        playerSnooper.addStatToSnooper("gui_supported", GraphicsEnvironment.isHeadless() ? "headless" : "supported");
-        playerSnooper.addStatToSnooper("dedicated", Boolean.valueOf(this.isDedicatedServer()));
-    }
-
-    /**
-     * Returns whether snooping is enabled or not.
-     */
-    public boolean isSnooperEnabled()
-    {
-        return true;
     }
 
     public abstract boolean isDedicatedServer();
@@ -1382,11 +1301,6 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     public void enableProfiling()
     {
         this.startProfiling = true;
-    }
-
-    public Snooper getPlayerUsageSnooper()
-    {
-        return this.usageSnooper;
     }
 
     /**
